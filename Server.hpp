@@ -1,5 +1,4 @@
-#ifndef SERVER_H_
-#define SERVER_H_
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,7 +17,8 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 
-#include "DataCenter.h"
+
+//#include "DataCenter.h"
 #include "Helper.h"
 
 #define BUFFER_SIZE 1024
@@ -35,8 +35,8 @@ class Server {
     fd_set fd_read;
     fd_set fd_write;
     timeval delay;
-    list<int> accepted_list;Z
-    DataCenter o_DataCenter;
+    list<int> accepted_list;
+//    DataCenter o_DataCenter;
 
     void initialize(int __port);
     bool binding();
@@ -50,4 +50,3 @@ public:
     ~Server();
     void start();
 };
-#endif

@@ -1,4 +1,4 @@
-#include "Server.h"
+#include "Server.hpp"
 
 int main(int argc, char *argv[]) {
     system("clear");
@@ -9,6 +9,6 @@ int main(int argc, char *argv[]) {
         iPort = atoi(argv[1]);
 
     Server sServer(iPort);
-    sServer.Start();
+    sServer.start();
     return 0;
 }

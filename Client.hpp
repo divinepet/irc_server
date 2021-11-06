@@ -1,5 +1,4 @@
-#ifndef CLIENT_H_
-#define CLIENT_H_
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,25 +19,20 @@
 
 using namespace std;
 
-class Client
-{
+class Client {
+	const char* host;
+	int port;
+	int socket_fd;
+	struct sockaddr_in s_serverAddr;
+	struct hostent *s_server;
 public:
     Client();
-    Client(const char* cHost, int iPort);
+    Client(const char* __host, int __port);
     ~Client();
 
-    bool Connect();
-    string Read();
-    bool Write(const string &sString);
-    bool Write(const char* cString);
-
-private:
-    const char* c_Host;
-    int i_Port;
-    int i_SockFD;
-    struct sockaddr_in o_ServerAddr;
-    struct hostent *o_Server;
-
+    bool connecting();
+    string reading();
+    bool writing(const string &__str);
+    bool writing(const char* __str);
 };
-#endif // SERVER_H_
 

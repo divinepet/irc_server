@@ -1,6 +1,5 @@
-#include "Server.h"
+#include "Server.hpp"
 #include "Helper.h"
-#include "DataCenter.h"
 
 Server::Server(int __port) {
     if (__port > 1024) {
@@ -17,14 +16,14 @@ Server::Server() {
     cout << "Server will be bound to default port: " << port << endl;
 }
 
-void Server::Initialize(int __port) {
+void Server::initialize(int __port) {
     port = __port;
     FD_ZERO(&fd_accept);
     FD_ZERO(&fd_read);
     FD_ZERO(&fd_write);
     cout << "Server initialized" << endl;
 
-    o_DataCenter.InitializeData("data.csv"); // todo x
+//    o_DataCenter.InitializeData("data.csv"); // todo x
 }
 
 bool Server::binding() {
@@ -64,7 +63,7 @@ bool Server::binding() {
 int Server::accepting() {
     struct sockaddr_in ClientAddr;
     client_length = sizeof(ClientAddr);
-    new_socket_fd = accept(socket_fd, (struct sockaddr *) &ClientAddr, &o_ClientLen);
+    new_socket_fd = accept(socket_fd, (struct sockaddr *) &ClientAddr, &client_length);
 
     if (new_socket_fd < 0) {
     	cout << "ERROR on accepting the connection" << endl;
@@ -143,53 +142,46 @@ void Server::start() {
             for (list<int>::iterator it = accepted_list.begin(); it != accepted_list.end(); it++) {
                 if (FD_ISSET(*it, &fd_read)) {
                     char buf[BUFFER_SIZE];
-                    int _read = reading(*it, &buf);
+                    int _read = reading(*it, &buf); // в buf записывается то, что написал клиент
 
-                    if (_read != 0) {
-                        vector<string> tokens = Helper::Split(string(buf),' ');
-
-                        if (tokens.size() == 2) {
-                            string sItemName = vTokens[0];
-                            double dAmount = atof(vTokens[1].c_str());
-                            dAmount = o_DataCenter.BuyItem(sItemName.c_str(), dAmount);
-                            printf("\nClient said : %s", cBuffer);
-                            if ( Write(*it, Helper::ToString(dAmount)) ) {
-                                if (dAmount == -1) {
-                                    printf ("Invalid Order.\n");
-                                } else if (dAmount == -2) {
-                                    printf("Out of stock for %s\n", cBuffer);
-                                } else {
-                                    printf ("Calculated Amount : %f \n", dAmount);
-                                }
-                            } else {}
-                        }
-                        else if (vTokens.size() == 1)
-                        {
-                            string sString = vTokens[0];
-
-                            if (sString.compare("stock\n") == 0)
-                            {
-                                sString = o_DataCenter.GetStock();
-                                Write(*it, sString);
-                                printf("\n");
-                                o_DataCenter.PrintStock();
-                            }
-                            else
-                            {
-                                Write(*it, Helper::ToString(-1));
-                            }
-                        }
-                        else
-                        {
-                            printf("Invalid Input.\n");
-                        }
-
-                    }
-                    else
-                    {
-                        printf("Client disconnected.\n");
-                        close(*it);
-                        lst_AcceptedList.remove(*it);
+                    if (_read != 0) { // триггер если было получено сообщение
+                    	printf("Client: %s", buf);
+						writing(*it, "hello\n");
+//                        vector<string> tokens = Helper::Split(string(buf),' ');
+//
+//                        if (tokens.size() == 2) {
+//                            string sItemName = tokens[0];
+//                            double dAmount = atof(tokens[1].c_str());
+//                            dAmount = o_DataCenter.BuyItem(sItemName.c_str(), dAmount);
+//                            printf("\nClient said : %s", buf);
+//                            if ( writing(*it, Helper::ToString(dAmount)) ) {
+//                                if (dAmount == -1) {
+//                                    printf ("Invalid Order.\n");
+//                                } else if (dAmount == -2) {
+//                                    printf("Out of stock for %s\n", buf);
+//                                } else {
+//                                    printf ("Calculated Amount : %f \n", dAmount);
+//                                }
+//                            } else {}
+//                        } else if (tokens.size() == 1) {
+//                            string sString = tokens[0];
+//
+//                            if (sString.compare("stock\n") == 0)
+//                            {
+//                                sString = o_DataCenter.GetStock();
+//                                writing(*it, sString);
+//                                printf("\n");
+//                                o_DataCenter.PrintStock();
+//                            } else {
+//                                writing(*it, Helper::ToString(-1));
+//                            }
+//                        } else {
+//                            printf("Invalid Input.\n");
+//                        }
+                    } else {
+						printf("Client disconnected.\n");
+						close(*it);
+						accepted_list.remove(*it);
                     }
                     break;
                 }
@@ -202,6 +194,6 @@ void Server::start() {
 
 Server::~Server()
 {
-    close(i_NewSockFD);
-    close(i_SockFD);
+    close(new_socket_fd);
+    close(socket_fd);
 }
