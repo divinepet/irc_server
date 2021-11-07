@@ -1,5 +1,4 @@
 #include "Server.hpp"
-#include "Helper.h"
 
 Server::Server(int __port) {
     if (__port > 1024) {
@@ -22,8 +21,6 @@ void Server::initialize(int __port) {
     FD_ZERO(&fd_read);
     FD_ZERO(&fd_write);
     cout << "Server initialized" << endl;
-
-//    o_DataCenter.InitializeData("data.csv"); // todo x
 }
 
 bool Server::binding() {
@@ -76,14 +73,12 @@ int Server::accepting() {
 }
 
 int Server::reading(int &__socket_fd, char (*__buf)[BUFFER_SIZE]) {
-    //char cBuffer[BUFFER_SIZE];
     bzero(__buf, BUFFER_SIZE);
     int resp = read(__socket_fd, __buf, BUFFER_SIZE);
     if (resp < 0)
     	cout << "Error occurred while reading from socket" << endl;
     return resp;
 }
-
 
 bool Server::writing(int &__socket_fd, const string &__str) {
 	int resp = write(__socket_fd, __str.c_str(), BUFFER_SIZE);
@@ -96,14 +91,16 @@ bool Server::writing(int &__socket_fd, const string &__str) {
 }
 
 void Server::start() {
-    if (!binding())
-        Helper::Error("Error on binding to port.\n");
+    if (!binding()) {
+        perror("Error on binding to port.\n");
+    	exit(-1);
+    }
 
     while (true) {
         FD_ZERO(&fd_read);
         FD_SET(socket_fd, &fd_read);
 
-        delay.tv_sec = 1;
+        delay.tv_sec = 0;
 		delay.tv_usec = 0;
 
 		if (max_fd < socket_fd)
@@ -113,7 +110,6 @@ void Server::start() {
 
         if (selecting > 0) {
             new_socket_fd = accepting();
-
             if (FD_ISSET(socket_fd, &fd_read) ) {
                 char msg[] = "Welcome to Mega-Chat!.\n\n";
 
@@ -133,8 +129,8 @@ void Server::start() {
                 max_fd = *it;
         }
 
-        delay.tv_sec = 1;
-		delay.tv_usec = 0;
+        delay.tv_sec = 0;
+        delay.tv_usec = 0;
 
 		selecting = select(max_fd + 1, &fd_read, NULL, NULL, &delay);
 
@@ -142,42 +138,18 @@ void Server::start() {
             for (list<int>::iterator it = accepted_list.begin(); it != accepted_list.end(); it++) {
                 if (FD_ISSET(*it, &fd_read)) {
                     char buf[BUFFER_SIZE];
-                    int _read = reading(*it, &buf); // в buf записывается то, что написал клиент
+                    int _read = reading(*it, &buf);
 
-                    if (_read != 0) { // триггер если было получено сообщение
-                    	printf("Client: %s", buf);
-						writing(*it, "hello\n");
-//                        vector<string> tokens = Helper::Split(string(buf),' ');
-//
-//                        if (tokens.size() == 2) {
-//                            string sItemName = tokens[0];
-//                            double dAmount = atof(tokens[1].c_str());
-//                            dAmount = o_DataCenter.BuyItem(sItemName.c_str(), dAmount);
-//                            printf("\nClient said : %s", buf);
-//                            if ( writing(*it, Helper::ToString(dAmount)) ) {
-//                                if (dAmount == -1) {
-//                                    printf ("Invalid Order.\n");
-//                                } else if (dAmount == -2) {
-//                                    printf("Out of stock for %s\n", buf);
-//                                } else {
-//                                    printf ("Calculated Amount : %f \n", dAmount);
-//                                }
-//                            } else {}
-//                        } else if (tokens.size() == 1) {
-//                            string sString = tokens[0];
-//
-//                            if (sString.compare("stock\n") == 0)
-//                            {
-//                                sString = o_DataCenter.GetStock();
-//                                writing(*it, sString);
-//                                printf("\n");
-//                                o_DataCenter.PrintStock();
-//                            } else {
-//                                writing(*it, Helper::ToString(-1));
-//                            }
-//                        } else {
-//                            printf("Invalid Input.\n");
-//                        }
+                    if (_read != 0) {
+
+                    	printf("user #%d: %s", *it, buf);
+                    	string total_buf = "xxx #" + to_string(*it) + ": " + buf;
+                    	for (list<int>::iterator i = accepted_list.begin(); i != accepted_list.end(); i++) {
+                    		if (i == it)
+								continue;
+							if (send(*i, total_buf.c_str(), strlen(total_buf.c_str()), 0) != strlen(total_buf.c_str()))
+								perror("Cannot send.");
+						}
                     } else {
 						printf("Client disconnected.\n");
 						close(*it);
@@ -192,8 +164,8 @@ void Server::start() {
 
 }
 
-Server::~Server()
-{
-    close(new_socket_fd);
+Server::~Server() {
+	for (list<int>::iterator it = accepted_list.begin(); it != accepted_list.end(); it++)
+    	close(*it);
     close(socket_fd);
 }

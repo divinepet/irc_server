@@ -13,13 +13,10 @@
 #include <netdb.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/wait.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
-
-
-//#include "DataCenter.h"
-#include "Helper.h"
 
 #define BUFFER_SIZE 1024
 #define DEFAULT_PORT 5000
@@ -36,14 +33,12 @@ class Server {
     fd_set fd_write;
     timeval delay;
     list<int> accepted_list;
-//    DataCenter o_DataCenter;
 
     void initialize(int __port);
     bool binding();
     int accepting();
     int reading(int &__socket_fd, char (*__buf)[BUFFER_SIZE]);
     bool writing(int &__socket_fd, const string &__str);
-    bool trading(const char* pcItem, double dAmount);
 public:
     Server();
     Server(int __port);

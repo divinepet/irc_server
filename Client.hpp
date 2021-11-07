@@ -22,6 +22,7 @@ using namespace std;
 class Client {
 	const char* host;
 	int port;
+	char nickname[40];
 	int socket_fd;
 	struct sockaddr_in s_serverAddr;
 	struct hostent *s_server;
@@ -32,7 +33,7 @@ public:
 
     bool connecting();
     string reading();
-    bool writing(const string &__str);
+    void getUserInfo(Client c);
     bool writing(const char* __str);
 };
 

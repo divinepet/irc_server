@@ -1,19 +1,10 @@
 #include "Client.hpp"
-#include "Helper.h"
 
-Client::Client() {
-    host = DEFAULT_SERVER;
-    port = 5000;
-}
+Client::Client() : host(DEFAULT_SERVER), port(5000) {}
 
-Client::Client(const char* __host,int __port) {
-    host = __host;
-    port = __port;
-}
+Client::Client(const char* __host,int __port) : host(__host), port(__port) {}
 
-Client::~Client() {
-    close(socket_fd);
-}
+Client::~Client() { close(socket_fd); }
 
 bool Client::connecting() {
     socket_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -39,6 +30,11 @@ bool Client::connecting() {
         printf("Error occurred while connecting to the server.\n");
         return false;
     }
+//	printf("Enter your nickname: ");
+//    fgets(nickname, 40, stdin);
+//
+//    if (send(socket_fd, nickname, strlen(nickname), 0) != strlen(nickname))
+//    	perror("Cannot send.");
     return true;
 }
 
@@ -59,14 +55,15 @@ string Client::reading() {
 
     if (response < 0) {
         printf("Error occurred while reading from socket.\n");
-        string tmp = string("");
-        return tmp;
+        return "";
     } else
         return string(buf);
 }
 
 int main(int argc, char *argv[])
 {
+	pthread_t t1;
+	int status;
     string _host = DEFAULT_SERVER;
     int port = DEFAULT_PORT;
     system("clear");
@@ -80,44 +77,35 @@ int main(int argc, char *argv[])
 
     Client c(_host.c_str(), port);
 
-    if(!c.connecting())
-        Helper::Error("Can't connect to the server.\n");
-    else
+    if (!c.connecting()) {
+        perror("Can't connect to the server.\n");
+    	exit(-1);
+    } else
         printf("Successfully connected to the server %s:%i.\n", _host.c_str(), port);
-
-    printf("Place your orders as <item name> <quantity>.\n");
 
     string sRead = c.reading();
     printf("%s\n", sRead.c_str());
 
+	pid_t pid;
+	pid = fork();
+	if (!pid) {
+		while (true) {
+			string sRead = c.reading();
+			if (sRead.empty()) {
+				printf("Error occurred while reading from the socket.\n");
+				exit(1);
+			}
+			else
+				printf("%s", sRead.c_str());
+		}
+	}
     while (true) {
         char buf[BUFFER_SIZE];
-        printf("Client: ");
         bzero(buf, BUFFER_SIZE);
         fgets(buf, BUFFER_SIZE, stdin);
 
         if (!c.writing(buf))
             printf("Can't send the message to the server.\n");
-
-        string sRead = c.reading();
-//        string sReq = sRead;
-
-        if (sRead.empty())
-            printf("Error occurred while reading from the socket.\n");
-        else {
-//            double dResponse = atof(sRead.c_str());
-//
-//            if (dResponse == -1) {
-//                printf("Invalid request.\n");
-//            }
-//            else if (dResponse == -2) {
-//                printf("Out of stock for %s\n", buf);
-//            } else if (dResponse > 0) {
-//                printf("Order %s Placed at %.2f \n\n", buf, dResponse);
-//            } else {
-//                printf("Stock : \n%s \n", sRead.c_str());
-//            }
-        }
     }
     return 0;
 }
