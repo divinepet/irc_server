@@ -30,16 +30,11 @@ bool Client::connecting() {
         printf("Error occurred while connecting to the server.\n");
         return false;
     }
-//	printf("Enter your nickname: ");
-//    fgets(nickname, 40, stdin);
-//
-//    if (send(socket_fd, nickname, strlen(nickname), 0) != strlen(nickname))
-//    	perror("Cannot send.");
     return true;
 }
 
 bool Client::writing(const char* __str) {
-    int response = write(socket_fd, __str, strlen(__str));
+    int response = send(socket_fd, __str, strlen(__str), 0);
 
     if (response < 0) {
         printf("Error occurred while writing to the socket.\n");
@@ -51,7 +46,7 @@ bool Client::writing(const char* __str) {
 string Client::reading() {
     char buf[BUFFER_SIZE];
     bzero(buf, BUFFER_SIZE);
-    int response = read(socket_fd, buf, BUFFER_SIZE);
+    int response = recv(socket_fd, buf, BUFFER_SIZE, 0);
 
     if (response < 0) {
         printf("Error occurred while reading from socket.\n");
@@ -60,10 +55,7 @@ string Client::reading() {
         return string(buf);
 }
 
-int main(int argc, char *argv[])
-{
-	pthread_t t1;
-	int status;
+int main(int argc, char *argv[]) {
     string _host = DEFAULT_SERVER;
     int port = DEFAULT_PORT;
     system("clear");
@@ -99,7 +91,8 @@ int main(int argc, char *argv[])
 				printf("%s", sRead.c_str());
 		}
 	}
-    while (true) {
+
+	while (true) {
         char buf[BUFFER_SIZE];
         bzero(buf, BUFFER_SIZE);
         fgets(buf, BUFFER_SIZE, stdin);

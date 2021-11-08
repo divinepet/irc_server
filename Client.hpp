@@ -33,7 +33,6 @@ public:
 
     bool connecting();
     string reading();
-    void getUserInfo(Client c);
     bool writing(const char* __str);
 };
 

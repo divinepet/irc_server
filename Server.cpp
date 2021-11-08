@@ -8,6 +8,7 @@ Server::Server(int __port) {
         initialize(DEFAULT_PORT);
         cout << "Invalid Port. Server will be bound to default port: " << DEFAULT_PORT << endl;
     }
+	std::allocator<int> all;
 }
 
 Server::Server() {
@@ -74,14 +75,14 @@ int Server::accepting() {
 
 int Server::reading(int &__socket_fd, char (*__buf)[BUFFER_SIZE]) {
     bzero(__buf, BUFFER_SIZE);
-    int resp = read(__socket_fd, __buf, BUFFER_SIZE);
+    int resp = recv(__socket_fd, __buf, BUFFER_SIZE, 0); // recv except read
     if (resp < 0)
     	cout << "Error occurred while reading from socket" << endl;
     return resp;
 }
 
 bool Server::writing(int &__socket_fd, const string &__str) {
-	int resp = write(__socket_fd, __str.c_str(), BUFFER_SIZE);
+	int resp = send(__socket_fd, __str.c_str(), strlen(__str.c_str()), 0);
 
     if (resp < 0) {
     	cout << "Error occurred while writing to socket" << endl;
