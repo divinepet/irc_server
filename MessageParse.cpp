@@ -4,22 +4,21 @@ MessageParse::MessageParse() {}
 
 MessageParse::~MessageParse() {}
 
+bool BothAreSpaces(char lhs, char rhs) { return (lhs == rhs) && (lhs == ' '); }
+
 void MessageParse::splitMessage(char *__buf) {
-	string buf = "scott tiger  mushroom";
+	string buf = __buf;
 	string delimiter = " ";
-	size_t pos = buf.find(delimiter);
 	vector<string> args;
-	string command = "";
+	size_t pos;
 
-	if (pos != string::npos) {
-		command = buf.substr(0, pos);
-		buf.erase(0, pos + delimiter.length());
-	}
-
-	cout << "command: " << command << endl;
+	// removing duplicate spaces in buffer
+	string::iterator new_end = unique(buf.begin(), buf.end(), BothAreSpaces);
+	buf.erase(new_end, buf.end());
+	if (buf[0] == ' ') buf.erase(buf.begin());
 
 
-
+	// pushing remain word in vector
 	while ((pos = buf.find(delimiter)) != std::string::npos) {
 		args.push_back(buf.substr(0, pos));
 		buf.erase(0, pos + delimiter.length());
