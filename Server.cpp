@@ -75,7 +75,7 @@ int Server::accepting() {
 
 int Server::reading(int &__socket_fd, char (*__buf)[BUFFER_SIZE]) {
     bzero(__buf, BUFFER_SIZE);
-    int resp = recv(__socket_fd, __buf, BUFFER_SIZE, 0); // recv except read
+    int resp = recv(__socket_fd, __buf, BUFFER_SIZE, 0);
     if (resp < 0)
     	cout << "Error occurred while reading from socket" << endl;
     return resp;
@@ -89,6 +89,32 @@ bool Server::writing(int &__socket_fd, const string &__str) {
         return false;
     }
     return true;
+}
+
+void Server::get_message() {
+	for (list<int>::iterator it = accepted_list.begin(); it != accepted_list.end(); it++) {
+		if (FD_ISSET(*it, &fd_read)) {
+			char buf[BUFFER_SIZE];
+			int _read = reading(*it, &buf);
+
+			if (_read != 0) {
+				printf("user #%d: %s", *it, buf);
+				string total_buf = "xxx #" + to_string(*it) + ": " + buf;
+				for (list<int>::iterator i = accepted_list.begin(); i != accepted_list.end(); i++) {
+					if (i == it)
+						continue;
+					if (send(*i, total_buf.c_str(), strlen(total_buf.c_str()), 0) != strlen(total_buf.c_str()))
+						perror("Cannot send.");
+				}
+			} else {
+				printf("Client disconnected.\n");
+				close(*it);
+				accepted_list.remove(*it);
+			}
+			break;
+		}
+
+	}
 }
 
 void Server::start() {
@@ -135,32 +161,8 @@ void Server::start() {
 
 		selecting = select(max_fd + 1, &fd_read, NULL, NULL, &delay);
 
-        if (selecting > 0) {
-            for (list<int>::iterator it = accepted_list.begin(); it != accepted_list.end(); it++) {
-                if (FD_ISSET(*it, &fd_read)) {
-                    char buf[BUFFER_SIZE];
-                    int _read = reading(*it, &buf);
-
-                    if (_read != 0) {
-
-                    	printf("user #%d: %s", *it, buf);
-                    	string total_buf = "xxx #" + to_string(*it) + ": " + buf;
-                    	for (list<int>::iterator i = accepted_list.begin(); i != accepted_list.end(); i++) {
-                    		if (i == it)
-								continue;
-							if (send(*i, total_buf.c_str(), strlen(total_buf.c_str()), 0) != strlen(total_buf.c_str()))
-								perror("Cannot send.");
-						}
-                    } else {
-						printf("Client disconnected.\n");
-						close(*it);
-						accepted_list.remove(*it);
-                    }
-                    break;
-                }
-
-            }
-        }
+        if (selecting > 0)
+            get_message();
     }
 
 }
