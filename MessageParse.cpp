@@ -18,7 +18,7 @@ void MessageParse::splitMessage(char *__buf) {
 	if (buf[0] == ' ') buf.erase(buf.begin());
 
 
-	// pushing remain word in vector
+	// pushing all words in vector
 	while ((pos = buf.find(delimiter)) != std::string::npos) {
 		args.push_back(buf.substr(0, pos));
 		buf.erase(0, pos + delimiter.length());
