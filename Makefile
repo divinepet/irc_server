@@ -1,5 +1,5 @@
-SRCS =	RunServer.cpp Server.cpp
-HEADERS = Server.hpp
+SRCS =	RunServer.cpp Server.cpp Service.cpp MessageParse.cpp
+HEADERS = Server.hpp Service.hpp MessageParse.hpp
 OBJS = ${SRCS:.cpp=.o}
 NAME = server
 CFLAGS = -I. -g3 -Wall -Werror

@@ -99,13 +99,13 @@ void Server::get_message() {
 
 			if (_read != 0) {
 				printf("user #%d: %s", *it, buf);
-				string total_buf = "xxx #" + to_string(*it) + ": " + buf;
-				for (list<int>::iterator i = accepted_list.begin(); i != accepted_list.end(); i++) {
-					if (i == it)
-						continue;
-					if (send(*i, total_buf.c_str(), strlen(total_buf.c_str()), 0) != strlen(total_buf.c_str()))
-						perror("Cannot send.");
-				}
+//				string total_buf = "xxx #" + to_string(*it) + ": " + buf;
+//				for (list<int>::iterator i = accepted_list.begin(); i != accepted_list.end(); i++) {
+//					if (i == it)
+//						continue;
+//					if (send(*i, total_buf.c_str(), strlen(total_buf.c_str()), 0) != strlen(total_buf.c_str()))
+//						perror("Cannot send.");
+//				}
 			} else {
 				printf("Client disconnected.\n");
 				close(*it);
