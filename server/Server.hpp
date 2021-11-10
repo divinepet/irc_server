@@ -40,6 +40,7 @@ private:
     timeval delay;
 public:
     list<User> users_list;
+	// static string serverName;
 
 private:
     void initialize(int __port);
@@ -52,6 +53,5 @@ public:
     Server(int __port);
     ~Server();
     void start();
-    bool writing(int &__client_socket, const string &__str);
-	string serverName;
+    static bool writing(int __client_socket, const string &__str);
 };

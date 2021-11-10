@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "../server/Server.hpp"
+#include "CommandList.hpp"
 
 using namespace std;
 

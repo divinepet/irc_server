@@ -11,7 +11,7 @@ Server::Server(int __port) {
 	std::allocator<int> all;
 }
 
-Server::Server() : serverName("srv") {
+Server::Server() {
     initialize(DEFAULT_PORT);
     cout << "Server will be bound to default port: " << port << endl;
 }
@@ -81,7 +81,7 @@ int Server::reading(const int &__socket_fd, char (*__buf)[BUFFER_SIZE]) {
     return resp;
 }
 
-bool Server::writing(int &__client_socket, const string &__str) {
+bool Server::writing(int __client_socket, const string &__str) {
 	int resp = send(__client_socket, __str.c_str(), strlen(__str.c_str()), 0);
 
     if (resp < 0) {

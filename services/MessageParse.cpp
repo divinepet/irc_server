@@ -34,7 +34,10 @@ void MessageParse::splitMessage(char *__buf, vector<string> &args) {
 
 int MessageParse::defineCommandType(vector<string> &args, User& user) {
 	if (!args.size()) return -1;
-	else if (args[0] == "ADMIN") return 1;
+	else if (args[0] == "ADMIN") {
+		CommandList::admin(args, user);
+		return 1;
+	}
 	else if (args[0] == "AWAY") return 2;
 	else if (args[0] == "INFO") return 3;
 	else if (args[0] == "INVITE") return 4;
