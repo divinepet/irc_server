@@ -18,12 +18,20 @@ const string &User::getAutoReply() const {
 	return auto_reply;
 }
 
+bool User::getAway() const {
+    return away;
+}
+
 void User::setNickname(const string &nickname) {
 	User::nickname = nickname;
 }
 
 void User::setAutoReply(const string &autoReply) {
 	auto_reply = autoReply;
+}
+
+void User::setAway(bool value) {
+    away = value;
 }
 
 User::User(const User &__x) : socket_fd(__x.socket_fd), nickname(__x.nickname), auto_reply(__x.auto_reply) {}

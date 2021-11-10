@@ -9,6 +9,7 @@ class User {
 	int socket_fd;
 	string nickname;
 	string auto_reply;
+	bool away;
 	User();
 public:
 	User(int __socket_fd);
@@ -20,8 +21,10 @@ public:
 
 	void setNickname(const string &nickname);
 	void setAutoReply(const string &autoReply);
+	void setAway(bool value);
 
 	int getSocketFd() const;
 	const string &getNickname() const;
 	const string &getAutoReply() const;
+	bool getAway() const;
 };
