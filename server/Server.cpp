@@ -1,5 +1,7 @@
 #include "Server.hpp"
 
+//string Server::serverName = "Irccc";
+
 Server::Server(int __port) {
     if (__port > 1024) {
         initialize(__port);

@@ -1,28 +1,24 @@
 
 #include "CommandList.hpp"
 
-int	CommandList::admin(std::vector<std::string> command, User user) {
-	std::string adminInfo =		":" + Server::serverName + " 256 " + user.getNickname() + Server::serverName + " :Administrative info\n";
-	std::string adminNickname =	":" + Server::serverName + " 258 " + user.getNickname() + " :Nickname		" + "TestNickname" + "\n";
-	std::string adminName =		":" + Server::serverName + " 257 " + user.getNickname() + " :Name		" + "TestName" + "\n";
-	std::string adminEmail =	":" + Server::serverName + " 259 " + user.getNickname() + " :E-Mail		" + "Test@test.com" + "\n";
-
-	if (command.size() != 1)
-	{
-		if (command[1] != Server::serverName) {
-			std::string resultString = ":IRCat 402 " + user.getNickname() + " :No such server";
-			Server::writing(user.getSocketFd(), resultString);
-		} else {
-			Server::writing(user.getSocketFd(), adminInfo);
-			Server::writing(user.getSocketFd(), adminNickname);
-			Server::writing(user.getSocketFd(), adminName);
-			Server::writing(user.getSocketFd(), adminEmail);
+void	CommandList::admin(std::vector<std::string> command, User& user) {
+	if (command.size() != 1) {
+		if (command[1] != serverInfo::serverName) {
+			Server::writing(user.getSocketFd(), Service::formatMsg(402, "No such server", user));
+			return;
 		}
 	} else {
-		Server::writing(user.getSocketFd(), adminInfo);
-		Server::writing(user.getSocketFd(), adminNickname);
-		Server::writing(user.getSocketFd(), adminName);
-		Server::writing(user.getSocketFd(), adminEmail);
+		Server::writing(user.getSocketFd(), Service::formatMsg(256, "Administrative info", user, serverInfo::serverName));
+		Server::writing(user.getSocketFd(), Service::formatMsg(257,  "Nickname    TestNickname", user));
+		Server::writing(user.getSocketFd(), Service::formatMsg(258,  "Name        TestName", user));
+		Server::writing(user.getSocketFd(), Service::formatMsg(259,  "E-Mail      Test@test.com", user));
 	}
-	return 1;
+}
+
+void CommandList::nick(std::vector<std::string> args, User& user) {
+	if (args.size() == 1) {
+		Server::writing(user.getSocketFd(), Service::formatMsg(461, "Not enough parameters", user));
+		return;
+	}
+	user.setNickname(args[1]);
 }

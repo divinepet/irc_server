@@ -24,4 +24,6 @@ public:
 	int getSocketFd() const;
 	const string &getNickname() const;
 	const string &getAutoReply() const;
+
+	bool isRegistered();
 };

@@ -30,46 +30,45 @@ void MessageParse::splitMessage(char *__buf, vector<string> &args) {
 	cout << endl;
 }
 
-int MessageParse::defineCommandType(vector<string> &args, User& user) {
-	if (!args.size()) return -1;
-	else if (args[0] == "ADMIN") { return CommandList::admin(args, user); }
-	else if (args[0] == "AWAY") return 1;
-	else if (args[0] == "INFO") return 1;
-	else if (args[0] == "INVITE") return 1;
-	else if (args[0] == "ISON") return 1;
-	else if (args[0] == "JOIN") return 1;
-	else if (args[0] == "KICK") return 1;
-	else if (args[0] == "KILL") return 1;
-	else if (args[0] == "LIST") return 1;
-	else if (args[0] == "MODE") return 1;
-	else if (args[0] == "NAMES") return 1;
-	else if (args[0] == "NICK") return 1;
-	else if (args[0] == "NOTICE") return 1;
-	else if (args[0] == "OPER") return 1;
-	else if (args[0] == "PART") return 1;
-	else if (args[0] == "PASS") return 1;
-	else if (args[0] == "PING") return 1;
-	else if (args[0] == "PONG") return 1;
-	else if (args[0] == "PRIVMSG") return 1;
-	else if (args[0] == "QUIT") return 1;
-	else if (args[0] == "REHASH") return 1;
-	else if (args[0] == "RESTART") return 1;
-	else if (args[0] == "TIME") return 1;
-	else if (args[0] == "TOPIC") return 1;
-	else if (args[0] == "USER") return 1;
-	else if (args[0] == "VERSION") return 1;
-	else if (args[0] == "WALLOPS") return 1;
-	else if (args[0] == "WHO") return 1;
-	else if (args[0] == "WHOIS") return 1;
-	else if (args[0] == "WHOWAS") return 1;
-//	else if (args[0] == "USERS") return 1;
-	return -1;
+void MessageParse::defineCommandType(vector<string> &args, User& user) {
+	if (args[0] == "PASS") { }
+	else if (args[0] == "NICK") { CommandList::nick(args, user); }
+	else if (args[0] == "USER") { }
+	else if (!user.isRegistered()) { Server::writing(user.getSocketFd(), Service::formatMsg(451, "You are not registered", user)); }
+	else if (args[0] == "ADMIN") { CommandList::admin(args, user); }
+	else if (args[0] == "AWAY") {}
+	else if (args[0] == "JOIN") {}
+	else if (args[0] == "INFO") {}
+	else if (args[0] == "INVITE") {}
+	else if (args[0] == "ISON") {}
+	else if (args[0] == "KICK") {}
+	else if (args[0] == "KILL") {}
+	else if (args[0] == "LIST") {}
+	else if (args[0] == "MODE") {}
+	else if (args[0] == "NAMES") {}
+	else if (args[0] == "NOTICE") {}
+	else if (args[0] == "OPER") {}
+	else if (args[0] == "PART") {}
+	else if (args[0] == "PING") {}
+	else if (args[0] == "PONG") {}
+	else if (args[0] == "PRIVMSG") {}
+	else if (args[0] == "QUIT") {}
+	else if (args[0] == "REHASH") {}
+	else if (args[0] == "RESTART") {}
+	else if (args[0] == "TIME") {}
+	else if (args[0] == "TOPIC") {}
+	else if (args[0] == "VERSION") {}
+	else if (args[0] == "WALLOPS") {}
+	else if (args[0] == "WHO") {}
+	else if (args[0] == "WHOIS") {}
+	else if (args[0] == "WHOWAS") {}
+//	else if (args[0] == "USERS") {}
+	else Server::writing(user.getSocketFd(), Service::formatMsg(451, "command not found", user));
 }
 
 void MessageParse::handleMessage(char *__buf, User& user) {
 	vector<string> args;
 
 	splitMessage(__buf, args);
-	if (defineCommandType(args, user) == -1)
-		Server::writing(user.getSocketFd(), "command not found\n");
+	defineCommandType(args, user);
 }

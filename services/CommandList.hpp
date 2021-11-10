@@ -5,6 +5,6 @@
 
 class CommandList {
 public:
-	static int	admin(std::vector<std::string> command, User user);
-
+	static void	admin(std::vector<std::string> command, User& user);
+	static void nick(std::vector<std::string> args, User& user);
 };
