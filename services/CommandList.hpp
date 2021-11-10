@@ -3,14 +3,8 @@
 #include <vector>
 #include "../server/Server.hpp"
 
-class CommandList
-{
-private:
-	/* data */
+class CommandList {
 public:
-	CommandList(/* args */);
-	~CommandList();
-
-	static void	admin(std::vector<std::string> command, User user);
+	static int	admin(std::vector<std::string> command, User user);
 
 };

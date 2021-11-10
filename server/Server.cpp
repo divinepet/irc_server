@@ -99,7 +99,6 @@ void Server::get_message() {
 
 			if (_read != 0) {
 				MessageParse::handleMessage(buf, *it);
-//				printf("user #%d: %s", it->getSocketFd(), buf);
 			} else {
 				printf("Client disconnected.\n");
 				close(it->getSocketFd());

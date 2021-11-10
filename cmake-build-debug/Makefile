@@ -225,6 +225,30 @@ server/Server.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/server/Server.cpp.s
 .PHONY : server/Server.cpp.s
 
+services/CommandList.o: services/CommandList.cpp.o
+.PHONY : services/CommandList.o
+
+# target to build an object file
+services/CommandList.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/services/CommandList.cpp.o
+.PHONY : services/CommandList.cpp.o
+
+services/CommandList.i: services/CommandList.cpp.i
+.PHONY : services/CommandList.i
+
+# target to preprocess a source file
+services/CommandList.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/services/CommandList.cpp.i
+.PHONY : services/CommandList.cpp.i
+
+services/CommandList.s: services/CommandList.cpp.s
+.PHONY : services/CommandList.s
+
+# target to generate assembly for a file
+services/CommandList.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/services/CommandList.cpp.s
+.PHONY : services/CommandList.cpp.s
+
 services/MessageParse.o: services/MessageParse.cpp.o
 .PHONY : services/MessageParse.o
 
@@ -294,6 +318,9 @@ help:
 	@echo "... server/Server.o"
 	@echo "... server/Server.i"
 	@echo "... server/Server.s"
+	@echo "... services/CommandList.o"
+	@echo "... services/CommandList.i"
+	@echo "... services/CommandList.s"
 	@echo "... services/MessageParse.o"
 	@echo "... services/MessageParse.i"
 	@echo "... services/MessageParse.s"

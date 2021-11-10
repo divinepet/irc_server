@@ -12,6 +12,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/Users/elaronda/Desktop/irc_server/models/Channel.cpp" "/Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles/irc_server.dir/models/Channel.cpp.o"
   "/Users/elaronda/Desktop/irc_server/models/User.cpp" "/Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles/irc_server.dir/models/User.cpp.o"
   "/Users/elaronda/Desktop/irc_server/server/Server.cpp" "/Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles/irc_server.dir/server/Server.cpp.o"
+  "/Users/elaronda/Desktop/irc_server/services/CommandList.cpp" "/Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles/irc_server.dir/services/CommandList.cpp.o"
   "/Users/elaronda/Desktop/irc_server/services/MessageParse.cpp" "/Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles/irc_server.dir/services/MessageParse.cpp.o"
   "/Users/elaronda/Desktop/irc_server/services/Service.cpp" "/Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles/irc_server.dir/services/Service.cpp.o"
   )

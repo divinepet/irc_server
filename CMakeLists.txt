@@ -17,6 +17,8 @@ add_executable(irc_server
         models/User.hpp
         server/Server.cpp
         server/Server.hpp
+        services/CommandList.cpp
+        services/CommandList.hpp
         services/MessageParse.cpp
         services/MessageParse.hpp
         services/Service.cpp

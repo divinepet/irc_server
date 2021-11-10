@@ -111,6 +111,12 @@
 		<Unit filename="/Users/elaronda/Desktop/irc_server/server/Server.hpp">
 			<Option target="irc_server"/>
 		</Unit>
+		<Unit filename="/Users/elaronda/Desktop/irc_server/services/CommandList.cpp">
+			<Option target="irc_server"/>
+		</Unit>
+		<Unit filename="/Users/elaronda/Desktop/irc_server/services/CommandList.hpp">
+			<Option target="irc_server"/>
+		</Unit>
 		<Unit filename="/Users/elaronda/Desktop/irc_server/services/MessageParse.cpp">
 			<Option target="irc_server"/>
 		</Unit>

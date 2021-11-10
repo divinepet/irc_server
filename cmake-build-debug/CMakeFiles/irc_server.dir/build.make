@@ -118,9 +118,22 @@ CMakeFiles/irc_server.dir/server/Server.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/irc_server.dir/server/Server.cpp.s"
 	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/elaronda/Desktop/irc_server/server/Server.cpp -o CMakeFiles/irc_server.dir/server/Server.cpp.s
 
+CMakeFiles/irc_server.dir/services/CommandList.cpp.o: CMakeFiles/irc_server.dir/flags.make
+CMakeFiles/irc_server.dir/services/CommandList.cpp.o: ../services/CommandList.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/irc_server.dir/services/CommandList.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/irc_server.dir/services/CommandList.cpp.o -c /Users/elaronda/Desktop/irc_server/services/CommandList.cpp
+
+CMakeFiles/irc_server.dir/services/CommandList.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/irc_server.dir/services/CommandList.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/elaronda/Desktop/irc_server/services/CommandList.cpp > CMakeFiles/irc_server.dir/services/CommandList.cpp.i
+
+CMakeFiles/irc_server.dir/services/CommandList.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/irc_server.dir/services/CommandList.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/elaronda/Desktop/irc_server/services/CommandList.cpp -o CMakeFiles/irc_server.dir/services/CommandList.cpp.s
+
 CMakeFiles/irc_server.dir/services/MessageParse.cpp.o: CMakeFiles/irc_server.dir/flags.make
 CMakeFiles/irc_server.dir/services/MessageParse.cpp.o: ../services/MessageParse.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/irc_server.dir/services/MessageParse.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/irc_server.dir/services/MessageParse.cpp.o"
 	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/irc_server.dir/services/MessageParse.cpp.o -c /Users/elaronda/Desktop/irc_server/services/MessageParse.cpp
 
 CMakeFiles/irc_server.dir/services/MessageParse.cpp.i: cmake_force
@@ -133,7 +146,7 @@ CMakeFiles/irc_server.dir/services/MessageParse.cpp.s: cmake_force
 
 CMakeFiles/irc_server.dir/services/Service.cpp.o: CMakeFiles/irc_server.dir/flags.make
 CMakeFiles/irc_server.dir/services/Service.cpp.o: ../services/Service.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/irc_server.dir/services/Service.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/irc_server.dir/services/Service.cpp.o"
 	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/irc_server.dir/services/Service.cpp.o -c /Users/elaronda/Desktop/irc_server/services/Service.cpp
 
 CMakeFiles/irc_server.dir/services/Service.cpp.i: cmake_force
@@ -150,6 +163,7 @@ irc_server_OBJECTS = \
 "CMakeFiles/irc_server.dir/models/Channel.cpp.o" \
 "CMakeFiles/irc_server.dir/models/User.cpp.o" \
 "CMakeFiles/irc_server.dir/server/Server.cpp.o" \
+"CMakeFiles/irc_server.dir/services/CommandList.cpp.o" \
 "CMakeFiles/irc_server.dir/services/MessageParse.cpp.o" \
 "CMakeFiles/irc_server.dir/services/Service.cpp.o"
 
@@ -160,11 +174,12 @@ irc_server: CMakeFiles/irc_server.dir/app/RunServer.cpp.o
 irc_server: CMakeFiles/irc_server.dir/models/Channel.cpp.o
 irc_server: CMakeFiles/irc_server.dir/models/User.cpp.o
 irc_server: CMakeFiles/irc_server.dir/server/Server.cpp.o
+irc_server: CMakeFiles/irc_server.dir/services/CommandList.cpp.o
 irc_server: CMakeFiles/irc_server.dir/services/MessageParse.cpp.o
 irc_server: CMakeFiles/irc_server.dir/services/Service.cpp.o
 irc_server: CMakeFiles/irc_server.dir/build.make
 irc_server: CMakeFiles/irc_server.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable irc_server"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable irc_server"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/irc_server.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

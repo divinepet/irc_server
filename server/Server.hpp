@@ -40,7 +40,7 @@ private:
     timeval delay;
 public:
     list<User> users_list;
-	// static string serverName;
+    static string serverName;
 
 private:
     void initialize(int __port);
@@ -55,3 +55,5 @@ public:
     void start();
     static bool writing(int __client_socket, const string &__str);
 };
+
+string Server::serverName = "Irccc";
