@@ -81,8 +81,8 @@ int Server::reading(int &__socket_fd, char (*__buf)[BUFFER_SIZE]) {
     return resp;
 }
 
-bool Server::writing(int &__socket_fd, const string &__str) {
-	int resp = send(__socket_fd, __str.c_str(), strlen(__str.c_str()), 0);
+bool Server::writing(int &__client_socket, const string &__str) {
+	int resp = send(__client_socket, __str.c_str(), strlen(__str.c_str()), 0);
 
     if (resp < 0) {
     	cout << "Error occurred while writing to socket" << endl;
@@ -99,13 +99,6 @@ void Server::get_message() {
 
 			if (_read != 0) {
 				printf("user #%d: %s", *it, buf);
-//				string total_buf = "xxx #" + to_string(*it) + ": " + buf;
-//				for (list<int>::iterator i = accepted_list.begin(); i != accepted_list.end(); i++) {
-//					if (i == it)
-//						continue;
-//					if (send(*i, total_buf.c_str(), strlen(total_buf.c_str()), 0) != strlen(total_buf.c_str()))
-//						perror("Cannot send.");
-//				}
 			} else {
 				printf("Client disconnected.\n");
 				close(*it);
@@ -138,7 +131,7 @@ void Server::start() {
         if (selecting > 0) {
             new_socket_fd = accepting();
             if (FD_ISSET(socket_fd, &fd_read) ) {
-                char msg[] = "Welcome to Mega-Chat!.\n\n";
+                char msg[] = "Welcome to Chat\n\n";
 
                 if (send(new_socket_fd, msg, strlen(msg), 0) != strlen(msg))
                     perror("Cannot send.");

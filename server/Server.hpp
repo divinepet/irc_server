@@ -41,7 +41,7 @@ class Server {
     int accepting();
     int reading(int &__socket_fd, char (*__buf)[BUFFER_SIZE]);
     void get_message();
-    bool writing(int &__socket_fd, const string &__str);
+    bool writing(int &__client_socket, const string &__str);
 public:
     Server();
     Server(int __port);
