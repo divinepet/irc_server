@@ -1,15 +1,11 @@
 #include "MessageParse.hpp"
 
-MessageParse::MessageParse() {}
-
-MessageParse::~MessageParse() {}
-
-vector<string> MessageParse::getArgs() const { return args; }
-
 bool bothAreSpaces(char lhs, char rhs) { return (lhs == rhs) && (lhs == ' '); }
+bool bothAreNewLines(char lhs, char rhs) { return (lhs == rhs) && (lhs == '\n'); }
 
-void MessageParse::splitMessage(char *__buf) {
+void MessageParse::splitMessage(char *__buf, vector<string> &args) {
 	string buf = __buf;
+	buf = buf.substr(0, buf.length() - 1);
 	string delimiter = " ";
 	size_t pos;
 
@@ -27,12 +23,16 @@ void MessageParse::splitMessage(char *__buf) {
 	}
 	args.push_back(buf);
 
+	printf("command: %s, ", args[0].c_str());
+	printf("args:");
+
 	for (vector<string>::iterator it = args.begin();  it != args.end(); ++it) {
-		cout << *it << endl;
+		printf(" [%s]", (*it).c_str());
 	}
+	cout << endl;
 }
 
-int MessageParse::defineCommandType() {
+int MessageParse::defineCommandType(vector<string> &args, User& user) {
 	if (!args.size()) return -1;
 	else if (args[0] == "ADMIN") return 1;
 	else if (args[0] == "AWAY") return 2;
@@ -69,12 +69,10 @@ int MessageParse::defineCommandType() {
 }
 
 
-void MessageParse::handleMessage(char *__buf) {
-	int commandType;
+void MessageParse::handleMessage(char *__buf, User& user) {
+	vector<string> args;
 
-	splitMessage(__buf);
-	commandType = defineCommandType();
-	switch (commandType) {
-
-	}
+	splitMessage(__buf, args);
+	if (defineCommandType(args, user) == -1)
+		printf("command not found\n");
 }

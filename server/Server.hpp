@@ -20,12 +20,16 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 
+#include "../models/User.hpp"
+#include "../services/MessageParse.hpp"
+
 #define BUFFER_SIZE 1024
 #define DEFAULT_PORT 5000
 
 using namespace std;
 
 class Server {
+private:
     int port;
     int socket_fd, new_socket_fd;
     socklen_t client_length;
@@ -34,17 +38,20 @@ class Server {
     fd_set fd_read;
     fd_set fd_write;
     timeval delay;
-    list<int> accepted_list;
+public:
+    list<User> users_list;
 
+private:
     void initialize(int __port);
     bool binding();
     int accepting();
-    int reading(int &__socket_fd, char (*__buf)[BUFFER_SIZE]);
+    int reading(const int &__socket_fd, char (*__buf)[BUFFER_SIZE]);
     void get_message();
-    bool writing(int &__client_socket, const string &__str);
 public:
     Server();
     Server(int __port);
     ~Server();
     void start();
+    bool writing(int &__client_socket, const string &__str);
+	string serverName;
 };

@@ -3,17 +3,13 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "../server/Server.hpp"
 
 using namespace std;
 
 class MessageParse {
-	vector<string> args;
+	static void splitMessage(char *__buf, vector<string> &args);
+	static int defineCommandType(vector<string> &args, User& user);
 public:
-	MessageParse();
-	virtual ~MessageParse();
-
-	void splitMessage(char *__buf);
-	void handleMessage(char *__buf);
-	int defineCommandType();
-	vector<string> getArgs() const;
+	static void handleMessage(char *__buf, User& user);
 };

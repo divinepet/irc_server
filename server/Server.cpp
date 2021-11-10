@@ -11,7 +11,7 @@ Server::Server(int __port) {
 	std::allocator<int> all;
 }
 
-Server::Server() {
+Server::Server() : serverName("srv") {
     initialize(DEFAULT_PORT);
     cout << "Server will be bound to default port: " << port << endl;
 }
@@ -73,7 +73,7 @@ int Server::accepting() {
     }
 }
 
-int Server::reading(int &__socket_fd, char (*__buf)[BUFFER_SIZE]) {
+int Server::reading(const int &__socket_fd, char (*__buf)[BUFFER_SIZE]) {
     bzero(__buf, BUFFER_SIZE);
     int resp = recv(__socket_fd, __buf, BUFFER_SIZE, 0);
     if (resp < 0)
@@ -92,17 +92,18 @@ bool Server::writing(int &__client_socket, const string &__str) {
 }
 
 void Server::get_message() {
-	for (list<int>::iterator it = accepted_list.begin(); it != accepted_list.end(); it++) {
-		if (FD_ISSET(*it, &fd_read)) {
+	for (list<User>::iterator it = users_list.begin(); it != users_list.end(); it++) {
+		if (FD_ISSET(it->getSocketFd(), &fd_read)) {
 			char buf[BUFFER_SIZE];
-			int _read = reading(*it, &buf);
+			int _read = reading(it->getSocketFd(), &buf);
 
 			if (_read != 0) {
-				printf("user #%d: %s", *it, buf);
+				MessageParse::handleMessage(buf, *it);
+//				printf("user #%d: %s", it->getSocketFd(), buf);
 			} else {
 				printf("Client disconnected.\n");
-				close(*it);
-				accepted_list.remove(*it);
+				close(it->getSocketFd());
+				users_list.remove(*it);
 			}
 			break;
 		}
@@ -131,22 +132,23 @@ void Server::start() {
         if (selecting > 0) {
             new_socket_fd = accepting();
             if (FD_ISSET(socket_fd, &fd_read) ) {
-                char msg[] = "Welcome to Chat\n\n";
+                char msg[] = "Daily message: Welcome to Chat!\n\n";
 
                 if (send(new_socket_fd, msg, strlen(msg), 0) != strlen(msg))
                     perror("Cannot send.");
 
                 fcntl(new_socket_fd, F_SETFL, fcntl(new_socket_fd, F_GETFL) | O_NONBLOCK);
 
-                accepted_list.push_back(new_socket_fd);
+                User user(new_socket_fd);
+                users_list.push_back(user);
                 FD_SET(new_socket_fd, &fd_read);
             }
         }
 
-        for (list<int>::iterator it = accepted_list.begin(); it != accepted_list.end(); it++) {
-            FD_SET(*it, &fd_read);
-            if (*it > 0 && max_fd < *it)
-                max_fd = *it;
+        for (list<User>::iterator it = users_list.begin(); it != users_list.end(); it++) {
+            FD_SET(it->getSocketFd(), &fd_read);
+            if (it->getSocketFd() > 0 && max_fd < it->getSocketFd())
+            	max_fd = it->getSocketFd();
         }
 
         delay.tv_sec = 0;
@@ -161,7 +163,7 @@ void Server::start() {
 }
 
 Server::~Server() {
-	for (list<int>::iterator it = accepted_list.begin(); it != accepted_list.end(); it++)
-    	close(*it);
+	for (list<User>::iterator it = users_list.begin(); it != users_list.end(); it++)
+		close(it->getSocketFd());
     close(socket_fd);
 }
