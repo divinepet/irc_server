@@ -1,7 +1,7 @@
-SRCS =	RunServer.cpp Server.cpp Service.cpp MessageParse.cpp
-HEADERS = Server.hpp Service.hpp MessageParse.hpp
+SRCS =	$(wildcard */*.cpp)
+HEADERS = $(wildcard */*.hpp)
 OBJS = ${SRCS:.cpp=.o}
-NAME = server
+NAME = ircserv
 CFLAGS = -I. -g3 -Wall -Werror
 
 all:		${NAME}
