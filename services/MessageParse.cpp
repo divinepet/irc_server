@@ -2,20 +2,17 @@
 
 bool bothAreSpaces(char lhs, char rhs) { return (lhs == rhs) && (lhs == ' '); }
 
-void MessageParse::splitMessage(char *__buf, vector<string> &args) {
-	string buf = __buf;
+void MessageParse::splitMessage(char *_buf, vector<string> &args) {
+	string buf = _buf;
 	buf = buf.substr(0, buf.length() - 1);
 	string delimiter = " ";
 	size_t pos;
 
-	// removing duplicate spaces in buffer
 	string::iterator new_end = unique(buf.begin(), buf.end(), bothAreSpaces);
 	buf.erase(new_end, buf.end());
-	if (buf[0] == ' ') buf.erase(buf.begin());
+	if (buf.size() > 0 && buf[0] == ' ') buf.erase(buf.begin());
+	if (buf[buf.size() - 1] == ' ') buf.erase(buf.end() - 1);
 
-
-	// split by space character and pushing all words in vector
-	// first element is a command, other remaining are arguments
 	while ((pos = buf.find(delimiter)) != std::string::npos) {
 		args.push_back(buf.substr(0, pos));
 		buf.erase(0, pos + delimiter.length());
@@ -30,11 +27,11 @@ void MessageParse::splitMessage(char *__buf, vector<string> &args) {
 	cout << endl;
 }
 
-void MessageParse::defineCommandType(vector<string> &args, User& user, list<User> users_list) {
-	if (args[0] == "PASS") { }
+void MessageParse::defineCommandType(vector<string> &args, User& user, list<User>& users_list, string pass) {
+	if (args[0] == "PASS") { CommandList::pass(args, user, users_list, pass); }
 	else if (args[0] == "NICK") { CommandList::nick(args, user); }
-	else if (args[0] == "USER") { }
-	else if (!user.isRegistered()) { Server::writing(user.getSocketFd(), Service::formatMsg(451, "You are not registered", user)); }
+	else if (args[0] == "USER") { CommandList::user(args, user); }
+	else if (!user.isRegistered()) { Service::errMsg(451, user); }
 	else if (args[0] == "ADMIN") { CommandList::admin(args, user); }
 	else if (args[0] == "AWAY") { CommandList::away(args, user); }
 	else if (args[0] == "JOIN") {}
@@ -63,12 +60,12 @@ void MessageParse::defineCommandType(vector<string> &args, User& user, list<User
 	else if (args[0] == "WHOIS") {}
 	else if (args[0] == "WHOWAS") {}
 //	else if (args[0] == "USERS") {}
-	else Server::writing(user.getSocketFd(), Service::formatMsg(451, "command not found", user));
+	else Service::errMsg(421, user, args[0]);
 }
 
-void MessageParse::handleMessage(char *__buf, User& user, list<User> users_list) {
+void MessageParse::handleMessage(char *_buf, User& user, list<User>& users_list, string pass) {
 	vector<string> args;
 
-	splitMessage(__buf, args);
-	defineCommandType(args, user, users_list);
+	splitMessage(_buf, args);
+	defineCommandType(args, user, users_list, pass);
 }

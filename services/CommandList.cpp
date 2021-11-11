@@ -3,36 +3,41 @@
 
 void	CommandList::admin(std::vector<std::string> args, User& user) {
 	if (args.size() == 1 || (args.size() != 1 && args[1] == serverInfo::serverName)) {
-		Server::writing(user.getSocketFd(), Service::formatMsg(256, "Administrative info", user, serverInfo::serverName));
-		Server::writing(user.getSocketFd(), Service::formatMsg(257,  "Nickname    TestNickname", user));
-		Server::writing(user.getSocketFd(), Service::formatMsg(258,  "Name        TestName", user));
-		Server::writing(user.getSocketFd(), Service::formatMsg(259,  "E-Mail      Test@test.com", user));
+		Service::replyMsg(256, user, serverInfo::serverName);
+		Service::replyMsg(257, user, "Test");
+		Service::replyMsg(258, user, "Test");
+		Service::replyMsg(259, user, "Test@test.com");
 	} else
-		Server::writing(user.getSocketFd(), Service::formatMsg(402, "No such server", user));
+		Service::errMsg(402, user);
+}
+
+void CommandList::motd(User &user) {
+	std::ifstream infile("daily");
+	std::string dailyMessageLine;
+	Service::replyMsg(375, user, serverInfo::serverName);
+	while (std::getline(infile, dailyMessageLine))
+		Service::replyMsg(372, user, dailyMessageLine);
+	Service::replyMsg(376, user);
 }
 
 void CommandList::nick(std::vector<std::string> args, User& user) {
 	if (args.size() == 1) {
-		Server::writing(user.getSocketFd(), Service::formatMsg(461, "Not enough parameters", user));
+		Service::errMsg(461, user);
 		return;
 	}
 	user.setNickname(args[1]);
-	std::ifstream infile("daily");
-	std::string dailyMessageLine;
-	Server::writing(user.getSocketFd(), Service::formatMsg(375, "- " + serverInfo::serverName + " Message of the day -", user));
-	while (std::getline(infile, dailyMessageLine))
-		Server::writing(user.getSocketFd(), Service::formatMsg(372, dailyMessageLine, user));
-	Server::writing(user.getSocketFd(), Service::formatMsg(376, "End of /MOTD command", user));
+	user.setRegisterPhase(user.getRegisterPhase() + 1);
+	if (user.getRegisterPhase() == 3 && user.isValidPass()) motd(user);
 }
 
 void CommandList::away(std::vector<std::string> args, User &user) {
     if (args.size() == 1) {
         user.setAway(false);
-        Server::writing(user.getSocketFd(), Service::formatMsg(305, "You are no longer marked as being away", user));
+		Service::replyMsg(305, user);
     }
     else if (args.size() > 1) {
         user.setAway(true);
-		Server::writing(user.getSocketFd(), Service::formatMsg(306, "You have been marked as being away", user));
+		Service::replyMsg(306, user);
         user.setAutoReply(args[1]);
     }
     else
@@ -45,7 +50,7 @@ void CommandList::invite(std::vector<std::string> args, User &user) {
     std::string channel_name;
 
     if (args.size() < 3) {
-		Server::writing(user.getSocketFd(), Service::formatMsg(461, "Not enough parameters", user));
+		Service::errMsg(461, user);
     }
     else {
 
@@ -54,16 +59,29 @@ void CommandList::invite(std::vector<std::string> args, User &user) {
 
 void CommandList::info(std::vector<std::string> args, User& user) {
 	if (args.size() == 1 || (args.size() != 1 && args[1] == serverInfo::serverName)) {
-		Server::writing(user.getSocketFd(), Service::formatMsg(371, ">| Server Information |<", user, serverInfo::serverName));
-		Server::writing(user.getSocketFd(), Service::formatMsg(371, "Compilation Time - " + serverInfo::compileTime, user, serverInfo::serverName));
-		Server::writing(user.getSocketFd(), Service::formatMsg(371, "Server Version - " + serverInfo::serverVersion, user, serverInfo::serverName));
-		Server::writing(user.getSocketFd(), Service::formatMsg(374,  "End of /INFO list", user, serverInfo::serverName));
+		Service::replyMsg(371, user, ">| Server Information |<");
+		Service::replyMsg(371, user, "Compilation Time" + serverInfo::compileTime);
+		Service::replyMsg(371, user, "Server Version" + serverInfo::serverVersion);
+		Service::replyMsg(374, user);
 	} else
-		Server::writing(user.getSocketFd(), Service::formatMsg(402, "No such server", user));
+		Service::errMsg(402, user);
 }
 
-void CommandList::pass(std::vector<std::string> args, User &user) {
-
+void CommandList::pass(std::vector<std::string> args, User &user, std::list<User>& userList, string pass) {
+	if (user.isRegistered()) {
+		Service::errMsg(462, user);
+		return;
+	} else if (user.getRegisterPhase() == 2) {
+		close(user.getSocketFd());
+		userList.remove(user);
+		return;
+	}
+	cout << pass << endl;
+	if (args[1] == pass) {
+		cout << "valid" << endl;
+		user.setValidPass(true);
+		user.setRegisterPhase(user.getRegisterPhase() + 1);
+	}
 }
 
 void	CommandList::ison(std::vector<std::string> args, User& user, std::list<User> userList) {
@@ -71,7 +89,7 @@ void	CommandList::ison(std::vector<std::string> args, User& user, std::list<User
 	std::string onlineUsers = "";
 
 	if (args.size() == 1)
-		Server::writing(user.getSocketFd(), Service::formatMsg(461, "Not enough parameters", user));
+		Service::errMsg(461, user);
 	else {
 		for (std::list<User>::iterator userIt = userList.begin(); userIt != userList.end(); userIt++) {
 			for (std::vector<std::string>::iterator strIt = args.begin(); strIt != args.end(); strIt++) {
@@ -82,6 +100,21 @@ void	CommandList::ison(std::vector<std::string> args, User& user, std::list<User
 			}
 		}
 		onlineUsers.pop_back();
-		Server::writing(user.getSocketFd(), Service::formatMsg(303, onlineUsers, user));
+		Service::replyMsg(303, user, onlineUsers);
 	}
 }
+
+void CommandList::user(std::vector<std::string> args, User &user) {
+	if (args.size() < 4) {
+		Service::errMsg(461, user);
+		return;
+	}
+	user.setUsername(args[1]);
+	user.setHost(args[2]);
+	user.setServername(args[3]);
+	user.setRealname(args[4]);
+	user.setRegisterPhase(user.getRegisterPhase() + 1);
+	if (user.getRegisterPhase() == 3 && user.isValidPass()) motd(user);
+}
+
+

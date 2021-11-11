@@ -9,8 +9,8 @@
 using namespace std;
 
 class MessageParse {
-	static void splitMessage(char *__buf, vector<string> &args);
-	static void defineCommandType(vector<string> &args, User& user, list<User> users_list);
+	static void splitMessage(char *_buf, vector<string> &args);
+	static void defineCommandType(vector<string> &args, User& user, list<User>& users_list, string pass);
 public:
-	static void handleMessage(char *__buf, User& user, list<User> users_list);
+	static void handleMessage(char *_buf, User& user, list<User>& users_list, string pass);
 };

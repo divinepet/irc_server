@@ -1,6 +1,6 @@
 #include "Server.hpp"
 
-Server::Server(int _port, int _pass) {
+Server::Server(int _port, string _pass) {
     if (_port > 1023 && _port < 49152) {
         initialize(_port, _pass);
         cout << "Server will be bound to port: " << _port << endl;
@@ -8,7 +8,7 @@ Server::Server(int _port, int _pass) {
 		throw "Wrong port!";
 }
 
-void Server::initialize(int _port, int _pass) {
+void Server::initialize(int _port, string& _pass) {
     port = _port;
 	pass = _pass;
     FD_ZERO(&fd_accept);
@@ -90,7 +90,7 @@ void Server::get_message() {
 			int _read = reading(it->getSocketFd(), &buf);
 
 			if (_read != 0) {
-				MessageParse::handleMessage(buf, *it, users_list);
+				MessageParse::handleMessage(buf, *it, users_list, pass);
 			} else {
 				printf("%s disconnected.\n", it->getNickname().c_str());
 				close(it->getSocketFd());
