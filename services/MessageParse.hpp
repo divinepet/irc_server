@@ -10,7 +10,7 @@ using namespace std;
 
 class MessageParse {
 	static void splitMessage(char *__buf, vector<string> &args);
-	static void defineCommandType(vector<string> &args, User& user);
+	static void defineCommandType(vector<string> &args, User& user, list<User> users_list);
 public:
-	static void handleMessage(char *__buf, User& user);
+	static void handleMessage(char *__buf, User& user, list<User> users_list);
 };
