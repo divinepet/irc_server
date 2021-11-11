@@ -68,3 +68,18 @@ void CommandList::invite(std::vector<std::string> command, User &user) {
 
 
 
+
+void CommandList::info(std::vector<std::string> args, User& user) {
+
+	std::string compilationTime = "Compilation Time - " + std::string("[00:00:00]");
+	std::string serverVersion = "Server Version - " + std::string("1.0");
+
+
+	if (args.size() == 1 || (args.size() != 1 && args[1] == serverInfo::serverName)) {
+		Server::writing(user.getSocketFd(), Service::formatMsg(371, ">| Server Information |<", user, serverInfo::serverName));
+		Server::writing(user.getSocketFd(), Service::formatMsg(371, compilationTime, user, serverInfo::serverName));
+		Server::writing(user.getSocketFd(), Service::formatMsg(371, serverVersion, user, serverInfo::serverName));
+		Server::writing(user.getSocketFd(), Service::formatMsg(374,  "End of /INFO list", user, serverInfo::serverName));
+	} else
+		Server::writing(user.getSocketFd(), Service::formatMsg(402, "No such server", user));
+}

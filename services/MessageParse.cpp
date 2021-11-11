@@ -38,7 +38,7 @@ void MessageParse::defineCommandType(vector<string> &args, User& user) {
 	else if (args[0] == "ADMIN") { CommandList::admin(args, user); }
 	else if (args[0] == "AWAY") {}
 	else if (args[0] == "JOIN") {}
-	else if (args[0] == "INFO") {}
+	else if (args[0] == "INFO") { CommandList::info(args, user); }
 	else if (args[0] == "INVITE") {}
 	else if (args[0] == "ISON") {}
 	else if (args[0] == "KICK") {}

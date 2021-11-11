@@ -7,6 +7,7 @@ class CommandList {
 public:
 	static void	admin(std::vector<std::string> command, User& user);
 	static void nick(std::vector<std::string> args, User& user);
+	static void info(std::vector<std::string> args, User& user);
 	static void away(std::vector<std::string> command, User &user);
 	static void invite(std::vector<std::string> command, User &user);
 
