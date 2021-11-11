@@ -44,3 +44,7 @@ User &User::operator=(const User &__x) {
 	auto_reply = __x.auto_reply;
 	return *this;
 }
+
+bool User::isRegistered() {
+	return (!nickname.empty());
+}

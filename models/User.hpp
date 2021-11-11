@@ -27,4 +27,6 @@ public:
 	const string &getNickname() const;
 	const string &getAutoReply() const;
 	bool getAway() const;
+
+	bool isRegistered();
 };

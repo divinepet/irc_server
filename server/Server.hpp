@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <cstring>
 #include <string>
 #include <sstream>
 #include <fstream>
@@ -21,10 +21,15 @@
 #include <fcntl.h>
 
 #include "../models/User.hpp"
+#include "../services/Service.hpp"
 #include "../services/MessageParse.hpp"
 
 #define BUFFER_SIZE 1024
 #define DEFAULT_PORT 5000
+
+namespace serverInfo {
+	static string serverName = "xIRC";
+}
 
 using namespace std;
 
@@ -40,7 +45,6 @@ private:
     timeval delay;
 public:
     list<User> users_list;
-    static string serverName;
 
 private:
     void initialize(int __port);
@@ -56,4 +60,3 @@ public:
     static bool writing(int __client_socket, const string &__str);
 };
 
-string Server::serverName = "Irccc";
