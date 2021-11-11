@@ -85,3 +85,38 @@ void	CommandList::ison(std::vector<std::string> args, User& user, std::list<User
 		Server::writing(user.getSocketFd(), Service::formatMsg(303, onlineUsers, user));
 	}
 }
+
+//  JOIN #foo,#bar fubar,foobar
+
+void CommandList::join(std::vector<std::string> args, User &user, list<Channel> &channel_list) {
+
+    list<Channel>::iterator ch = channel_list.begin();
+
+    if (args.size() > 1) {
+
+        for (size_t i = 0; i < args[1].length(); ++i) {
+            if (args[1][0] != '#' &&  args[1][0] != '&') {
+            }
+        }
+
+        for (; ch != channel_list.end() && ch->_channel_name != args[1]; ++ch) {}
+        if (ch != channel_list.end()) {
+            channel_list.push_back(Channel(args[1], user));
+        }
+        else {
+            ch->addUser(user);
+        }
+    }
+}
+
+std::vector<std::string> CommandList::split(std::string str, char ch) {
+
+    std::vector<std::string> result;
+
+    for (size_t i = 0; i - 1 != std::string::npos; i = str.find(ch) + 1) {
+        result.push_back(str.substr(i,str.find(ch)));
+    }
+
+    return result;
+}
+
