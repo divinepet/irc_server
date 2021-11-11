@@ -64,8 +64,6 @@ void	CommandList::ison(std::vector<std::string> args, User& user, std::list<User
 
 	std::string onlineUsers = "";
 
-	// userList./
-
 	if (args.size() == 1)
 		Server::writing(user.getSocketFd(), Service::formatMsg(461, "Not enough parameters", user));
 	else {
