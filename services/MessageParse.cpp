@@ -30,7 +30,7 @@ void MessageParse::splitMessage(char *__buf, vector<string> &args) {
 	cout << endl;
 }
 
-void MessageParse::defineCommandType(vector<string> &args, User& user) {
+void MessageParse::defineCommandType(vector<string> &args, User& user, list<User> users_list) {
 	if (args[0] == "PASS") { }
 	else if (args[0] == "NICK") { CommandList::nick(args, user); }
 	else if (args[0] == "USER") { }
@@ -40,7 +40,7 @@ void MessageParse::defineCommandType(vector<string> &args, User& user) {
 	else if (args[0] == "JOIN") {}
 	else if (args[0] == "INFO") { CommandList::info(args, user); }
 	else if (args[0] == "INVITE") {}
-	else if (args[0] == "ISON") {}
+	else if (args[0] == "ISON") { CommandList::ison(args, user, users_list); }
 	else if (args[0] == "KICK") {}
 	else if (args[0] == "KILL") {}
 	else if (args[0] == "LIST") {}
@@ -66,9 +66,9 @@ void MessageParse::defineCommandType(vector<string> &args, User& user) {
 	else Server::writing(user.getSocketFd(), Service::formatMsg(451, "command not found", user));
 }
 
-void MessageParse::handleMessage(char *__buf, User& user) {
+void MessageParse::handleMessage(char *__buf, User& user, list<User> users_list) {
 	vector<string> args;
 
 	splitMessage(__buf, args);
-	defineCommandType(args, user);
+	defineCommandType(args, user, users_list);
 }

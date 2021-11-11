@@ -59,3 +59,25 @@ void CommandList::info(std::vector<std::string> args, User& user) {
 	} else
 		Server::writing(user.getSocketFd(), Service::formatMsg(402, "No such server", user));
 }
+
+void	CommandList::ison(std::vector<std::string> args, User& user, std::list<User> userList) {
+
+	std::string onlineUsers = "";
+
+	// userList./
+
+	if (args.size() == 1)
+		Server::writing(user.getSocketFd(), Service::formatMsg(461, "Not enough parameters", user));
+	else {
+		for (std::list<User>::iterator userIt = userList.begin(); userIt != userList.end(); userIt++) {
+			for (std::vector<std::string>::iterator strIt = args.begin(); strIt != args.end(); strIt++) {
+				if (*strIt == userIt->getNickname()) {
+					onlineUsers += userIt->getNickname();
+					onlineUsers += " ";
+				}
+			}
+		}
+		onlineUsers.pop_back();
+		Server::writing(user.getSocketFd(), Service::formatMsg(303, onlineUsers, user));
+	}
+}
