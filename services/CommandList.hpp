@@ -17,5 +17,5 @@ public:
 	static void join(std::vector<std::string> args, User &user, list<Channel> &channel_list);
 
 private:
-    static std::vector<std::string> split(std::string str, char ch);
+    static std::vector<std::string> split(std::string str, char ch); // not full-tested
 };

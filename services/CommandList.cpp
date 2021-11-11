@@ -94,11 +94,6 @@ void CommandList::join(std::vector<std::string> args, User &user, list<Channel> 
 
     if (args.size() > 1) {
 
-        for (size_t i = 0; i < args[1].length(); ++i) {
-            if (args[1][0] != '#' &&  args[1][0] != '&') {
-            }
-        }
-
         for (; ch != channel_list.end() && ch->_channel_name != args[1]; ++ch) {}
         if (ch != channel_list.end()) {
             channel_list.push_back(Channel(args[1], user));
@@ -109,12 +104,18 @@ void CommandList::join(std::vector<std::string> args, User &user, list<Channel> 
     }
 }
 
+// not full-tested
 std::vector<std::string> CommandList::split(std::string str, char ch) {
 
     std::vector<std::string> result;
 
-    for (size_t i = 0; i - 1 != std::string::npos; i = str.find(ch) + 1) {
-        result.push_back(str.substr(i,str.find(ch)));
+    for (size_t i = 0, j = str.find(ch, i); j != std::string::npos;) {
+        result.push_back(str.substr(i,j - i));
+        i = j + 1;
+        j = str.find(ch, i);
+        if (i != str.length() && j == std::string::npos) {
+            result.push_back(str.substr(i, str.length()));
+        }
     }
 
     return result;
