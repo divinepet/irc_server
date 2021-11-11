@@ -36,7 +36,7 @@ void MessageParse::defineCommandType(vector<string> &args, User& user) {
 	else if (args[0] == "USER") { }
 	else if (!user.isRegistered()) { Server::writing(user.getSocketFd(), Service::formatMsg(451, "You are not registered", user)); }
 	else if (args[0] == "ADMIN") { CommandList::admin(args, user); }
-	else if (args[0] == "AWAY") {}
+	else if (args[0] == "AWAY") { CommandList::away(args, user); }
 	else if (args[0] == "JOIN") {}
 	else if (args[0] == "INFO") { CommandList::info(args, user); }
 	else if (args[0] == "INVITE") {}
