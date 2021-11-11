@@ -21,21 +21,23 @@
 #include <fcntl.h>
 
 #include "../models/User.hpp"
-#include "../services/Service.hpp"
 #include "../services/MessageParse.hpp"
+#include "../services/Service.hpp"
 
 #define BUFFER_SIZE 1024
 #define DEFAULT_PORT 5000
 
 namespace serverInfo {
-	static string serverName = "xIRC";
-}
+	static string serverName = "IrcServ";
+	static string compileTime = Service::getDate();
+	static string serverVersion = "1.0";
+};
 
 using namespace std;
 
 class Server {
 private:
-    int port;
+    int port, pass;
     int socket_fd, new_socket_fd;
     socklen_t client_length;
     int max_fd;
@@ -47,16 +49,15 @@ public:
     list<User> users_list;
 
 private:
-    void initialize(int __port);
+	Server();
+    void initialize(int _port, int _pass);
     bool binding();
     int accepting();
-    int reading(const int &__socket_fd, char (*__buf)[BUFFER_SIZE]);
+    int reading(const int &_socket_fd, char (*_buf)[BUFFER_SIZE]);
     void get_message();
 public:
-    Server();
-    Server(int __port);
+    Server(int _port, int _pass);
     ~Server();
     void start();
-    static bool writing(int __client_socket, const string &__str);
+    static bool writing(int _client_socket, const string &_str);
 };
-

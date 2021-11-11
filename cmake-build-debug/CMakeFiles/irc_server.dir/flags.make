@@ -4,7 +4,7 @@
 # compile CXX with /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/Users/cshells/Desktop/ft_irc/. -I/Users/cshells/Desktop/ft_irc/app -I/Users/cshells/Desktop/ft_irc/models -I/Users/cshells/Desktop/ft_irc/server -I/Users/cshells/Desktop/ft_irc/services
+CXX_INCLUDES = -I/Users/elaronda/Desktop/irc_server/. -I/Users/elaronda/Desktop/irc_server/app -I/Users/elaronda/Desktop/irc_server/models -I/Users/elaronda/Desktop/irc_server/server -I/Users/elaronda/Desktop/irc_server/services
 
 CXX_FLAGS = -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -mmacosx-version-min=10.14 -std=gnu++14
 

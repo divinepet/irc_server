@@ -1,25 +1,16 @@
 #include "Server.hpp"
 
-//string Server::serverName = "Irccc";
-
-Server::Server(int __port) {
-    if (__port > 1024) {
-        initialize(__port);
-        cout << "Server will be bound to port: " << __port << endl;
-    } else {
-        initialize(DEFAULT_PORT);
-        cout << "Invalid Port. Server will be bound to default port: " << DEFAULT_PORT << endl;
-    }
-	std::allocator<int> all;
+Server::Server(int _port, int _pass) {
+    if (_port > 1023 && _port < 49152) {
+        initialize(_port, _pass);
+        cout << "Server will be bound to port: " << _port << endl;
+    } else
+		throw "Wrong port!";
 }
 
-Server::Server() {
-    initialize(DEFAULT_PORT);
-    cout << "Server will be bound to default port: " << port << endl;
-}
-
-void Server::initialize(int __port) {
-    port = __port;
+void Server::initialize(int _port, int _pass) {
+    port = _port;
+	pass = _pass;
     FD_ZERO(&fd_accept);
     FD_ZERO(&fd_read);
     FD_ZERO(&fd_write);
@@ -47,7 +38,6 @@ bool Server::binding() {
     ServerAddr.sin_family = AF_INET;
     ServerAddr.sin_addr.s_addr = INADDR_ANY;
     ServerAddr.sin_port = htons(port);
-
     if (bind(socket_fd, (struct sockaddr *) &ServerAddr, sizeof(ServerAddr)) < 0)
         return false;
 
@@ -75,16 +65,16 @@ int Server::accepting() {
     }
 }
 
-int Server::reading(const int &__socket_fd, char (*__buf)[BUFFER_SIZE]) {
-    bzero(__buf, BUFFER_SIZE);
-    int resp = recv(__socket_fd, __buf, BUFFER_SIZE, 0);
+int Server::reading(const int &_socket_fd, char (*_buf)[BUFFER_SIZE]) {
+    bzero(_buf, BUFFER_SIZE);
+    int resp = recv(_socket_fd, _buf, BUFFER_SIZE, 0);
     if (resp < 0)
     	cout << "Error occurred while reading from socket" << endl;
     return resp;
 }
 
-bool Server::writing(int __client_socket, const string &__str) {
-	int resp = send(__client_socket, __str.c_str(), strlen(__str.c_str()), 0);
+bool Server::writing(int _client_socket, const string &_str) {
+	int resp = send(_client_socket, _str.c_str(), strlen(_str.c_str()), 0);
 
     if (resp < 0) {
     	cout << "Error occurred while writing to socket" << endl;
@@ -102,7 +92,7 @@ void Server::get_message() {
 			if (_read != 0) {
 				MessageParse::handleMessage(buf, *it);
 			} else {
-				printf("Client disconnected.\n");
+				printf("%s disconnected.\n", it->getNickname().c_str());
 				close(it->getSocketFd());
 				users_list.remove(*it);
 			}
@@ -133,15 +123,11 @@ void Server::start() {
         if (selecting > 0) {
             new_socket_fd = accepting();
             if (FD_ISSET(socket_fd, &fd_read) ) {
-                char msg[] = "Daily message: Welcome to Chat!\n\n";
-
-                if (send(new_socket_fd, msg, strlen(msg), 0) != strlen(msg))
-                    perror("Cannot send.");
-
                 fcntl(new_socket_fd, F_SETFL, fcntl(new_socket_fd, F_GETFL) | O_NONBLOCK);
 
                 User user(new_socket_fd);
                 users_list.push_back(user);
+
                 FD_SET(new_socket_fd, &fd_read);
             }
         }
