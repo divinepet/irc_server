@@ -128,7 +128,7 @@ void CommandList::join(vector<string> args, User &user, list<Channel> &channel_l
     if (args.size() > 1) {
 
         for (; ch != channel_list.end() && ch->_channel_name != args[1]; ++ch) {}
-        if (ch != channel_list.end()) {
+        if (ch == channel_list.end()) {
             channel_list.push_back(Channel(args[1], user));
         }
         else {
@@ -137,3 +137,42 @@ void CommandList::join(vector<string> args, User &user, list<Channel> &channel_l
     }
 }
 
+void CommandList::part(std::vector<std::string> args, User &user, list<Channel> &channel_list) {
+
+	list<Channel>::iterator ch = channel_list.begin();
+	bool	channelFound = false;
+	bool	userFoundOnChannel = false;
+	std::vector<std::string> channelVector;
+
+	// #kek,#lal
+	if (args.size() > 1) {
+		channelVector = Service::split(args[1], ',');
+		int channelVectorSize = channelVector.size();
+		if (channelVector.size() > 0) {
+			for (int i = 0; i < channelVectorSize; i++) {
+				std::list<Channel>::iterator channelIter; // Check channels
+				for (channelIter = channel_list.begin(); channelIter != channel_list.end(); ++channelIter) {
+					if (channelIter->_channel_name == channelVector[i]) {
+						channelFound = true;
+						for (std::list<User>::iterator userlistIter = channelIter->_user_list.begin(); userlistIter != channelIter->_user_list.end(); ++userlistIter) {
+							if (user.getNickname() == userlistIter->getNickname()) {
+								userFoundOnChannel = true;
+								// delete user from channel
+								break;
+							}
+						}
+					}
+				}
+				if (!channelFound) {
+					Service::errMsg(403, user, channelIter->_channel_name);
+				} else if (!userFoundOnChannel) {
+					Service::errMsg(442, user, channelIter->_channel_name);
+				}
+				channelFound = false;
+				userFoundOnChannel = false;
+			}
+		} else {
+			// send error not enough arguments
+		}
+	}
+}

@@ -19,6 +19,11 @@ vector<string> Service::split(string str, char ch) {
 
 	vector<string> result;
 
+	if (str.find(ch) == string::npos) {
+		result.push_back(str);
+		return (result);
+	}
+
 	for (size_t i = 0, j = str.find(ch, i); j != string::npos;) {
 		result.push_back(str.substr(i,j - i));
 		i = j + 1;

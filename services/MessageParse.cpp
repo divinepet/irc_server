@@ -36,7 +36,7 @@ void MessageParse::defineCommandType(vector<string> &args, User& user, list<User
 	else if (!user.isRegistered()) { Service::errMsg(451, user); }
 	else if (args[0] == "ADMIN") { CommandList::admin(args, user); }
 	else if (args[0] == "AWAY") { CommandList::away(args, user); }
-	else if (args[0] == "JOIN") {}
+	else if (args[0] == "JOIN") { CommandList::join(args, user, channel_list); }
 	else if (args[0] == "INFO") { CommandList::info(args, user); }
 	else if (args[0] == "INVITE") {}
 	else if (args[0] == "ISON") { CommandList::ison(args, user, users_list); }
@@ -47,7 +47,7 @@ void MessageParse::defineCommandType(vector<string> &args, User& user, list<User
 	else if (args[0] == "NAMES") {}
 	else if (args[0] == "NOTICE") {}
 	else if (args[0] == "OPER") {}
-	else if (args[0] == "PART") {}
+	else if (args[0] == "PART") { CommandList::part(args, user, channel_list); }
 	else if (args[0] == "PING") {}
 	else if (args[0] == "PONG") {}
 	else if (args[0] == "PRIVMSG") {}
