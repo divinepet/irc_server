@@ -13,6 +13,8 @@ void MessageParse::splitMessage(char *_buf, vector<string> &args) {
 	if (buf.size() > 0 && buf[0] == ' ') buf.erase(buf.begin());
 	if (buf[buf.size() - 1] == ' ') buf.erase(buf.end() - 1);
 
+
+
 	while ((pos = buf.find(delimiter)) != std::string::npos) {
 		args.push_back(buf.substr(0, pos));
 		buf.erase(0, pos + delimiter.length());
@@ -28,10 +30,9 @@ void MessageParse::splitMessage(char *_buf, vector<string> &args) {
 }
 
 void MessageParse::defineCommandType(vector<string> &args, User& user, list<User>& users_list, string pass, list<Channel> &channel_list) {
-	if (args[0] == "PASS") { CommandList::pass(args, user, users_list, pass); }
-	if (args[0] == "PASS") { }
+	if (args[0] == "PASS") { /*CommandList::pass(args, user, users_list, pass);*/ }
 	else if (args[0] == "NICK") { CommandList::nick(args, user); }
-	else if (args[0] == "USER") { CommandList::user(args, user); }
+	else if (args[0] == "USER") { /*CommandList::user(args, user);*/ }
 	else if (!user.isRegistered()) { Service::errMsg(451, user); }
 	else if (args[0] == "ADMIN") { CommandList::admin(args, user); }
 	else if (args[0] == "AWAY") { CommandList::away(args, user); }

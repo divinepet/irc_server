@@ -26,8 +26,11 @@ void CommandList::nick(std::vector<std::string> args, User& user) {
 		return;
 	}
 	user.setNickname(args[1]);
-	user.setRegisterPhase(user.getRegisterPhase() + 1);
-	if (user.getRegisterPhase() == 3 && user.isValidPass()) motd(user);
+//	user.setRegisterPhase(user.getRegisterPhase() + 1);
+//	if (user.getRegisterPhase() == 3 && user.isValidPass()) motd(user);
+	user.setValidPass(true);
+	user.setRegisterPhase(3);
+	motd(user);
 }
 
 void CommandList::away(std::vector<std::string> args, User &user) {
@@ -67,22 +70,22 @@ void CommandList::info(std::vector<std::string> args, User& user) {
 		Service::errMsg(402, user, args[1]);
 }
 
-void CommandList::pass(vector<std::string> args, User &user, list<User>& userList, string pass) {
-	if (user.isRegistered()) {
-		Service::errMsg(462, user);
-		return;
-	} else if (user.getRegisterPhase() == 2) {
-		close(user.getSocketFd());
-		userList.remove(user);
-		return;
-	}
-	cout << pass << endl;
-	if (args[1] == pass) {
-		cout << "valid" << endl;
-		user.setValidPass(true);
-		user.setRegisterPhase(user.getRegisterPhase() + 1);
-	}
-}
+//void CommandList::pass(vector<std::string> args, User &user, list<User>& userList, string pass) {
+//	if (user.isRegistered()) {
+//		Service::errMsg(462, user);
+//		return;
+//	} else if (user.getRegisterPhase() == 2) {
+//		close(user.getSocketFd());
+//		userList.remove(user);
+//		return;
+//	}
+//	cout << pass << endl;
+//	if (args[1] == pass) {
+//		cout << "valid" << endl;
+//		user.setValidPass(true);
+//		user.setRegisterPhase(user.getRegisterPhase() + 1);
+//	}
+//}
 
 void CommandList::ison(std::vector<std::string> args, User& user, std::list<User> userList) {
 
@@ -104,18 +107,18 @@ void CommandList::ison(std::vector<std::string> args, User& user, std::list<User
 	}
 }
 
-void CommandList::user(std::vector<std::string> args, User &user) {
-	if (args.size() < 4) {
-		Service::errMsg(461, user);
-		return;
-	}
-	user.setUsername(args[1]);
-	user.setHost(args[2]);
-	user.setServername(args[3]);
-	user.setRealname(args[4]);
-	user.setRegisterPhase(user.getRegisterPhase() + 1);
-	if (user.getRegisterPhase() == 3 && user.isValidPass()) motd(user);
-}
+//void CommandList::user(std::vector<std::string> args, User &user) {
+//	if (args.size() < 4) {
+//		Service::errMsg(461, user);
+//		return;
+//	}
+//	user.setUsername(args[1]);
+//	user.setHost(args[2]);
+//	user.setServername(args[3]);
+//	user.setRealname(args[4]);
+//	user.setRegisterPhase(user.getRegisterPhase() + 1);
+//	if (user.getRegisterPhase() == 3 && user.isValidPass()) motd(user);
+//}
 
 //  JOIN #foo,#bar fubar,foobar
 void CommandList::join(vector<string> args, User &user, list<Channel> &channel_list) {
