@@ -12,11 +12,13 @@ public:
 
 	Channel(std::string name) {
         _channel_name = name;
+        _topic = "";
 	}
 
 	Channel(std::string name, User &user) {
 	    _channel_name = name;
 	    _user_list.push_back(user);
+        _topic = "";
 	};
 
 	Channel(std::string name, User &user, std::string password) {
@@ -25,21 +27,27 @@ public:
 	    _has_password = true;
 	    _password = password;
 	    _user_list.push_back(user);
+        _topic = "";
 	};
 
 	virtual ~Channel();
 
 	bool            _is_invite_only;
 	bool            _has_password;
+    std::string     _topic;
 	std::string     _password;
 	std::string     _channel_name;
 	std::list<User> _user_list;
 	std::list<User> _operator_list;
     std::list<User> _invite_list;
 
-	void addUser(User &user);
-	void	deleteUser(User &user);
-    void addUser(User &user, string password);
+	bool addUser(User &user);
+    bool addUser(User &user, string password);
+    void addOperator(User &user);
+    void deleteUser(User &user);
+
+    string getChannelName() const;
+    string getChannelTopic() const;
 
 
 	bool operator == (const Channel& s) const { return _channel_name == s._channel_name; }
