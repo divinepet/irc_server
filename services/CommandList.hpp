@@ -21,4 +21,5 @@ public:
 	static void time(std::vector<std::string> args, User &user);
 	static void version(std::vector<std::string> args, User &user);
 	static int restart(User &user);
+	static void kick(vector<string> args, User &user, list<Channel> &channel_list);
 };

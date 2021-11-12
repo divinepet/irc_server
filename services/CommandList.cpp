@@ -207,3 +207,62 @@ int CommandList::restart(User &user) {
 //	}
 	return 3;
 }
+
+void CommandList::kick(vector<string> args, User &user, list<Channel> &channel_list) {
+
+ 	std::vector<std::string> channelVector;
+ 	std::vector<std::string> userVector;
+ 	bool	channelFound = false;
+ 	bool	userFoundOnChannel = false;
+ 	bool	userIsOperator = false;
+
+
+ 	if (args.size() > 2) {
+ 		channelVector = Service::split(args[1], ',');
+ 		userVector = Service::split(args[2], ',');
+ 		int channelVectorSize = channelVector.size();
+ 		if (channelVectorSize != userVector.size())
+ 		{
+ 			Service::errMsg(461, user, "PART");
+ 			return ;
+ 		}
+ 		for (int i = 0; i < channelVectorSize; i++) {
+ 			std::list<Channel>::iterator channelIter; // Check channels
+ 			for (channelIter = channel_list.begin(); channelIter != channel_list.end(); ++channelIter) {
+ 				if (channelIter->_channel_name == channelVector[i]) {
+ 					channelFound = true;
+ 					for (std::list<User>::iterator operlistIter = channelIter->_oper_list.begin(); !userIsOperator && operlistIter != channelIter->_oper_list.end(); ++operlistIter) {
+ 						if (operlistIter->getNickname() == user.getNickname())
+ 							userIsOperator = true;
+ 					}
+ 					for (std::list<User>::iterator userlistIter = channelIter->_user_list.begin(); userIsOperator && userlistIter != channelIter->_user_list.end(); ++userlistIter) {
+ 						if (userVector[i] == userlistIter->getNickname()) {
+ 							userFoundOnChannel = true;
+ 							// delete user from channel
+ 							Service::replyMsg(258, user, "USER FOUND AND KICKED FROM CHANNEL " + channelIter->_channel_name);
+ 							channelIter->deleteUser(*userlistIter);
+ 							Service::emptyChannel(channel_list);
+ 							userIsOperator = false;
+ 							break ;
+ 						}
+ 					}
+ 					if (userFoundOnChannel)
+ 						break ;
+ 				}
+ 			}
+ 			if (!channelFound) {
+ 				Service::errMsg(403, user, args[1]);
+ 			} else if (!userIsOperator) {
+ 				Service::errMsg(482, user, channelIter->_channel_name);
+ 			}
+ 			else if (!userFoundOnChannel) {
+ 				Service::errMsg(442, user, args[1]);
+ 			}
+ 			channelFound = false;
+ 			userFoundOnChannel = false;
+ 			userIsOperator = false;
+ 		}
+ 	} else {
+ 		Service::errMsg(461, user, "KICK");
+ 	}
+ }
