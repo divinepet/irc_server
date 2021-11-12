@@ -99,6 +99,7 @@ void Server::get_message() {
 				printf("%s disconnected.\n", it->getNickname().c_str());
 				close(it->getSocketFd());
 				users_list.remove(*it);
+                Service::emptyChannel(channel_list);
 			}
 			break;
 		}

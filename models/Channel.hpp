@@ -37,9 +37,9 @@ public:
 	std::list<User> _operator_list;
 
 	void addUser(User &user);
+	void	deleteUser(User &user);
 
-
-
+	bool operator == (const Channel& s) const { return _channel_name == s._channel_name; }
 
 };
 

@@ -72,7 +72,7 @@ void CommandList::invite(std::vector<std::string> args, User &user) {
 void CommandList::info(std::vector<std::string> args, User& user) {
 	if (args.size() == 1 || (args.size() != 1 && args[1] == serverInfo::serverName)) {
 		Service::replyMsg(371, user, ">| Server Information |<");
-		Service::replyMsg(371, user, "Compilation Time" + serverInfo::compileTime);
+		// Service::replyMsg(371, user, "Compilation Time" + serverInfo::compileTime);
 		Service::replyMsg(371, user, "Server Version" + serverInfo::serverVersion);
 		Service::replyMsg(374, user);
 	} else
@@ -151,7 +151,6 @@ void CommandList::part(std::vector<std::string> args, User &user, list<Channel> 
 	bool	userFoundOnChannel = false;
 	std::vector<std::string> channelVector;
 
-	// #kek,#lal
 	if (args.size() > 1) {
 		channelVector = Service::split(args[1], ',');
 		int channelVectorSize = channelVector.size();
@@ -165,22 +164,27 @@ void CommandList::part(std::vector<std::string> args, User &user, list<Channel> 
 							if (user.getNickname() == userlistIter->getNickname()) {
 								userFoundOnChannel = true;
 								// delete user from channel
-								break;
+								Service::replyMsg(258, user, "USER FOUND AND DELETED FROM CHANNEL " + channelIter->_channel_name);
+								channelIter->deleteUser(*userlistIter);
+								Service::emptyChannel(channel_list);
+								break ;
 							}
 						}
+						if (userFoundOnChannel)
+							break ;
 					}
 				}
 				if (!channelFound) {
-					Service::errMsg(403, user, channelIter->_channel_name);
+					Service::errMsg(403, user, args[1]);
 				} else if (!userFoundOnChannel) {
-					Service::errMsg(442, user, channelIter->_channel_name);
+					Service::errMsg(442, user, args[1]);
 				}
 				channelFound = false;
 				userFoundOnChannel = false;
 			}
-		} else {
-			// send error not enough arguments
 		}
+	} else {
+		Service::errMsg(461, user, "PART");
 	}
 }
 

@@ -32,7 +32,7 @@ class Service;
 
 namespace serverInfo {
 	static string serverName = "IrcServ";
-	static string compileTime = Service::getDate();
+	// static string compileTime = Service::getDate();
 	static string serverVersion = "1.0";
 };
 
