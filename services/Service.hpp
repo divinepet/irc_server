@@ -22,6 +22,7 @@ public:
 
 private:
 	static bool	channelIsEmpty(const Channel &channel);
+    static bool isChannelName(string str);
 };
 
 #include "../server/Server.hpp"

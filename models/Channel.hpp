@@ -35,9 +35,12 @@ public:
 	std::string     _channel_name;
 	std::list<User> _user_list;
 	std::list<User> _operator_list;
+    std::list<User> _invite_list;
 
 	void addUser(User &user);
 	void	deleteUser(User &user);
+    void addUser(User &user, string password);
+
 
 	bool operator == (const Channel& s) const { return _channel_name == s._channel_name; }
 

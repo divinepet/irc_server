@@ -26,6 +26,7 @@ vector<string> Service::split(string str, char ch) {
 
 	for (size_t i = 0, j = str.find(ch, i); j != string::npos;) {
 		result.push_back(str.substr(i,j - i));
+        for (; str[j] == ch; ++j) {}
 		i = j + 1;
 		j = str.find(ch, i);
 		if (i != str.length() && j == string::npos) {
@@ -178,6 +179,17 @@ void	Service::emptyChannel(list<Channel> &channel_list) {
 
 	channel_list.remove_if(channelIsEmpty);
 }
+bool Service::isChannelName(string str) {
+
+    for (size_t i = 0; i < str.length(); i++) {
+        if (i == 0 && (str[i] != '#' && str[i] != '&'))
+            return false;
+        else if (str[i] == ' ' || str[i] == 7 || str[i] == ',')
+            return false;
+    }
+    return true;
+}
+
 
 bool	Service::channelIsEmpty(const Channel &channel) {
 	return (channel._user_list.size() == 0);
