@@ -17,7 +17,4 @@ public:
 	static void pass(vector<string> args, User &user, list<User>& userList, string pass);
 	static void join(vector<string> args, User &user, list<Channel> &channel_list);
 	static void user(std::vector<std::string> args, User &user);
-
-private:
-    static std::vector<std::string> split(std::string str, char ch); // not full-tested
 };

@@ -1,7 +1,7 @@
 
 #include "CommandList.hpp"
 
-void	CommandList::admin(std::vector<std::string> args, User& user) {
+void CommandList::admin(std::vector<std::string> args, User& user) {
 	if (args.size() == 1 || (args.size() != 1 && args[1] == serverInfo::serverName)) {
 		Service::replyMsg(256, user, serverInfo::serverName);
 		Service::replyMsg(257, user, "Test");
@@ -84,7 +84,7 @@ void CommandList::pass(vector<std::string> args, User &user, list<User>& userLis
 	}
 }
 
-void	CommandList::ison(std::vector<std::string> args, User& user, std::list<User> userList) {
+void CommandList::ison(std::vector<std::string> args, User& user, std::list<User> userList) {
 
 	std::string onlineUsers = "";
 
@@ -117,10 +117,7 @@ void CommandList::user(std::vector<std::string> args, User &user) {
 	if (user.getRegisterPhase() == 3 && user.isValidPass()) motd(user);
 }
 
-
-
 //  JOIN #foo,#bar fubar,foobar
-
 void CommandList::join(vector<string> args, User &user, list<Channel> &channel_list) {
 
     list<Channel>::iterator ch = channel_list.begin();
