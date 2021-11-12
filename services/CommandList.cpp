@@ -8,7 +8,7 @@ void	CommandList::admin(std::vector<std::string> args, User& user) {
 		Service::replyMsg(258, user, "Test");
 		Service::replyMsg(259, user, "Test@test.com");
 	} else
-		Service::errMsg(402, user);
+		Service::errMsg(402, user, args[1]);
 }
 
 void CommandList::motd(User &user) {
@@ -64,7 +64,7 @@ void CommandList::info(std::vector<std::string> args, User& user) {
 		Service::replyMsg(371, user, "Server Version" + serverInfo::serverVersion);
 		Service::replyMsg(374, user);
 	} else
-		Service::errMsg(402, user);
+		Service::errMsg(402, user, args[1]);
 }
 
 void CommandList::pass(std::vector<std::string> args, User &user, std::list<User>& userList, string pass) {
