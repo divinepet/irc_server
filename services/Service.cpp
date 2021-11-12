@@ -14,6 +14,23 @@ string Service::getDate() {
 	return result.substr(0, result.length() - 1);
 }
 
+// not full-tested
+vector<string> Service::split(string str, char ch) {
+
+	vector<string> result;
+
+	for (size_t i = 0, j = str.find(ch, i); j != string::npos;) {
+		result.push_back(str.substr(i,j - i));
+		i = j + 1;
+		j = str.find(ch, i);
+		if (i != str.length() && j == string::npos) {
+			result.push_back(str.substr(i, str.length()));
+		}
+	}
+
+	return result;
+}
+
 void Service::errMsg(int err, User &user, string arg1, string arg2) {
 	string msg = ":" + serverInfo::serverName + " " + to_string(err) + " " + user.getNickname();
 	switch (err) {

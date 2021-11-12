@@ -67,7 +67,7 @@ void CommandList::info(std::vector<std::string> args, User& user) {
 		Service::errMsg(402, user, args[1]);
 }
 
-void CommandList::pass(std::vector<std::string> args, User &user, std::list<User>& userList, string pass) {
+void CommandList::pass(vector<std::string> args, User &user, list<User>& userList, string pass) {
 	if (user.isRegistered()) {
 		Service::errMsg(462, user);
 		return;
@@ -121,7 +121,7 @@ void CommandList::user(std::vector<std::string> args, User &user) {
 
 //  JOIN #foo,#bar fubar,foobar
 
-void CommandList::join(std::vector<std::string> args, User &user, list<Channel> &channel_list) {
+void CommandList::join(vector<string> args, User &user, list<Channel> &channel_list) {
 
     list<Channel>::iterator ch = channel_list.begin();
 
@@ -135,22 +135,5 @@ void CommandList::join(std::vector<std::string> args, User &user, list<Channel> 
             ch->addUser(user);
         }
     }
-}
-
-// not full-tested
-std::vector<std::string> CommandList::split(std::string str, char ch) {
-
-    std::vector<std::string> result;
-
-    for (size_t i = 0, j = str.find(ch, i); j != std::string::npos;) {
-        result.push_back(str.substr(i,j - i));
-        i = j + 1;
-        j = str.find(ch, i);
-        if (i != str.length() && j == std::string::npos) {
-            result.push_back(str.substr(i, str.length()));
-        }
-    }
-
-    return result;
 }
 

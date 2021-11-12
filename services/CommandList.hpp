@@ -14,8 +14,8 @@ public:
 	static void ison(std::vector<std::string> args, User& user, std::list<User> userList);
 	static void away(std::vector<std::string> args, User &user);
 	static void invite(std::vector<std::string> args, User &user);
-	static void pass(std::vector<std::string> args, User &user);
-	static void join(std::vector<std::string> args, User &user, list<Channel> &channel_list);
+	static void pass(vector<string> args, User &user, list<User>& userList, string pass);
+	static void join(vector<string> args, User &user, list<Channel> &channel_list);
 	static void user(std::vector<std::string> args, User &user);
 
 private:
