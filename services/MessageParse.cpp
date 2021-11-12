@@ -7,12 +7,12 @@ void MessageParse::splitMessage(char *_buf, vector<string> &args) {
 	buf = buf.substr(0, buf.length() - 1);
 	string delimiter = " ";
 	size_t pos;
+	string prefix;
 
 	string::iterator new_end = unique(buf.begin(), buf.end(), bothAreSpaces);
 	buf.erase(new_end, buf.end());
 	if (buf.size() > 0 && buf[0] == ' ') buf.erase(buf.begin());
 	if (buf[buf.size() - 1] == ' ') buf.erase(buf.end() - 1);
-
 
 
 	while ((pos = buf.find(delimiter)) != std::string::npos) {
@@ -21,11 +21,28 @@ void MessageParse::splitMessage(char *_buf, vector<string> &args) {
 	}
 	args.push_back(buf);
 
+	size_t i = 0;
+	for (vector<string>::iterator it = args.begin();  it != args.end(); ++it, ++i) {
+		if ((*it).front() == ':' && i == 0) {
+			(*it).erase(0, 1);
+			prefix = *it;
+			args.erase(it);
+		}
+		else if ((*it).front() == ':') {
+			(*it).erase(0, 1);
+			vector<string>::iterator it2 = it + 1;
+			vector<string>::iterator it3 = it + 1;
+			for (;  it2 != args.end(); ++it2)
+				*it = *it + " " + *it2;
+			args.erase(it3, args.end());
+		}
+	}
+
+	printf("prefix: <%s>, ", prefix.c_str());
 	printf("command: <%s>, ", args[0].c_str());
 	printf("%lu args:", args.size() - 1);
-
 	for (vector<string>::iterator it = args.begin() + 1;  it != args.end(); ++it)
-		printf(" [%s]", (*it).c_str());
+		printf(" (%s)", (*it).c_str());
 	cout << endl;
 }
 
@@ -70,5 +87,4 @@ void MessageParse::handleMessage(char *_buf, User& user, list<User>& users_list,
 
 	splitMessage(_buf, args);
 	defineCommandType(args, user, users_list, pass, channel_list);
-	splitMessage(_buf, args);
 }

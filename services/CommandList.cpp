@@ -79,9 +79,7 @@ void CommandList::info(std::vector<std::string> args, User& user) {
 //		userList.remove(user);
 //		return;
 //	}
-//	cout << pass << endl;
 //	if (args[1] == pass) {
-//		cout << "valid" << endl;
 //		user.setValidPass(true);
 //		user.setRegisterPhase(user.getRegisterPhase() + 1);
 //	}
