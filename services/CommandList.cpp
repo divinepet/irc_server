@@ -166,7 +166,7 @@ void CommandList::ison(std::vector<std::string> args, User& user, std::list<User
 //	user.setUsername(args[1]);
 //	user.setHost(args[2]);
 //	user.setServername(args[3]);
-//	user.setRealname(args[4]);
+//	user.setRealName(args[4]);
 //	user.setRegisterPhase(user.getRegisterPhase() + 1);
 //	if (user.getRegisterPhase() == 3 && user.isValidPass()) motd(user);
 //}

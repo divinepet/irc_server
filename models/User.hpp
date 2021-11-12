@@ -7,7 +7,7 @@ using namespace std;
 
 class User {
 	int socket_fd;
-	string nickname, username, realname, host, servername;
+	string nickname, username, realName, host, servername, realHost;
 	string auto_reply;
 	int registerPhase;
 	bool validPass;
@@ -16,6 +16,11 @@ class User {
 	bool oper;
 public:
 	User(int _socket_fd);
+
+	const string &getRealHost() const;
+
+	void setRealHost(const string &realHost);
+
 	User(const User& _x);
 	User& operator=(const User& _x);
 	bool operator == (const User& s) const { return socket_fd == s.socket_fd && nickname == s.nickname; }
@@ -25,7 +30,7 @@ public:
 	void setValidPass(bool validPass);
 	void setRegisterPhase(int registerPhase);
 	void setUsername(const string &username);
-	void setRealname(const string &realname);
+	void setRealName(const string &realName);
 	void setHost(const string &host);
 	void setServername(const string &servername);
 	void setNickname(const string &nickname);
@@ -36,7 +41,7 @@ public:
 	int getSocketFd() const;
 	int getRegisterPhase() const;
 	const string &getUsername() const;
-	const string &getRealname() const;
+	const string &getRealName() const;
 	const string &getHost() const;
 	const string &getServername() const;
 	const string &getNickname() const;
