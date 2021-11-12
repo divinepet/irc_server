@@ -13,11 +13,14 @@ void CommandList::admin(std::vector<std::string> args, User& user) {
 
 void CommandList::motd(User &user) {
 	std::ifstream infile("daily");
-	std::string dailyMessageLine;
-	Service::replyMsg(375, user, serverInfo::serverName);
-	while (std::getline(infile, dailyMessageLine))
-		Service::replyMsg(372, user, dailyMessageLine);
-	Service::replyMsg(376, user);
+	if (infile) {
+		std::string dailyMessageLine;
+		Service::replyMsg(375, user, serverInfo::serverName);
+		while (std::getline(infile, dailyMessageLine))
+			Service::replyMsg(372, user, dailyMessageLine);
+		Service::replyMsg(376, user);
+	} else
+		Service::errMsg(422, user);
 }
 
 void CommandList::nick(std::vector<std::string> args, User& user) {
@@ -173,4 +176,16 @@ void CommandList::part(std::vector<std::string> args, User &user, list<Channel> 
 			// send error not enough arguments
 		}
 	}
+}
+
+void CommandList::time(vector<string> args, User &user) {
+	(args.size() > 1 && args[1] != serverInfo::serverName)
+		? Service::errMsg(402, user, args[1])
+		: Service::replyMsg(391, user, serverInfo::serverName, Service::getDate());
+}
+
+void CommandList::version(std::vector<std::string> args, User &user) {
+	(args.size() > 1 && args[1] != serverInfo::serverName)
+	? Service::errMsg(402, user, args[1])
+	: Service::replyMsg(351, user, "1", "0", serverInfo::serverName, "beta");
 }

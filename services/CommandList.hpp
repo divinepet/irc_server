@@ -14,8 +14,10 @@ public:
 	static void ison(std::vector<std::string> args, User& user, std::list<User> userList);
 	static void away(std::vector<std::string> args, User &user);
 	static void invite(std::vector<std::string> args, User &user);
-	static void pass(vector<string> args, User &user, list<User>& userList, string pass);
+//	static void pass(vector<string> args, User &user, list<User>& userList, string pass);
 	static void join(vector<string> args, User &user, list<Channel> &channel_list);
-	static void user(std::vector<std::string> args, User &user);
+//	static void user(std::vector<std::string> args, User &user);
 	static void part(std::vector<std::string> args, User &user, list<Channel> &channel_list);
+	static void time(std::vector<std::string> args, User &user);
+	static void version(std::vector<std::string> args, User &user);
 };

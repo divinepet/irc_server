@@ -213,11 +213,11 @@ void Service::replyMsg(int code, User &user, string arg1, string arg2, string ar
 		case 382:
 			msg += arg1 + " :Rehashing\n"; break;
 		case 391:
-			msg += arg1 + " :" + arg2; // ctime return string following '\n' break;
+			msg += arg1 + " :" + arg2 + "\n"; break;
 		case 392:
 			msg += ":UserID   Terminal  Host\n"; break;
 		case 393:
-			msg += ":%-8s %-9s %-8s\n"; // Хз, что это UPD: Понял, строка длиной 8 символов break;
+			msg += ":%-8s %-9s %-8s\n"; break; // строка длиной 8 символов
 		case 394:
 			msg += ":End of users\n"; break;
 		case 395:
@@ -229,7 +229,7 @@ void Service::replyMsg(int code, User &user, string arg1, string arg2, string ar
 		case 202:
 			msg += "H.S. " + arg1 + " " + arg2 + "\n"; break;
 		case 203:
-			msg += "???? " + arg1 + " " + arg2 + "\n"; // ???? break;
+			msg += "???? " + arg1 + " " + arg2 + "\n"; break;
 		case 204:
 			msg += "Oper " + arg1 + " " + arg2 + "\n"; break;
 		case 205:
@@ -261,7 +261,7 @@ void Service::replyMsg(int code, User &user, string arg1, string arg2, string ar
 		case 241:
 			msg += "L " + arg1 + " * " + arg2 + " " + arg3 + "\n"; break;
 		case 242:
-			msg += ":Server Up %d days %d:%02d:%02d\n"; // Поменять break;
+			msg += ":Server Up %d days %d:%02d:%02d\n"; break;
 		case 243:
 			msg += "O " + arg1 + " * " + arg2 + "\n"; break;
 		case 244:

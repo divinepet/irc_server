@@ -28,6 +28,7 @@
 #define BUFFER_SIZE 1024
 
 class Channel;
+class Service;
 
 namespace serverInfo {
 	static string serverName = "IrcServ";

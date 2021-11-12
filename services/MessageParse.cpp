@@ -71,9 +71,9 @@ void MessageParse::defineCommandType(vector<string> &args, User& user, list<User
 	else if (args[0] == "QUIT") {}
 	else if (args[0] == "REHASH") {}
 	else if (args[0] == "RESTART") {}
-	else if (args[0] == "TIME") {}
+	else if (args[0] == "TIME") { CommandList::time(args, user); }
 	else if (args[0] == "TOPIC") {}
-	else if (args[0] == "VERSION") {}
+	else if (args[0] == "VERSION") { CommandList::version(args, user); }
 	else if (args[0] == "WALLOPS") {}
 	else if (args[0] == "WHO") {}
 	else if (args[0] == "WHOIS") {}

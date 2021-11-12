@@ -5,7 +5,6 @@
 using namespace std;
 
 class User;
-class Service;
 
 class Service {
 public:
