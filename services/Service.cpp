@@ -293,4 +293,14 @@ void Service::replyMsg(int code, User &user, string arg1, string arg2, string ar
 	Server::writing(user.getSocketFd(), msg);
 }
 
+void	Service::emptyChannel(list<Channel> &channel_list) {
 
+	channel_list.remove_if(channelIsEmpty);
+}
+
+bool	Service::channelIsEmpty(const Channel &channel) {
+	return (channel._user_list.size() == 0);
+}
+
+// 0 JOIN
+// 1 "#abc abc, sda asdf, as, fdas # afsfa"
