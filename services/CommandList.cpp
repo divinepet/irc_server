@@ -231,7 +231,7 @@ void CommandList::kick(vector<string> args, User &user, list<Channel> &channel_l
  			for (channelIter = channel_list.begin(); channelIter != channel_list.end(); ++channelIter) {
  				if (channelIter->_channel_name == channelVector[i]) {
  					channelFound = true;
- 					for (std::list<User>::iterator operlistIter = channelIter->_oper_list.begin(); !userIsOperator && operlistIter != channelIter->_oper_list.end(); ++operlistIter) {
+ 					for (std::list<User>::iterator operlistIter = channelIter->_operator_list.begin(); !userIsOperator && operlistIter != channelIter->_operator_list.end(); ++operlistIter) {
  						if (operlistIter->getNickname() == user.getNickname())
  							userIsOperator = true;
  					}
