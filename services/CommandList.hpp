@@ -17,4 +17,5 @@ public:
 	static void pass(vector<string> args, User &user, list<User>& userList, string pass);
 	static void join(vector<string> args, User &user, list<Channel> &channel_list);
 	static void user(std::vector<std::string> args, User &user);
+	static void kick(vector<string> args, User &user, list<Channel> &channel_list);
 };
