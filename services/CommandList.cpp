@@ -23,10 +23,16 @@ void CommandList::motd(User &user) {
 		Service::errMsg(422, user);
 }
 
-void CommandList::nick(std::vector<std::string> args, User& user) {
+void CommandList::nick(std::vector<std::string> args, User& user, list<User>& userList) {
 	if (args.size() == 1) {
 		Service::errMsg(461, user);
 		return;
+	}
+	for (list<User>::iterator it = userList.begin(); it != userList.end(); ++it) {
+		if (it->getNickname() == args[1]) {
+			Service::errMsg(433, user, args[1]);
+			return;
+		}
 	}
 	user.setNickname(args[1]);
 //	user.setRegisterPhase(user.getRegisterPhase() + 1);
@@ -188,4 +194,12 @@ void CommandList::version(std::vector<std::string> args, User &user) {
 	(args.size() > 1 && args[1] != serverInfo::serverName)
 	? Service::errMsg(402, user, args[1])
 	: Service::replyMsg(351, user, "1", "0", serverInfo::serverName, "beta");
+}
+
+int CommandList::restart(User &user) {
+//	if (!user.isOper()) {
+//		Service::errMsg(481, user);
+//		return -1;
+//	}
+	return 3;
 }

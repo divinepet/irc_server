@@ -13,7 +13,7 @@ class User {
 	bool validPass;
 	bool away;
 	bool registered;
-	User() {};
+	bool oper;
 public:
 	User(int _socket_fd);
 	User(const User& _x);
@@ -23,7 +23,6 @@ public:
 	~User();
 
 	void setValidPass(bool validPass);
-
 	void setRegisterPhase(int registerPhase);
 	void setUsername(const string &username);
 	void setRealname(const string &realname);
@@ -32,6 +31,7 @@ public:
 	void setNickname(const string &nickname);
 	void setAutoReply(const string &autoReply);
 	void setAway(bool value);
+	void setOper(bool oper);
 
 	int getSocketFd() const;
 	int getRegisterPhase() const;
@@ -43,7 +43,7 @@ public:
 	const string &getAutoReply() const;
 
 	bool isValidPass() const;
-
+	bool isOper() const;
 	bool isAway() const;
 	bool isRegistered() const;
 };

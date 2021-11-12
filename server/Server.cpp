@@ -90,7 +90,11 @@ void Server::get_message() {
 			int _read = reading(it->getSocketFd(), &buf);
 
 			if (_read != 0) {
-				MessageParse::handleMessage(buf, *it, users_list, pass, channel_list);
+				int code = MessageParse::handleMessage(buf, *it, users_list, pass, channel_list);
+				switch (code) {
+					case 3: restartServer(); break;
+					default: ;
+				}
 			} else {
 				printf("%s disconnected.\n", it->getNickname().c_str());
 				close(it->getSocketFd());
@@ -149,8 +153,15 @@ void Server::start() {
 
 }
 
+void Server::restartServer() {
+	this->~Server();
+	system("clear");
+	start();
+}
+
 Server::~Server() {
 	for (list<User>::iterator it = users_list.begin(); it != users_list.end(); it++)
 		close(it->getSocketFd());
     close(socket_fd);
 }
+

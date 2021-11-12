@@ -53,13 +53,14 @@ public:
     list<User> users_list;
     list<Channel> channel_list;
 
+
 private:
-	Server();
     void initialize(int _port, string& _pass);
     bool binding();
     int accepting();
     int reading(const int &_socket_fd, char (*_buf)[BUFFER_SIZE]);
     void get_message();
+	void restartServer();
 public:
     Server(int _port, string _pass);
     ~Server();

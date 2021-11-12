@@ -46,9 +46,9 @@ void MessageParse::splitMessage(char *_buf, vector<string> &args) {
 	cout << endl;
 }
 
-void MessageParse::defineCommandType(vector<string> &args, User& user, list<User>& users_list, string pass, list<Channel> &channel_list) {
+int MessageParse::defineCommandType(vector<string> &args, User& user, list<User>& users_list, string pass, list<Channel> &channel_list) {
 	if (args[0] == "PASS") { /*CommandList::pass(args, user, users_list, pass);*/ }
-	else if (args[0] == "NICK") { CommandList::nick(args, user); }
+	else if (args[0] == "NICK") { CommandList::nick(args, user, users_list); }
 	else if (args[0] == "USER") { /*CommandList::user(args, user);*/ }
 	else if (!user.isRegistered()) { Service::errMsg(451, user); }
 	else if (args[0] == "ADMIN") { CommandList::admin(args, user); }
@@ -70,7 +70,7 @@ void MessageParse::defineCommandType(vector<string> &args, User& user, list<User
 	else if (args[0] == "PRIVMSG") {}
 	else if (args[0] == "QUIT") {}
 	else if (args[0] == "REHASH") {}
-	else if (args[0] == "RESTART") {}
+	else if (args[0] == "RESTART") { return CommandList::restart(user); }
 	else if (args[0] == "TIME") { CommandList::time(args, user); }
 	else if (args[0] == "TOPIC") {}
 	else if (args[0] == "VERSION") { CommandList::version(args, user); }
@@ -80,11 +80,13 @@ void MessageParse::defineCommandType(vector<string> &args, User& user, list<User
 	else if (args[0] == "WHOWAS") {}
 //	else if (args[0] == "USERS") {}
 	else Service::errMsg(421, user, args[0]);
+	return 0;
 }
 
-void MessageParse::handleMessage(char *_buf, User& user, list<User>& users_list, string pass, list<Channel> &channel_list) {
+int MessageParse::handleMessage(char *_buf, User& user, list<User>& users_list, string pass, list<Channel> &channel_list) {
 	vector<string> args;
 
 	splitMessage(_buf, args);
-	defineCommandType(args, user, users_list, pass, channel_list);
+	return defineCommandType(args, user, users_list, pass, channel_list);
+
 }
