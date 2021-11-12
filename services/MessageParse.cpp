@@ -70,5 +70,4 @@ void MessageParse::handleMessage(char *_buf, User& user, list<User>& users_list,
 
 	splitMessage(_buf, args);
 	defineCommandType(args, user, users_list, pass, channel_list);
-	splitMessage(_buf, args);
 }

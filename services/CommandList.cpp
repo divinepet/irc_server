@@ -47,16 +47,60 @@ void CommandList::away(std::vector<std::string> args, User &user) {
         return ;
 }
 
-void CommandList::invite(std::vector<std::string> args, User &user) {
+void CommandList::invite(std::vector<std::string> args, User &user, list<User> user_list, list<Channel> &channel_list) {
 
-    std::string requested_user;
-    std::string channel_name;
+    std::string msg;
+    std::string rqsted_user;
+    std::string rqsted_chnl_name;
+    list<User>::iterator usr_iter = user_list.begin();
+    list<Channel>::iterator chnl_iter = channel_list.begin();
+    list<User>::iterator chnl_usr_list = chnl_iter->_user_list.begin();
+    list<User>::iterator chnl_oper_list = chnl_iter->_operator_list.begin();
 
-    if (args.size() < 3) {
-		Service::errMsg(461, user);
-    }
-    else {
-
+    if (args.size() > 2) {
+        rqsted_user = args[1];
+        rqsted_chnl_name = args[2];
+        for (; chnl_iter != channel_list.end() && chnl_iter->_channel_name != rqsted_chnl_name; ++chnl_iter) {} // searching rqsted channel
+        if (chnl_iter != channel_list.end()) { // if rqsted channel exists
+            for (; usr_iter != user_list.end() && usr_iter->getNickname() != rqsted_user; ++usr_iter) {} // searching rqsted user
+            if (usr_iter != user_list.end()) { // if rqsted user exists
+                for (; chnl_usr_list != chnl_iter->_user_list.end()
+                                && chnl_usr_list->getNickname() != user.getNickname(); ++chnl_usr_list) {} // searching current user on rqsted channel
+                if (chnl_usr_list != chnl_iter->_user_list.end()) { // if current user on rqsted channel
+                    chnl_usr_list = chnl_iter->_user_list.begin();
+                    for (; chnl_usr_list != chnl_iter->_user_list.end()
+                           && chnl_usr_list->getNickname() != rqsted_user; ++chnl_usr_list) {} // searching rqsted user on rqsted channel
+                    if (chnl_usr_list == chnl_iter->_user_list.end()) { // if rqsted user NOT on rqsted channel
+                        if (chnl_iter->_is_invite_only) { // if rqsted channel is invite only
+                            for (; chnl_oper_list != chnl_iter->_operator_list.end()
+                                                && chnl_oper_list->getNickname() != user.getNickname(); ++chnl_oper_list) {} // searching current user in operator list of rqsted channel
+                            if (chnl_oper_list == chnl_iter->_operator_list.end()) { // cuurent user not operator on invite only channel
+                                Service::errMsg(482, user,rqsted_chnl_name);
+                                return ;
+                            }
+                        }
+                        if (!usr_iter->isAway()) { // rqsted user is available
+                            chnl_iter->_invite_list.push_back(*usr_iter);
+                            msg = ":" + user.getNickname() + "!t127.0.0.1 INVITE" + rqsted_user + " :" +rqsted_chnl_name;
+                            Server::writing(usr_iter->getSocketFd(), msg);
+                            Service::replyMsg(341, user, rqsted_chnl_name, rqsted_user);
+                        } else { // rqsted user has AWAY status
+                            Service::replyMsg(301, user, rqsted_user, usr_iter->getAutoReply());
+                        }
+                    } else { // rqsted user already on channel
+                        Service::errMsg(443, user, rqsted_user, rqsted_chnl_name);
+                    }
+                } else { // current user not on rqsted channel
+                    Service::errMsg(442, user, rqsted_chnl_name);
+                }
+            } else { // rqsted user does not exist
+                Service::errMsg(401, user, args[1]);
+            }
+        } else { //rqsted channel does not exist
+            return ;
+        }
+    } else { // not enough params
+        Service::errMsg(461, user, args[0]);
     }
 }
 
@@ -123,16 +167,35 @@ void CommandList::ison(std::vector<std::string> args, User& user, std::list<User
 //  JOIN #foo,#bar fubar,foobar
 void CommandList::join(vector<string> args, User &user, list<Channel> &channel_list) {
 
-    list<Channel>::iterator ch = channel_list.begin();
+    vector<string> input_channels;
+    vector<string> input_passwords;
+    list<Channel>::iterator chnl_iter = channel_list.begin();
 
     if (args.size() > 1) {
-
-        for (; ch != channel_list.end() && ch->_channel_name != args[1]; ++ch) {}
-        if (ch == channel_list.end()) {
-            channel_list.push_back(Channel(args[1], user));
+        input_channels = Service::split(args[1], ',');
+        if (args.size() == 3) {
+            input_passwords = Service::split(args[2], ',');
         }
-        else {
-            ch->addUser(user);
+        for (size_t i = 0; i < input_channels.size(); ++i) {
+            for (; chnl_iter != channel_list.end() && chnl_iter->_channel_name != input_channels[i]; ++chnl_iter) {}
+            if (chnl_iter == channel_list.end()) {
+                if (input_passwords[i].length() > 0) {
+                    channel_list.push_back(Channel(args[1], user, input_passwords[i]));
+                } else {
+                    channel_list.push_back(Channel(args[1], user));
+                }
+                chnl_iter->_operator_list.push_back(user);
+            } else {
+                if (!chnl_iter->_is_invite_only) {
+                    if (input_passwords[i].length() > 0) {
+                        chnl_iter->addUser(user, input_passwords[i]);
+                    } else {
+                        chnl_iter->addUser(user);
+                    }
+                } else {
+                    Service::errMsg(473, user, chnl_iter->_channel_name);
+                }
+            }
         }
     }
 }
