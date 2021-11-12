@@ -22,4 +22,5 @@ public:
 	static void version(std::vector<std::string> args, User &user);
 	static int restart(User &user);
 	static void kick(vector<string> args, User &user, list<Channel> &channel_list);
+	static void kill(vector<string> args, User &user, list<User> &user_list);
 };

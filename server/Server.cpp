@@ -50,28 +50,18 @@ bool Server::binding() {
     return true;
 }
 
-int Server::accepting() {
+pair<int, string> Server::accepting() {
     struct sockaddr_in ClientAddr;
     client_length = sizeof(ClientAddr);
     new_socket_fd = accept(socket_fd, (struct sockaddr *) &ClientAddr, &client_length);
-	User user(new_socket_fd);
 
     if (new_socket_fd < 0) {
     	cout << "ERROR on accepting the connection" << endl;
-		new_socket_fd = -1;
-    } else {
-
-    	cout << "New Client Connected, ip: " << inet_ntoa(ClientAddr.sin_addr)
-    			<< ", port: " << ntohs(ClientAddr.sin_port) << endl;
+        return make_pair(-1, nullptr);
     }
-	if (FD_ISSET(socket_fd, &fd_read) ) {
-		fcntl(new_socket_fd, F_SETFL, fcntl(new_socket_fd, F_GETFL) | O_NONBLOCK);
-
-		user.setRealHost(inet_ntoa(ClientAddr.sin_addr));
-		users_list.push_back(user);
-		FD_SET(new_socket_fd, &fd_read);
-	}
-	return new_socket_fd;
+	cout << "New Client Connected, ip: " << inet_ntoa(ClientAddr.sin_addr)
+			<< ", port: " << ntohs(ClientAddr.sin_port) << endl;
+	return make_pair(new_socket_fd, inet_ntoa(ClientAddr.sin_addr));
 }
 
 int Server::reading(const int &_socket_fd, char (*_buf)[BUFFER_SIZE]) {
@@ -134,8 +124,19 @@ void Server::start() {
 
 		int selecting = select(max_fd + 1, &fd_read, NULL, NULL, &delay);
 
-        if (selecting > 0)
-            new_socket_fd = accepting();
+        if (selecting > 0) {
+			pair<int, string> pair = accepting();
+            new_socket_fd = pair.first;
+            if (FD_ISSET(socket_fd, &fd_read) ) {
+                fcntl(new_socket_fd, F_SETFL, fcntl(new_socket_fd, F_GETFL) | O_NONBLOCK);
+
+                User user(new_socket_fd);
+				user.setRealHost(pair.second);
+                users_list.push_back(user);
+
+                FD_SET(new_socket_fd, &fd_read);
+            }
+        }
 
         for (list<User>::iterator it = users_list.begin(); it != users_list.end(); it++) {
             FD_SET(it->getSocketFd(), &fd_read);

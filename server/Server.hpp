@@ -57,7 +57,7 @@ public:
 private:
     void initialize(int _port, string& _pass);
     bool binding();
-    int accepting();
+	pair<int, string> accepting();
     int reading(const int &_socket_fd, char (*_buf)[BUFFER_SIZE]);
     void get_message();
 	void restartServer();

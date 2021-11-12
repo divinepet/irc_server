@@ -264,10 +264,10 @@ void CommandList::version(std::vector<std::string> args, User &user) {
 }
 
 int CommandList::restart(User &user) {
-//	if (!user.isOper()) {
-//		Service::errMsg(481, user);
-//		return -1;
-//	}
+	if (!user.isOper()) {
+		Service::errMsg(481, user);
+		return -1;
+	}
 	return 3;
 }
 
@@ -329,3 +329,23 @@ void CommandList::kick(vector<string> args, User &user, list<Channel> &channel_l
  		Service::errMsg(461, user, "KICK");
  	}
  }
+
+ //todo нестабильно работает, протестировать
+void CommandList::kill(vector<string> args, User &user, list<User> &user_list) {
+	if (args.size() < 3) {
+		Service::errMsg(461, user, args[0]);
+	}
+	else if (!user.isOper())
+		Service::errMsg(481, user);
+	else {
+		for (list<User>::iterator it = user_list.begin(); it != user_list.end(); ++it) {
+			if (it->getNickname() == args[1]) {
+				Server::writing(it->getSocketFd(), args[2] + "\n");
+				close(it->getSocketFd());
+				user_list.erase(it);
+				return;
+			}
+		}
+		Service::errMsg(401, user, args[1]);
+	}
+}

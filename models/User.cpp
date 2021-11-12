@@ -2,26 +2,31 @@
 
 User::~User() {}
 
-User::User(int _socket_fd) : socket_fd(_socket_fd), registerPhase(0), away(false), registered(false), validPass(false) {}
+User::User(int _socket_fd) : socket_fd(_socket_fd), registerPhase(0), away(false), registered(false), validPass(false),
+								oper(false) {}
 
 User::User(const User &_x) : socket_fd(_x.socket_fd), nickname(_x.nickname), username(_x.username), realName(_x.realName),
-								host(_x.host), servername(_x.servername), auto_reply(_x.auto_reply), registerPhase(_x.registerPhase),
-								validPass(_x.validPass), away(_x.away), registered(_x.registered) {}
+								host(_x.host), servername(_x.servername), realHost(_x.realHost), auto_reply(_x.auto_reply),
+								registerPhase(_x.registerPhase), validPass(_x.validPass), away(_x.away),
+								registered(_x.registered), oper(_x.oper) {}
 
 User &User::operator=(const User &_x) {
 	if (this == &_x)
 		return *this;
+
 	socket_fd = _x.socket_fd;
 	nickname = _x.nickname;
 	username = _x.username;
 	realName= _x.realName;
 	host = _x.host;
 	servername = _x.servername;
+	realHost = _x.realHost;
 	auto_reply = _x.auto_reply;
 	registerPhase = _x.registerPhase;
 	validPass = _x.validPass;
 	away = _x.away;
 	registered = _x.registered;
+	oper = _x.oper;
 	return *this;
 }
 

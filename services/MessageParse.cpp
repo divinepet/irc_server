@@ -58,7 +58,7 @@ int MessageParse::defineCommandType(vector<string> &args, User& user, list<User>
 	else if (args[0] == "INVITE") {}
 	else if (args[0] == "ISON") { CommandList::ison(args, user, users_list); }
 	else if (args[0] == "KICK") { CommandList::kick(args, user, channel_list); }
-	else if (args[0] == "KILL") {}
+	else if (args[0] == "KILL") { CommandList::kill(args, user, users_list); }
 	else if (args[0] == "LIST") {}
 	else if (args[0] == "MODE") {}
 	else if (args[0] == "NAMES") {}
