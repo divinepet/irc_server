@@ -90,7 +90,7 @@ void Server::get_message() {
 			int _read = reading(it->getSocketFd(), &buf);
 
 			if (_read != 0) {
-				MessageParse::handleMessage(buf, *it, users_list, pass);
+				MessageParse::handleMessage(buf, *it, users_list, pass, channel_list);
 			} else {
 				printf("%s disconnected.\n", it->getNickname().c_str());
 				close(it->getSocketFd());

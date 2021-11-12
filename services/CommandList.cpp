@@ -118,3 +118,39 @@ void CommandList::user(std::vector<std::string> args, User &user) {
 }
 
 
+
+//  JOIN #foo,#bar fubar,foobar
+
+void CommandList::join(std::vector<std::string> args, User &user, list<Channel> &channel_list) {
+
+    list<Channel>::iterator ch = channel_list.begin();
+
+    if (args.size() > 1) {
+
+        for (; ch != channel_list.end() && ch->_channel_name != args[1]; ++ch) {}
+        if (ch != channel_list.end()) {
+            channel_list.push_back(Channel(args[1], user));
+        }
+        else {
+            ch->addUser(user);
+        }
+    }
+}
+
+// not full-tested
+std::vector<std::string> CommandList::split(std::string str, char ch) {
+
+    std::vector<std::string> result;
+
+    for (size_t i = 0, j = str.find(ch, i); j != std::string::npos;) {
+        result.push_back(str.substr(i,j - i));
+        i = j + 1;
+        j = str.find(ch, i);
+        if (i != str.length() && j == std::string::npos) {
+            result.push_back(str.substr(i, str.length()));
+        }
+    }
+
+    return result;
+}
+

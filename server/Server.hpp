@@ -21,10 +21,13 @@
 #include <fcntl.h>
 
 #include "../models/User.hpp"
+#include "../models/Channel.hpp"
 #include "../services/MessageParse.hpp"
 #include "../services/Service.hpp"
 
 #define BUFFER_SIZE 1024
+
+class Channel;
 
 namespace serverInfo {
 	static string serverName = "IrcServ";
@@ -47,6 +50,7 @@ private:
     timeval delay;
 public:
     list<User> users_list;
+    list<Channel> channel_list;
 
 private:
 	Server();

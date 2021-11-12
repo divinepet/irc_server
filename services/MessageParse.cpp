@@ -27,8 +27,9 @@ void MessageParse::splitMessage(char *_buf, vector<string> &args) {
 	cout << endl;
 }
 
-void MessageParse::defineCommandType(vector<string> &args, User& user, list<User>& users_list, string pass) {
+void MessageParse::defineCommandType(vector<string> &args, User& user, list<User>& users_list, string pass, list<Channel> &channel_list) {
 	if (args[0] == "PASS") { CommandList::pass(args, user, users_list, pass); }
+	if (args[0] == "PASS") { }
 	else if (args[0] == "NICK") { CommandList::nick(args, user); }
 	else if (args[0] == "USER") { CommandList::user(args, user); }
 	else if (!user.isRegistered()) { Service::errMsg(451, user); }
@@ -63,9 +64,10 @@ void MessageParse::defineCommandType(vector<string> &args, User& user, list<User
 	else Service::errMsg(421, user, args[0]);
 }
 
-void MessageParse::handleMessage(char *_buf, User& user, list<User>& users_list, string pass) {
+void MessageParse::handleMessage(char *_buf, User& user, list<User>& users_list, string pass, list<Channel> &channel_list) {
 	vector<string> args;
 
 	splitMessage(_buf, args);
-	defineCommandType(args, user, users_list, pass);
+	defineCommandType(args, user, users_list, pass, channel_list);
+	splitMessage(_buf, args);
 }
