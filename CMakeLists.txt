@@ -17,8 +17,8 @@ add_executable(irc_server
         models/User.hpp
         server/Server.cpp
         server/Server.hpp
-        services/yaml-parse/YamlParser.cpp
-        services/yaml-parse/YamlParser.hpp
+        services/YamlParser.cpp
+        services/YamlParser.hpp
         services/CommandList.cpp
         services/CommandList.hpp
         services/MessageParse.cpp

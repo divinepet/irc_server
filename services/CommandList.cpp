@@ -2,11 +2,11 @@
 #include "CommandList.hpp"
 
 void CommandList::admin(std::vector<std::string> args, User& user) {
-	if (args.size() == 1 || (args.size() != 1 && args[1] == serverInfo::serverName)) {
-		Service::replyMsg(256, user, serverInfo::serverName);
-		Service::replyMsg(257, user, "Test");
-		Service::replyMsg(258, user, "Test");
-		Service::replyMsg(259, user, "Test@test.com");
+	if (args.size() == 1 || (args.size() != 1 && args[1] == config["server.name"])) {
+		Service::replyMsg(256, user, " " + config["server.name"]);
+		Service::replyMsg(257, user, config["server.author.nickname"]);
+		Service::replyMsg(258, user, config["server.author.name"]);
+		Service::replyMsg(259, user, config["server.author.mail"]);
 	} else
 		Service::errMsg(402, user, args[1]);
 }
@@ -15,7 +15,7 @@ void CommandList::motd(User &user) {
 	std::ifstream infile("resources/daily");
 	if (infile) {
 		std::string dailyMessageLine;
-		Service::replyMsg(375, user, serverInfo::serverName);
+		Service::replyMsg(375, user, config["server.name"]);
 		while (std::getline(infile, dailyMessageLine))
 			Service::replyMsg(372, user, dailyMessageLine);
 		Service::replyMsg(376, user);
@@ -114,10 +114,10 @@ void CommandList::invite(std::vector<std::string> args, User &user, list<User> u
 }
 
 void CommandList::info(std::vector<std::string> args, User& user) {
-	if (args.size() == 1 || (args.size() != 1 && args[1] == serverInfo::serverName)) {
+	if (args.size() == 1 || (args.size() != 1 && args[1] == config["server.name"])) {
 		Service::replyMsg(371, user, ">| Server Information |<");
-		// Service::replyMsg(371, user, "Compilation Time" + serverInfo::compileTime);
-		Service::replyMsg(371, user, "Server Version" + serverInfo::serverVersion);
+		Service::replyMsg(371, user, "Compilation Time " + config["server.compilationTime"]);
+		Service::replyMsg(371, user, "Server Version " + config["server.version"] + "." + config["server.debugLevel"]);
 		Service::replyMsg(374, user);
 	} else
 		Service::errMsg(402, user, args[1]);
@@ -261,15 +261,15 @@ void CommandList::part(std::vector<std::string> args, User &user, list<Channel> 
 }
 
 void CommandList::time(vector<string> args, User &user) {
-	(args.size() > 1 && args[1] != serverInfo::serverName)
+	(args.size() > 1 && args[1] != config["server.name"])
 		? Service::errMsg(402, user, args[1])
-		: Service::replyMsg(391, user, serverInfo::serverName, Service::getDate());
+		: Service::replyMsg(391, user, config["server.name"], Service::getDate());
 }
 
 void CommandList::version(std::vector<std::string> args, User &user) {
-	(args.size() > 1 && args[1] != serverInfo::serverName)
+	(args.size() > 1 && args[1] != config["server.name"])
 	? Service::errMsg(402, user, args[1])
-	: Service::replyMsg(351, user, "1", "0", serverInfo::serverName, "beta");
+	: Service::replyMsg(351, user, config["server.version"], config["server.debugLevel"], config["server.name"], config["server.release"]);
 }
 
 int CommandList::restart(User &user) {

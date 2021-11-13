@@ -118,18 +118,18 @@ CMakeFiles/irc_server.dir/server/Server.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/irc_server.dir/server/Server.cpp.s"
 	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/elaronda/Desktop/irc_server/server/Server.cpp -o CMakeFiles/irc_server.dir/server/Server.cpp.s
 
-CMakeFiles/irc_server.dir/services/yaml-parse/YamlParser.cpp.o: CMakeFiles/irc_server.dir/flags.make
-CMakeFiles/irc_server.dir/services/yaml-parse/YamlParser.cpp.o: ../services/yaml-parse/YamlParser.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/irc_server.dir/services/yaml-parse/YamlParser.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/irc_server.dir/services/yaml-parse/YamlParser.cpp.o -c /Users/elaronda/Desktop/irc_server/services/yaml-parse/YamlParser.cpp
+CMakeFiles/irc_server.dir/services/YamlParser.cpp.o: CMakeFiles/irc_server.dir/flags.make
+CMakeFiles/irc_server.dir/services/YamlParser.cpp.o: ../services/YamlParser.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/irc_server.dir/services/YamlParser.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/irc_server.dir/services/YamlParser.cpp.o -c /Users/elaronda/Desktop/irc_server/services/YamlParser.cpp
 
-CMakeFiles/irc_server.dir/services/yaml-parse/YamlParser.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/irc_server.dir/services/yaml-parse/YamlParser.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/elaronda/Desktop/irc_server/services/yaml-parse/YamlParser.cpp > CMakeFiles/irc_server.dir/services/yaml-parse/YamlParser.cpp.i
+CMakeFiles/irc_server.dir/services/YamlParser.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/irc_server.dir/services/YamlParser.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/elaronda/Desktop/irc_server/services/YamlParser.cpp > CMakeFiles/irc_server.dir/services/YamlParser.cpp.i
 
-CMakeFiles/irc_server.dir/services/yaml-parse/YamlParser.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/irc_server.dir/services/yaml-parse/YamlParser.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/elaronda/Desktop/irc_server/services/yaml-parse/YamlParser.cpp -o CMakeFiles/irc_server.dir/services/yaml-parse/YamlParser.cpp.s
+CMakeFiles/irc_server.dir/services/YamlParser.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/irc_server.dir/services/YamlParser.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/elaronda/Desktop/irc_server/services/YamlParser.cpp -o CMakeFiles/irc_server.dir/services/YamlParser.cpp.s
 
 CMakeFiles/irc_server.dir/services/CommandList.cpp.o: CMakeFiles/irc_server.dir/flags.make
 CMakeFiles/irc_server.dir/services/CommandList.cpp.o: ../services/CommandList.cpp
@@ -176,7 +176,7 @@ irc_server_OBJECTS = \
 "CMakeFiles/irc_server.dir/models/Channel.cpp.o" \
 "CMakeFiles/irc_server.dir/models/User.cpp.o" \
 "CMakeFiles/irc_server.dir/server/Server.cpp.o" \
-"CMakeFiles/irc_server.dir/services/yaml-parse/YamlParser.cpp.o" \
+"CMakeFiles/irc_server.dir/services/YamlParser.cpp.o" \
 "CMakeFiles/irc_server.dir/services/CommandList.cpp.o" \
 "CMakeFiles/irc_server.dir/services/MessageParse.cpp.o" \
 "CMakeFiles/irc_server.dir/services/Service.cpp.o"
@@ -188,7 +188,7 @@ irc_server: CMakeFiles/irc_server.dir/app/RunServer.cpp.o
 irc_server: CMakeFiles/irc_server.dir/models/Channel.cpp.o
 irc_server: CMakeFiles/irc_server.dir/models/User.cpp.o
 irc_server: CMakeFiles/irc_server.dir/server/Server.cpp.o
-irc_server: CMakeFiles/irc_server.dir/services/yaml-parse/YamlParser.cpp.o
+irc_server: CMakeFiles/irc_server.dir/services/YamlParser.cpp.o
 irc_server: CMakeFiles/irc_server.dir/services/CommandList.cpp.o
 irc_server: CMakeFiles/irc_server.dir/services/MessageParse.cpp.o
 irc_server: CMakeFiles/irc_server.dir/services/Service.cpp.o

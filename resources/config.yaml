@@ -1,6 +1,10 @@
-name: IrcServ
-age: 18
-admin:
-  elaronda: "x3x"
-  chells: "x98vf"
-version: "1.0"
+server:
+  author:
+    nickname: elaronda, cshells, frariel
+    name: erik, max, rin
+    mail: null
+  name: IrcServ
+  version: 1
+  debugLevel: 0
+  release: beta
+  compilationTime: 00:00:00

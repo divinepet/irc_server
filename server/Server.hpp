@@ -24,17 +24,19 @@
 #include "../models/Channel.hpp"
 #include "../services/MessageParse.hpp"
 #include "../services/Service.hpp"
+#include "../services/YamlParser.hpp"
+static YamlParser config;
 
 #define BUFFER_SIZE 1024
 
 class Channel;
 class Service;
 
-namespace serverInfo {
-	static string serverName = "IrcServ";
-	// static string compileTime = Service::getDate();
-	static string serverVersion = "1.0";
-};
+//namespace serverInfo {
+//	static string serverName = "IrcServ";
+//	// static string compileTime = Service::getDate();
+//	static string serverVersion = "1.0";
+//};
 
 using namespace std;
 

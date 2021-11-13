@@ -297,29 +297,29 @@ services/Service.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/services/Service.cpp.s
 .PHONY : services/Service.cpp.s
 
-services/yaml-parse/YamlParser.o: services/yaml-parse/YamlParser.cpp.o
-.PHONY : services/yaml-parse/YamlParser.o
+services/YamlParser.o: services/YamlParser.cpp.o
+.PHONY : services/YamlParser.o
 
 # target to build an object file
-services/yaml-parse/YamlParser.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/services/yaml-parse/YamlParser.cpp.o
-.PHONY : services/yaml-parse/YamlParser.cpp.o
+services/YamlParser.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/services/YamlParser.cpp.o
+.PHONY : services/YamlParser.cpp.o
 
-services/yaml-parse/YamlParser.i: services/yaml-parse/YamlParser.cpp.i
-.PHONY : services/yaml-parse/YamlParser.i
+services/YamlParser.i: services/YamlParser.cpp.i
+.PHONY : services/YamlParser.i
 
 # target to preprocess a source file
-services/yaml-parse/YamlParser.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/services/yaml-parse/YamlParser.cpp.i
-.PHONY : services/yaml-parse/YamlParser.cpp.i
+services/YamlParser.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/services/YamlParser.cpp.i
+.PHONY : services/YamlParser.cpp.i
 
-services/yaml-parse/YamlParser.s: services/yaml-parse/YamlParser.cpp.s
-.PHONY : services/yaml-parse/YamlParser.s
+services/YamlParser.s: services/YamlParser.cpp.s
+.PHONY : services/YamlParser.s
 
 # target to generate assembly for a file
-services/yaml-parse/YamlParser.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/services/yaml-parse/YamlParser.cpp.s
-.PHONY : services/yaml-parse/YamlParser.cpp.s
+services/YamlParser.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/services/YamlParser.cpp.s
+.PHONY : services/YamlParser.cpp.s
 
 # Help Target
 help:
@@ -351,9 +351,9 @@ help:
 	@echo "... services/Service.o"
 	@echo "... services/Service.i"
 	@echo "... services/Service.s"
-	@echo "... services/yaml-parse/YamlParser.o"
-	@echo "... services/yaml-parse/YamlParser.i"
-	@echo "... services/yaml-parse/YamlParser.s"
+	@echo "... services/YamlParser.o"
+	@echo "... services/YamlParser.i"
+	@echo "... services/YamlParser.s"
 .PHONY : help
 
 
