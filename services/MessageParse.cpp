@@ -14,7 +14,7 @@ void MessageParse::splitMessage(char *_buf, vector<string> &args) {
 	if (buf.size() > 0 && buf[0] == ' ') buf.erase(buf.begin());
 	if (buf[buf.size() - 1] == ' ') buf.erase(buf.end() - 1);
 
-//	cout << config["admin.elaronda.kraken"] << endl;
+
 	while ((pos = buf.find(delimiter)) != std::string::npos) {
 		args.push_back(buf.substr(0, pos));
 		buf.erase(0, pos + delimiter.length());
@@ -63,7 +63,7 @@ int MessageParse::defineCommandType(vector<string> &args, User& user, list<User>
 	else if (args[0] == "MODE") {}
 	else if (args[0] == "NAMES") {}
 	else if (args[0] == "NOTICE") {}
-	else if (args[0] == "OPER") {}
+	else if (args[0] == "OPER") { CommandList::oper(args, user); }
 	else if (args[0] == "PART") { CommandList::part(args, user, channel_list); }
 	else if (args[0] == "PING") {}
 	else if (args[0] == "PONG") {}

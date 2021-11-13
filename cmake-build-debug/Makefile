@@ -321,6 +321,30 @@ services/YamlParser.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/services/YamlParser.cpp.s
 .PHONY : services/YamlParser.cpp.s
 
+services/sha256.o: services/sha256.cpp.o
+.PHONY : services/sha256.o
+
+# target to build an object file
+services/sha256.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/services/sha256.cpp.o
+.PHONY : services/sha256.cpp.o
+
+services/sha256.i: services/sha256.cpp.i
+.PHONY : services/sha256.i
+
+# target to preprocess a source file
+services/sha256.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/services/sha256.cpp.i
+.PHONY : services/sha256.cpp.i
+
+services/sha256.s: services/sha256.cpp.s
+.PHONY : services/sha256.s
+
+# target to generate assembly for a file
+services/sha256.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/services/sha256.cpp.s
+.PHONY : services/sha256.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -354,6 +378,9 @@ help:
 	@echo "... services/YamlParser.o"
 	@echo "... services/YamlParser.i"
 	@echo "... services/YamlParser.s"
+	@echo "... services/sha256.o"
+	@echo "... services/sha256.i"
+	@echo "... services/sha256.s"
 .PHONY : help
 
 

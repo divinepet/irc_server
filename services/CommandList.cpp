@@ -358,3 +358,14 @@ void CommandList::kill(vector<string> args, User &user, list<User> &user_list) {
 		Service::errMsg(401, user, args[1]);
 	}
 }
+
+void CommandList::oper(vector<string> args, User& user) {
+	if (args.size() < 3)
+		Service::errMsg(461, user, args[0]);
+	else if (config["operators." + args[1]] != sha256(args[2])) {
+		Service::errMsg(464, user);
+	} else {
+		user.setOper(true);
+		Service::replyMsg(381, user);
+	}
+}

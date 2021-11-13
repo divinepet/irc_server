@@ -24,4 +24,4 @@ add_executable(irc_server
         services/MessageParse.cpp
         services/MessageParse.hpp
         services/Service.cpp
-        services/Service.hpp)
+        services/Service.hpp services/sha256.cpp services/sha256.hpp)

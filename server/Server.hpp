@@ -25,6 +25,7 @@
 #include "../services/MessageParse.hpp"
 #include "../services/Service.hpp"
 #include "../services/YamlParser.hpp"
+#include "../services/sha256.hpp"
 static YamlParser config;
 
 #define BUFFER_SIZE 1024

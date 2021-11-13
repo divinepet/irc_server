@@ -7,6 +7,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/irc_server.dir/services/MessageParse.cpp.o"
   "CMakeFiles/irc_server.dir/services/Service.cpp.o"
   "CMakeFiles/irc_server.dir/services/YamlParser.cpp.o"
+  "CMakeFiles/irc_server.dir/services/sha256.cpp.o"
   "irc_server"
   "irc_server.pdb"
 )

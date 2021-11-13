@@ -135,6 +135,12 @@
 		<Unit filename="/Users/elaronda/Desktop/irc_server/services/YamlParser.hpp">
 			<Option target="irc_server"/>
 		</Unit>
+		<Unit filename="/Users/elaronda/Desktop/irc_server/services/sha256.cpp">
+			<Option target="irc_server"/>
+		</Unit>
+		<Unit filename="/Users/elaronda/Desktop/irc_server/services/sha256.hpp">
+			<Option target="irc_server"/>
+		</Unit>
 		<Unit filename="/Users/elaronda/Desktop/irc_server/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
