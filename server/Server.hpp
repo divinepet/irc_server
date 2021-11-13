@@ -33,12 +33,6 @@ static YamlParser config;
 class Channel;
 class Service;
 
-//namespace serverInfo {
-//	static string serverName = "IrcServ";
-//	// static string compileTime = Service::getDate();
-//	static string serverVersion = "1.0";
-//};
-
 using namespace std;
 
 class Server {
@@ -52,6 +46,7 @@ private:
     fd_set fd_read;
     fd_set fd_write;
     timeval delay;
+	string message_poll;
 public:
     list<User> users_list;
     list<Channel> channel_list;

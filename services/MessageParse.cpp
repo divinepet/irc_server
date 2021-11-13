@@ -2,24 +2,23 @@
 
 bool bothAreSpaces(char lhs, char rhs) { return (lhs == rhs) && (lhs == ' '); }
 
-void MessageParse::splitMessage(char *_buf, vector<string> &args) {
-	string buf = _buf;
-	buf = buf.substr(0, buf.length() - 1);
+void MessageParse::splitMessage(string _msg, vector<string> &args) {
+	_msg = _msg.substr(0, _msg.length() - 1);
 	string delimiter = " ";
 	size_t pos;
 	string prefix;
 
-	string::iterator new_end = unique(buf.begin(), buf.end(), bothAreSpaces);
-	buf.erase(new_end, buf.end());
-	if (buf.size() > 0 && buf[0] == ' ') buf.erase(buf.begin());
-	if (buf[buf.size() - 1] == ' ') buf.erase(buf.end() - 1);
+	string::iterator new_end = unique(_msg.begin(), _msg.end(), bothAreSpaces);
+	_msg.erase(new_end, _msg.end());
+	if (_msg.size() > 0 && _msg[0] == ' ') _msg.erase(_msg.begin());
+	if (_msg[_msg.size() - 1] == ' ') _msg.erase(_msg.end() - 1);
 
 
-	while ((pos = buf.find(delimiter)) != std::string::npos) {
-		args.push_back(buf.substr(0, pos));
-		buf.erase(0, pos + delimiter.length());
+	while ((pos = _msg.find(delimiter)) != std::string::npos) {
+		args.push_back(_msg.substr(0, pos));
+		_msg.erase(0, pos + delimiter.length());
 	}
-	args.push_back(buf);
+	args.push_back(_msg);
 
 	size_t i = 0;
 	for (vector<string>::iterator it = args.begin();  it != args.end(); ++it, ++i) {
@@ -83,10 +82,10 @@ int MessageParse::defineCommandType(vector<string> &args, User& user, list<User>
 	return 0;
 }
 
-int MessageParse::handleMessage(char *_buf, User& user, list<User>& users_list, string pass, list<Channel> &channel_list) {
+int MessageParse::handleMessage(string _msg, User& user, list<User>& users_list, string pass, list<Channel> &channel_list) {
 	vector<string> args;
 
-	splitMessage(_buf, args);
+	splitMessage(_msg, args);
 	return defineCommandType(args, user, users_list, pass, channel_list);
 
 }

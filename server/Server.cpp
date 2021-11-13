@@ -65,11 +65,11 @@ pair<int, string> Server::accepting() {
 }
 
 int Server::reading(const int &_socket_fd, char (*_buf)[BUFFER_SIZE]) {
-    bzero(_buf, BUFFER_SIZE);
-    int resp = recv(_socket_fd, _buf, BUFFER_SIZE, 0);
-    if (resp < 0)
-    	cout << "Error occurred while reading from socket" << endl;
-    return resp;
+	bzero(_buf, BUFFER_SIZE);
+	int resp = recv(_socket_fd, _buf, BUFFER_SIZE, 0);
+	if (resp < 0)
+		cout << "Error occurred while reading from socket" << endl;
+	return resp;
 }
 
 bool Server::writing(int _client_socket, const string &_str) {
@@ -89,10 +89,17 @@ void Server::get_message() {
 			int _read = reading(it->getSocketFd(), &buf);
 
 			if (_read != 0) {
-				int code = MessageParse::handleMessage(buf, *it, users_list, pass, channel_list);
-				switch (code) {
-					case 3: restartServer(); break;
-					default: ;
+				if (!strstr(buf, "\n")) {
+					message_poll += buf;
+					continue;
+				} else {
+					message_poll += buf;
+					int code = MessageParse::handleMessage(message_poll, *it, users_list, pass, channel_list);
+					message_poll.clear();
+					switch (code) {
+						case 3: restartServer(); break;
+						default:;
+					}
 				}
 			} else {
 				printf("%s disconnected.\n", it->getNickname().c_str());
@@ -122,7 +129,7 @@ void Server::start() {
 		if (max_fd < socket_fd)
             max_fd = socket_fd;
 
-		int selecting = select(max_fd + 1, &fd_read, NULL, NULL, &delay);
+		int selecting = select(max_fd + 1, &fd_read, &fd_write, NULL, &delay);
 
         if (selecting > 0) {
 			pair<int, string> pair = accepting();
@@ -147,7 +154,7 @@ void Server::start() {
         delay.tv_sec = 0;
         delay.tv_usec = 0;
 
-		selecting = select(max_fd + 1, &fd_read, NULL, NULL, &delay);
+		selecting = select(max_fd + 1, &fd_read, &fd_write, NULL, &delay);
 
         if (selecting > 0)
             get_message();

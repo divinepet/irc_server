@@ -369,3 +369,4 @@ void CommandList::oper(vector<string> args, User& user) {
 		Service::replyMsg(381, user);
 	}
 }
+
