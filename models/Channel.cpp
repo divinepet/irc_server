@@ -9,8 +9,12 @@ bool Channel::addUser(User &user) {
     return true;
 }
 
-void    Channel::deleteUser(User &user) {
+void Channel::deleteUser(User &user) {
     _user_list.remove(user);
+    _operator_list.remove(user);
+}
+
+void Channel::deleteOperator(User &user) {
     _operator_list.remove(user);
 }
 
@@ -34,12 +38,14 @@ void Channel::addOperator(User &user) {
     }
 }
 
-string Channel::getChannelName() const {
-    return _channel_name;
-}
+bool Channel::isInviteOnly() const { return _invite_only; }
 
-string Channel::getChannelTopic() const {
-    return _topic;
-}
+string Channel::getChannelName() const { return _channel_name; }
+
+string Channel::getChannelTopic() const { return _topic; }
+
+list<User>::iterator Channel::getOperListBegin() { return _operator_list.begin(); }
+
+list<User>::iterator Channel::getOperListEnd() { return _operator_list.end(); }
 
 

@@ -13,12 +13,30 @@ public:
 	Channel(std::string name) {
         _channel_name = name;
         _topic = "";
-	}
+        _has_password = false;
+        _invite_only = false;
+        _secret = false;
+        _private = false;
+        _no_outside = false;
+        _moderated = false;
+        _voice = true;
+        _banned = false;
+        _topic_by_oper = false;
+    }
 
 	Channel(std::string name, User &user) {
 	    _channel_name = name;
 	    _user_list.push_back(user);
         _topic = "";
+        _has_password = false;
+        _invite_only = false;
+        _secret = false;
+        _private = false;
+        _no_outside = false;
+        _moderated = false;
+        _voice = true;
+        _banned = false;
+        _topic_by_oper = false;
 	};
 
 	Channel(std::string name, User &user, std::string password) {
@@ -28,12 +46,29 @@ public:
 	    _password = password;
 	    _user_list.push_back(user);
         _topic = "";
+        _has_password = false;
+        _invite_only = false;
+        _secret = false;
+        _private = false;
+        _no_outside = false;
+        _moderated = false;
+        _voice = true;
+        _banned = false;
+        _topic_by_oper = false;
 	};
 
 	virtual ~Channel();
 
-	bool            _is_invite_only;
+	bool            _invite_only;
 	bool            _has_password;
+    bool            _secret;
+    bool            _private;
+    bool            _no_outside;
+    bool            _moderated;
+    bool            _voice;
+    bool            _banned;
+    bool            _topic_by_oper;
+
     std::string     _topic;
 	std::string     _password;
 	std::string     _channel_name;
@@ -45,9 +80,13 @@ public:
     bool addUser(User &user, string password);
     void addOperator(User &user);
     void deleteUser(User &user);
+    void deleteOperator(User &user);
 
-    string getChannelName() const;
-    string getChannelTopic() const;
+    bool                    isInviteOnly() const;
+    string                  getChannelName() const;
+    string                  getChannelTopic() const;
+    list<User>::iterator    getOperListBegin();
+    list<User>::iterator    getOperListEnd();
 
 
 	bool operator == (const Channel& s) const { return _channel_name == s._channel_name; }

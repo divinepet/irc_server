@@ -3,12 +3,13 @@
 User::~User() {}
 
 User::User(int _socket_fd) : socket_fd(_socket_fd), registerPhase(0), away(false), registered(false), validPass(false),
-								oper(false) {}
+								oper(false), invisible(false), serv_notices(true), wallops(true) {}
 
 User::User(const User &_x) : socket_fd(_x.socket_fd), nickname(_x.nickname), username(_x.username), realName(_x.realName),
 								host(_x.host), servername(_x.servername), realHost(_x.realHost), auto_reply(_x.auto_reply),
 								registerPhase(_x.registerPhase), validPass(_x.validPass), away(_x.away),
-								registered(_x.registered), oper(_x.oper) {}
+								registered(_x.registered), oper(_x.oper), wallops(_x.wallops), serv_notices(_x.serv_notices),
+                                invisible(_x.invisible) {}
 
 User &User::operator=(const User &_x) {
 	if (this == &_x)
@@ -27,6 +28,9 @@ User &User::operator=(const User &_x) {
 	away = _x.away;
 	registered = _x.registered;
 	oper = _x.oper;
+    wallops = _x.wallops;
+    serv_notices = _x.serv_notices;
+    invisible = _x.invisible;
 	return *this;
 }
 

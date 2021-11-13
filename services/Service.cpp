@@ -195,5 +195,28 @@ bool	Service::channelIsEmpty(const Channel &channel) {
 	return (channel._user_list.size() == 0);
 }
 
+pair<list<User>::iterator, bool> Service::isInList(list<User>::iterator first, list<User>::iterator last, string name) {
+
+    list<User>::iterator tmp = first;
+
+    for (; tmp != last && first->getNickname() != name; ++tmp) {}
+    if (tmp == last) {
+        return make_pair(tmp,false);
+    }
+    return make_pair(tmp,true);
+}
+
+pair<list<Channel>::iterator, bool> Service::isInList(list<Channel>::iterator first, list<Channel>::iterator last, string name) {
+
+    list<Channel>::iterator tmp = first;
+
+    for (; tmp != last && first->getChannelName() != name; ++tmp) {}
+    if (tmp == last) {
+        return make_pair(tmp,false);
+    }
+    return make_pair(tmp,true);;
+}
+
+
 // 0 JOIN
 // 1 "#abc abc, sda asdf, as, fdas # afsfa"
