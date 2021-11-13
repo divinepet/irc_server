@@ -12,7 +12,7 @@ void CommandList::admin(std::vector<std::string> args, User& user) {
 }
 
 void CommandList::motd(User &user) {
-	std::ifstream infile("daily");
+	std::ifstream infile("resources/daily");
 	if (infile) {
 		std::string dailyMessageLine;
 		Service::replyMsg(375, user, serverInfo::serverName);

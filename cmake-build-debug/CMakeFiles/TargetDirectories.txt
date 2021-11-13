@@ -1,3 +1,3 @@
-/Users/cshells/Desktop/ft_irc/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/Users/cshells/Desktop/ft_irc/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/cshells/Desktop/ft_irc/cmake-build-debug/CMakeFiles/irc_server.dir
+/Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles/irc_server.dir

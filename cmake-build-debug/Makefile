@@ -57,10 +57,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/cshells/Desktop/ft_irc
+CMAKE_SOURCE_DIR = /Users/elaronda/Desktop/irc_server
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/cshells/Desktop/ft_irc/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/elaronda/Desktop/irc_server/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/cshells/Desktop/ft_irc/cmake-build-debug/CMakeFiles /Users/cshells/Desktop/ft_irc/cmake-build-debug//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles /Users/elaronda/Desktop/irc_server/cmake-build-debug//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/cshells/Desktop/ft_irc/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/elaronda/Desktop/irc_server/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -297,6 +297,30 @@ services/Service.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/services/Service.cpp.s
 .PHONY : services/Service.cpp.s
 
+services/yaml-parse/YamlParser.o: services/yaml-parse/YamlParser.cpp.o
+.PHONY : services/yaml-parse/YamlParser.o
+
+# target to build an object file
+services/yaml-parse/YamlParser.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/services/yaml-parse/YamlParser.cpp.o
+.PHONY : services/yaml-parse/YamlParser.cpp.o
+
+services/yaml-parse/YamlParser.i: services/yaml-parse/YamlParser.cpp.i
+.PHONY : services/yaml-parse/YamlParser.i
+
+# target to preprocess a source file
+services/yaml-parse/YamlParser.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/services/yaml-parse/YamlParser.cpp.i
+.PHONY : services/yaml-parse/YamlParser.cpp.i
+
+services/yaml-parse/YamlParser.s: services/yaml-parse/YamlParser.cpp.s
+.PHONY : services/yaml-parse/YamlParser.s
+
+# target to generate assembly for a file
+services/yaml-parse/YamlParser.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/services/yaml-parse/YamlParser.cpp.s
+.PHONY : services/yaml-parse/YamlParser.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -327,6 +351,9 @@ help:
 	@echo "... services/Service.o"
 	@echo "... services/Service.i"
 	@echo "... services/Service.s"
+	@echo "... services/yaml-parse/YamlParser.o"
+	@echo "... services/yaml-parse/YamlParser.i"
+	@echo "... services/yaml-parse/YamlParser.s"
 .PHONY : help
 
 
