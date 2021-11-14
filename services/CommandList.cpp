@@ -80,7 +80,7 @@ void CommandList::invite(std::vector<std::string> args, User &user, list<User> u
                     for (; chnl_usr_list != chnl_iter->_user_list.end()
                            && chnl_usr_list->getNickname() != rqsted_user; ++chnl_usr_list) {} // searching rqsted user on rqsted channel
                     if (chnl_usr_list == chnl_iter->_user_list.end()) { // if rqsted user NOT on rqsted channel
-                        if (chnl_iter->_is_invite_only) { // if rqsted channel is invite only
+                        if (chnl_iter->_invite_only) { // if rqsted channel is invite only
                             for (; chnl_oper_list != chnl_iter->_operator_list.end()
                                                 && chnl_oper_list->getNickname() != user.getNickname(); ++chnl_oper_list) {} // searching current user in operator list of rqsted channel
                             if (chnl_oper_list == chnl_iter->_operator_list.end()) { // cuurent user not operator on invite only channel
@@ -197,7 +197,7 @@ void CommandList::join(vector<string> args, User &user, list<Channel> &channel_l
                 channel_list.push_back(new_chnl);
                 Service::replyMsg(332, user, new_chnl.getChannelName(), new_chnl.getChannelTopic());
             } else { // if exist
-                if (!chnl_iter->_is_invite_only) {
+                if (!chnl_iter->_invite_only) {
                     if (input_passwords[i].length() > 0) {
                         res = chnl_iter->addUser(user, input_passwords[i]);
                     } else {
@@ -369,4 +369,142 @@ void CommandList::oper(vector<string> args, User& user) {
 		Service::replyMsg(381, user);
 	}
 }
+
+
+//bool CommandList::checkModeFlags(string flags_str, string flags_variables, User &user, int &params_num) {
+//
+//    string          chnl_flags = "opsitnmlbvk";
+//    string          user_flags = "iswo";
+//    vector<int>     flags_cnt[255];
+//
+//    for (size_t i = 1; i < flags_str.length(); ++i) {
+//        if (flags_variables.find(flags_str[i]) != string::npos) {
+//            flags_cnt[flags_str[i]][0]++;
+//            if (flags_cnt[flags_str[i]][0] > 1) { // if flags occurs more than once
+//                Service::errMsg(501, user, "MODE");
+//                return false;
+//            }
+//        } else {
+//            Service::errMsg(472, user, string("" + flags_str[i]));
+//            return false;
+//        }
+//}
+
+bool CommandList::checkModeParams(vector<string> args, User &user) {
+
+    int             chnl_params_num = 0;
+    bool            special_flags = false;
+    string          chnl_flags = "opsitnmlbvk";
+    string          user_flags = "iswo";
+    vector<int>     flags[255];
+
+
+    if (args.size() > 2) { // if cmd_name + chnl_name/user_name + flags exist
+        if (args[2][0] == '+' || args[2][0] == '-') { // if it begins with +/- exist
+            if (args[1][0] == '#' || args[1][0] == '&') { // if MODE for chnl
+                for (size_t i = 1; i < args[2].length(); ++i) { // checking flags
+                    if (chnl_flags.find(args[2][i]) != string::npos) {
+                        flags[args[2][i]][0]++;
+                        if (flags[args[2][i]][0] > 1) { // if flags occurs more than once
+                            Service::errMsg(501, user, args[0]);
+                            return false;
+                        }
+                    } else { // unknown flag
+                        Service::errMsg(472, user, string("" + args[2][i]));
+                        return false;
+                    }
+                    if (special_flags == true && args[2].length() > 2) { // if flags [o l b k] not single in line
+                        Service::errMsg(472, user, args[2]);
+                        return false;
+                    }
+                    if (args[2][i] == 'o' || args[2][i] == 'l' || args[2][i] == 'b' || args[2][i] == 'k') {
+                        special_flags = true;
+                    }
+                }
+                if (special_flags && args[3].empty()) { // number of expected params is invalid (for chnl MODE)
+                    Service::errMsg(461, user, args[0]);
+                    return false;
+                }
+            } else { // MODE for user
+                for (size_t i = 1; i < args[2].length(); ++i) { // checking flags
+                    if (user_flags.find(args[2][i]) != string::npos) {
+                        flags[args[2][i]][0]++;
+                        if (flags[args[2][i]][0] > 1) { // if flags occurs more than once
+                            Service::errMsg(501, user, args[0]);
+                            return false;
+                        }
+                    } else { // unknown flag
+                        Service::errMsg(472, user, string("" + args[2][i]));
+                        return false;
+                    }
+                }
+            }
+        } else { // unknown flag (no prefix +/-)
+            Service::errMsg(472, user, args[2]);
+            return false;
+        }
+    } else { // not enough params (for both MODE)
+        Service::errMsg(461, user, args[0]);
+        return false;
+    }
+    return true;
+}
+
+void CommandList::mode(vector<string> args, User &user, list<User> &user_list, list<Channel> &channel_list) {
+
+    pair<list<Channel>::iterator, bool> rqsted_chnl;
+    pair<list<User>::iterator, bool> rqsted_user;
+    list<Channel>::iterator chnl_iter = channel_list.begin();
+    list<User>::iterator    chnl_oper_iter = chnl_iter->getOperListBegin();
+    list<User>::iterator    user_iter = user_list.begin();
+
+    if (checkModeParams(args, user)) {
+
+        if (args[1][0] == '#' || args[1][0] == '&') {
+            rqsted_chnl = Service::isInList(channel_list.begin(), channel_list.end(), args[1]);
+            if (rqsted_chnl.second) { // if channel exist
+                for (size_t i = 1; i < args[2].length(); ++i) {
+                    switch (args[2][i]) {
+                        case 'o': {
+                            rqsted_user = Service::isInList(user_list.begin(), user_list.end(), args[3]);
+                            if (rqsted_user.second) { // if input user exist
+                                if (Service::isInList(rqsted_chnl.first->getOperListBegin(), rqsted_chnl.first->getOperListEnd(), user.getNickname()).second) { // if cuurent user operator on rqsted channel
+                                    if (Service::isInList(rqsted_chnl.first->getOperListBegin(), rqsted_chnl.first->getOperListEnd(), args[3]).second) { // if input user not operator yet on rqsted channel
+                                        if (args[2][0] == '+') {
+                                            Service::replyMsg(221,user, args[3] + "is already operator on " + args[1]);
+                                            return;
+                                        } else {
+                                            rqsted_chnl.first->deleteOperator(*rqsted_user.first);
+                                            Service::replyMsg(221,user, args[3] + "removed from operator list on " + args[1]);
+                                            return;
+                                        }
+                                    } else {
+                                        if (args[2][0] == '+') {
+                                            rqsted_chnl.first->addOperator(*rqsted_user.first);
+                                            Service::replyMsg(221,user, args[3] + "is now operator on " + args[1]);
+                                            return;
+                                        } else {
+                                            Service::replyMsg(221,user, args[3] + "is already not an operator on " + args[1]);
+                                            return;
+                                        }
+                                    }
+                                } else {
+                                    Service::errMsg(482, user, args[1]);
+                                }
+                            } else {
+                                Service::errMsg(401, user, args[3]);
+                            }
+                            break;
+                        }
+                    }
+                }
+            } else {
+                Service::errMsg(403, user, args[1]);
+            }
+        } else {
+
+        }
+    }
+}
+
 

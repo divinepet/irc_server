@@ -6,14 +6,18 @@
 using namespace std;
 
 class User {
-	int socket_fd;
-	string nickname, username, realName, host, servername, realHost;
-	string auto_reply;
-	int registerPhase;
-	bool validPass;
-	bool away;
-	bool registered;
-	bool oper;
+	int     socket_fd;
+	string  nickname, username, realName, host, servername, realHost;
+	string  auto_reply;
+	int     registerPhase;
+	bool    validPass;
+	bool    away;
+	bool    registered;
+	bool    oper;
+    bool    invisible;
+    bool    serv_notices;
+    bool    wallops;
+
 public:
 	User(int _socket_fd);
 

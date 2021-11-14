@@ -20,9 +20,13 @@ public:
 												string arg5="", string arg6="", string arg7="", string arg8="");
 	static void	emptyChannel(list<Channel> &channel_list);
 
+    static pair<list<User>::iterator, bool>     isInList(list<User>::iterator first, list<User>::iterator last, string name);
+    static pair<list<Channel>::iterator, bool>  isInList(list<Channel>::iterator first, list<Channel>::iterator last, string name);
+
 private:
 	static bool	channelIsEmpty(const Channel &channel);
     static bool isChannelName(string str);
+
 };
 
 #include "../server/Server.hpp"

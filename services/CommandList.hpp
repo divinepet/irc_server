@@ -24,4 +24,7 @@ public:
 	static void time(vector<string> args, User &user);
 //	static void user(vector<string> args, User &user);
 	static void version(vector<string> args, User &user);
+	static void     mode(vector<string> args, User &user, list<User> &user_list, list<Channel> &channel_list);
+	static bool     checkModeParams(vector<string> args, User &user);
+//	static bool     checkModeFlags(string flags_str, User &user, int &params_num);
 };
