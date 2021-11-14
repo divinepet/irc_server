@@ -314,7 +314,6 @@ void CommandList::kick(vector<string> args, User &user, list<Channel> &channel_l
  							Service::replyMsg(258, user, "USER FOUND AND KICKED FROM CHANNEL " + channelIter->_channel_name);
  							channelIter->deleteUser(*userlistIter);
  							Service::emptyChannel(channel_list);
- 							userIsOperator = false;
  							break ;
  						}
  					}
@@ -507,4 +506,41 @@ void CommandList::oper(vector<string> args, User& user) {
 //    }
 //}
 
+void	CommandList::list_cmd(vector<string> args, User &user, list<Channel> &channel_list) {
 
+	std::vector<std::string> channelVector;
+
+	if (args.size() == 1) {
+		Service::replyMsg(321, user);
+		for (list<Channel>::iterator ch = channel_list.begin(); ch != channel_list.end(); ch++) {
+			if (!ch->_secret) {
+				if (!ch->_private)
+					Service::replyMsg(322, user, ch->getChannelName(), to_string(ch->_user_list.size()), ch->getChannelTopic());
+				else
+					Service::replyMsg(322, user, "PRV");
+			}
+		}
+		Service::replyMsg(323, user);
+	} else if (args.size() > 1) {
+		if (args.size() == 3 && args[2] != config["server.name"]) {
+			Service::errMsg(402, user, args[2]);
+		} else {
+			Service::replyMsg(321, user);
+			channelVector = Service::split(args[1], ',');
+
+			std::list<Channel>::iterator channelIter; // Check channels
+			std::vector<std::string>::iterator chVectorIter; // Check channels
+			for (chVectorIter = channelVector.begin(); chVectorIter != channelVector.end(); chVectorIter++) {
+				// cout << *chVectorIter << endl;
+				for (channelIter = channel_list.begin(); channelIter != channel_list.end(); ++channelIter) {
+					if (*chVectorIter == channelIter->getChannelName()) {
+						if (!channelIter->_secret)
+							Service::replyMsg(322, user, channelIter->getChannelName(), to_string(channelIter->_user_list.size()), channelIter->getChannelTopic());
+						break;
+					}
+				}
+			}
+			Service::replyMsg(323, user);
+		}
+	}
+}

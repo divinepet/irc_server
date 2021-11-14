@@ -15,26 +15,32 @@ string Service::getDate() {
 }
 
 // not full-tested
-vector<string> Service::split(string str, char ch) {
 
-	vector<string> result;
+bool			Service::isComma(char c) {
+	if (c == ',')
+		return true;
+	return false;
+}
 
-	if (str.find(ch) == string::npos) {
-		result.push_back(str);
-		return (result);
-	}
+bool			Service::isNotComma(char c) {
+	if (c == ',')
+		return false;
+	return true;
+}
 
-	for (size_t i = 0, j = str.find(ch, i); j != string::npos;) {
-		result.push_back(str.substr(i,j - i));
-        for (; str[j] == ch; ++j) {}
-		i = j + 1;
-		j = str.find(ch, i);
-		if (i != str.length() && j == string::npos) {
-			result.push_back(str.substr(i, str.length()));
-		}
-	}
-
-	return result;
+vector<string>	Service::split(const std::string& s, char c){
+    typedef std::string::const_iterator iter;
+    std::vector<std::string> ret;
+    iter i = s.begin();
+    while(i!=s.end()){
+        i = std::find_if(i, s.end(), isNotComma); // find the beginning of a word
+        iter j= std::find_if(i, s.end(), isComma); // find the end of the same word
+        if(i!=s.end()){
+            ret.push_back(std::string(i, j)); //insert the word into vector
+            i = j; // repeat 1,2,3 on the rest of the line.
+        }
+    }
+    return ret;
 }
 
 void Service::errMsg(int err, User &user, string arg1, string arg2) {

@@ -14,7 +14,7 @@ class Service {
 public:
 	static string getTime();
 	static string getDate();
-	static vector<string> split(string str, char ch);
+	static vector<string> split(const string &str, char c);
 	static void errMsg(int err, User &user, string arg1="", string arg2="");
 	static void replyMsg(int code, User &user, string arg1="", string arg2="", string arg3="", string arg4="",
 												string arg5="", string arg6="", string arg7="", string arg8="");
@@ -26,6 +26,8 @@ public:
 private:
 	static bool	channelIsEmpty(const Channel &channel);
     static bool isChannelName(string str);
+	static bool	isComma(char c);
+    static bool isNotComma(char c);
 
 };
 
