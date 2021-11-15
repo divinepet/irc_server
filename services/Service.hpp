@@ -23,7 +23,7 @@ public:
 
     static pair<list<User>::iterator, bool>     isInList(list<User>::iterator first, list<User>::iterator last, string name);
     static pair<list<Channel>::iterator, bool>  isInList(list<Channel>::iterator first, list<Channel>::iterator last, string name);
-
+	static string	getUsersFromList(User &user, list<User> &userlist);
 private:
 	static bool	channelIsEmpty(const Channel &channel);
     static bool isChannelName(string str);

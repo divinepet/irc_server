@@ -4,6 +4,8 @@
 #include "../server/Server.hpp"
 
 class Channel;
+class User;
+using namespace std;
 
 class CommandList {
 public:
@@ -30,4 +32,6 @@ public:
 	static bool checkModeParams(vector<string> args, User &user);
 //	static bool checkModeFlags(string flags_str, User &user, int &params_num);
 	static void	list_cmd(vector<string> args, User &user, list<Channel> &channel_list);
+	static void	names(vector<string> args, User &user, list<Channel> &channel_list);
+
 };

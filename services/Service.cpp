@@ -208,11 +208,29 @@ pair<list<Channel>::iterator, bool> Service::isInList(list<Channel>::iterator fi
 
     list<Channel>::iterator tmp = first;
 
-    for (; tmp != last && first->getChannelName() != name; ++tmp) {}
+    for (; tmp != last && tmp->getChannelName() != name; ++tmp) {}
     if (tmp == last) {
+		cout << "Doesn't exist " << name << endl;
         return make_pair(tmp,false);
     }
+	cout << "Exists " << name << endl;
     return make_pair(tmp,true);;
+}
+
+string	Service::getUsersFromList(User &user, list<User> &userlist) {
+
+	std::string result = "";
+
+	for (list<User>::iterator it = userlist.begin(); it != userlist.end(); ++it) {
+		// if (it->isInvisible && it->getNickname() == user.getNickname()) {
+			// result += it->getNickname();
+			// result += " ";
+		// } else if (!it->isInvisible) {
+			result += it->getNickname();
+			result += " ";
+		// }
+	}
+	return result;
 }
 
 

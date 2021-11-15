@@ -192,6 +192,7 @@ void CommandList::join(vector<string> args, User &user, list<Channel> &channel_l
         for (size_t i = 0; i < input_channels.size(); ++i) {
             chnl = Service::isInList(channel_list.begin(), channel_list.end(), input_channels[i]); // searching new chnl among the existing
             if (!chnl.second) { // if rqsted chnl does not exist
+				cout << "FUCK" << endl;
                 if (input_passwords.size() > i && input_passwords[i].length() > 0) {
                     new_chnl = Channel(input_channels[i], user, input_passwords[i]);
                 } else {
@@ -199,6 +200,7 @@ void CommandList::join(vector<string> args, User &user, list<Channel> &channel_l
                 }
                 new_chnl.addOperator(user);
                 channel_list.push_back(new_chnl);
+				user.joinedChannels.push_back(new_chnl);
                 Service::replyMsg(332, user, new_chnl.getChannelName(), new_chnl.getChannelTopic());
             } else { // if rqsted chnl exist
                 if (!chnl.first->_invite_only) {
@@ -242,6 +244,7 @@ void CommandList::part(std::vector<std::string> args, User &user, list<Channel> 
 								// delete user from channel
 								Service::replyMsg(258, user, "USER FOUND AND DELETED FROM CHANNEL " + channelIter->_channel_name);
 								channelIter->deleteUser(*userlistIter);
+								userlistIter->joinedChannels.remove(*channelIter);
 								Service::emptyChannel(channel_list);
 								break ;
 							}
@@ -317,6 +320,7 @@ void CommandList::kick(vector<string> args, User &user, list<Channel> &channel_l
  							// delete user from channel
  							Service::replyMsg(258, user, "USER FOUND AND KICKED FROM CHANNEL " + channelIter->_channel_name);
  							channelIter->deleteUser(*userlistIter);
+							userlistIter->joinedChannels.remove(*channelIter);
  							Service::emptyChannel(channel_list);
  							break ;
  						}
@@ -520,9 +524,13 @@ void CommandList::list_cmd(vector<string> args, User &user, list<Channel> &chann
 			if (!ch->_secret) {
 				if (!ch->_private)
 					Service::replyMsg(322, user, ch->getChannelName(), to_string(ch->_user_list.size()), ch->getChannelTopic());
+				else if (Service::isInList(user.joinedChannels.begin(), user.joinedChannels.end(), ch->getChannelName()).second)
+					Service::replyMsg(322, user, ch->getChannelName(), to_string(ch->_user_list.size()), ch->getChannelTopic());
 				else
 					Service::replyMsg(322, user, "PRV");
 			}
+			else if (Service::isInList(user.joinedChannels.begin(), user.joinedChannels.end(), ch->getChannelName()).second)
+				Service::replyMsg(322, user, ch->getChannelName(), to_string(ch->_user_list.size()), ch->getChannelTopic());
 		}
 		Service::replyMsg(323, user);
 	} else if (args.size() > 1) {
@@ -539,6 +547,8 @@ void CommandList::list_cmd(vector<string> args, User &user, list<Channel> &chann
 				for (channelIter = channel_list.begin(); channelIter != channel_list.end(); ++channelIter) {
 					if (*chVectorIter == channelIter->getChannelName()) {
 						if (!channelIter->_secret)
+							Service::replyMsg(322, user, channelIter->getChannelName(), to_string(channelIter->_user_list.size()), channelIter->getChannelTopic());
+						else if (Service::isInList(user.joinedChannels.begin(), user.joinedChannels.end(), channelIter->getChannelName()).second)
 							Service::replyMsg(322, user, channelIter->getChannelName(), to_string(channelIter->_user_list.size()), channelIter->getChannelTopic());
 						break;
 					}
@@ -559,3 +569,42 @@ int CommandList::pong(vector<string> args, User &user) {
 	: (Service::errMsg(402, user, args[1]), 0);
 }
 
+void	CommandList::names(vector<string> args, User &user, list<Channel> &channel_list) {
+
+	std::vector<std::string> channelVector;
+
+	if (args.size() == 1) {
+		for (list<Channel>::iterator ch = channel_list.begin(); ch != channel_list.end(); ch++) {
+			if (ch->_private || ch->_secret) {
+				if (Service::isInList(user.joinedChannels.begin(), user.joinedChannels.end(), ch->getChannelName()).second) { // if user is in channel
+					string userlist = Service::getUsersFromList(user, ch->_user_list);
+					Service::replyMsg(353, user, ch->getChannelName(), userlist);
+				}
+			} else {
+				string userlist = Service::getUsersFromList(user, ch->_user_list);
+				Service::replyMsg(353, user, ch->getChannelName(), userlist);
+			}
+		}
+		Service::replyMsg(366, user, "*");
+		/*listAllChannels*/
+	} else {
+		channelVector = Service::split(args[1], ',');
+		std::list<Channel>::iterator channelIter; // Check channels
+		std::vector<std::string>::iterator chVectorIter; // Check channels
+		for (size_t i = 0; i < channelVector.size(); i++) {
+			pair<list<Channel>::iterator, bool> kex = Service::isInList(channel_list.begin(), channel_list.end(), channelVector[i]);
+			if (kex.second) {
+				if (kex.first->_private || kex.first->_secret) {
+					if (Service::isInList(user.joinedChannels.begin(), user.joinedChannels.end(), kex.first->getChannelName()).second) { // if user is in channel
+						string userlist = Service::getUsersFromList(user, kex.first->_user_list);
+						Service::replyMsg(353, user, kex.first->getChannelName(), userlist);
+					}
+				} else {
+					string userlist = Service::getUsersFromList(user, kex.first->_user_list);
+					Service::replyMsg(353, user, kex.first->getChannelName(), userlist);
+				}
+				Service::replyMsg(366, user, kex.first->getChannelName());
+			}
+		}
+	}
+}
