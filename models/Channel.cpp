@@ -30,11 +30,11 @@ bool Channel::addUser(User &user, string password) {
 
 void Channel::addOperator(User &user) {
 
-    list<User>::iterator usr_iter = _user_list.begin();
+    list<User>::iterator oper_iter = _operator_list.begin();
 
-    for (; usr_iter != _user_list.end() && user.getNickname() != usr_iter->getNickname(); ++usr_iter) {}
-    if (usr_iter == _user_list.end()) {
-        _user_list.push_back(user);
+    for (; oper_iter != _operator_list.end() && user.getNickname() != oper_iter->getNickname(); ++oper_iter) {}
+    if (oper_iter == _operator_list.end()) {
+        _operator_list.push_back(user);
     }
 }
 
