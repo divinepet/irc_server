@@ -100,7 +100,15 @@ void* ping_request(void *_ping_data) {
 	}
 	if (!p_d->restart_response) {
 		close(p_d->client_socket);
-		// delete user from userlist
+		list<User> *v;
+		v = reinterpret_cast<list<User>*>(p_d->users_list_ptr);
+		cout << p_d->client_socket << endl;
+		for (list<User>::iterator it = v->begin(); it != v->end() ; ++it) {
+			if (it->getSocketFd() == p_d->client_socket) {
+				v->erase(it);
+				break;
+			}
+		}
 	}
 	p_d->response_waiting = false;
 	return NULL;
@@ -158,6 +166,7 @@ void Server::start() {
 	int maxClients = atoi(config["maxConnections"].c_str());
 	rr_data = new t_ping[maxClients];
 	request_thread = new pthread_t[maxClients];
+	rr_data->users_list_ptr = reinterpret_cast<uintptr_t>(&users_list);
 	pthread_mutex_init(&rr_data->print_mutex, NULL);
 
     if (!binding()) {

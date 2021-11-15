@@ -30,6 +30,7 @@
 static YamlParser config;
 
 typedef struct s_ping {
+	uintptr_t users_list_ptr;
 	time_t last_message_time;
 	int client_socket;
 	bool response_waiting;
