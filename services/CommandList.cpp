@@ -23,23 +23,26 @@ void CommandList::motd(User &user) {
 		Service::errMsg(422, user);
 }
 
-void CommandList::nick(std::vector<std::string> args, User& user, list<User>& userList) {
+int CommandList::nick(std::vector<std::string> args, User& user, list<User>& userList) {
 	if (args.size() == 1) {
 		Service::errMsg(461, user);
-		return;
+		return 0;
 	}
 	for (list<User>::iterator it = userList.begin(); it != userList.end(); ++it) {
 		if (it->getNickname() == args[1]) {
 			Service::errMsg(433, user, args[1]);
-			return;
+			return 0;
 		}
 	}
 	user.setNickname(args[1]);
 //	user.setRegisterPhase(user.getRegisterPhase() + 1);
-//	if (user.getRegisterPhase() == 3 && user.isValidPass()) motd(user);
+//	if (user.getRegisterPhase() == 3 && user.isValidPass()) { motd(user); return 7; }
 	user.setValidPass(true);
 	user.setRegisterPhase(3);
 	motd(user);
+	return 7;
+//	return 0;
+
 }
 
 void CommandList::away(std::vector<std::string> args, User &user) {
@@ -158,17 +161,18 @@ void CommandList::ison(std::vector<std::string> args, User& user, std::list<User
 	}
 }
 
-//void CommandList::user(std::vector<std::string> args, User &user) {
+//int CommandList::user(std::vector<std::string> args, User &user) {
 //	if (args.size() < 4) {
 //		Service::errMsg(461, user);
-//		return;
+//		return 0;
 //	}
 //	user.setUsername(args[1]);
 //	user.setHost(args[2]);
 //	user.setServername(args[3]);
 //	user.setRealName(args[4]);
 //	user.setRegisterPhase(user.getRegisterPhase() + 1);
-//	if (user.getRegisterPhase() == 3 && user.isValidPass()) motd(user);
+//	if (user.getRegisterPhase() == 3 && user.isValidPass()) { motd(user); return 7; }
+//	return 0;
 //}
 
 //  JOIN #foo,#bar fubar,foobar
@@ -506,7 +510,7 @@ void CommandList::oper(vector<string> args, User& user) {
 //    }
 //}
 
-void	CommandList::list_cmd(vector<string> args, User &user, list<Channel> &channel_list) {
+void CommandList::list_cmd(vector<string> args, User &user, list<Channel> &channel_list) {
 
 	std::vector<std::string> channelVector;
 
@@ -544,3 +548,14 @@ void	CommandList::list_cmd(vector<string> args, User &user, list<Channel> &chann
 		}
 	}
 }
+
+int CommandList::ping(vector<string> args, User &user) {
+	return (args.size() == 1) ? Service::errMsg(409, user), 0
+	: Server::writing(user.getSocketFd(), ":" + config["server.name"] + " PONG :" + args[1] + "\n"), 8;
+}
+
+int CommandList::pong(vector<string> args, User &user) {
+	return (args[1] == config["server.name"]) ? 8
+	: (Service::errMsg(402, user, args[1]), 0);
+}
+

@@ -8,7 +8,7 @@ protected:
 	typedef unsigned int uint32;
 	typedef unsigned long long uint64;
 	const static uint32 sha256_k[];
-	static const unsigned int SHA224_256_BLOCK_SIZE = (512/8);
+	static const unsigned int SHA224_256_BLOCK_SIZE = (512 / 8);
 public:
 	void init();
 	void update(const unsigned char *message, unsigned int len);
@@ -25,14 +25,14 @@ protected:
 
 std::string sha256(std::string input);
 
-#define SHA2_SHFR(x, n)    (x >> n)
-#define SHA2_ROTR(x, n)   ((x >> n) | (x << ((sizeof(x) << 3) - n)))
-#define SHA2_ROTL(x, n)   ((x << n) | (x >> ((sizeof(x) << 3) - n)))
-#define SHA2_CH(x, y, z)  ((x & y) ^ (~x & z))
+#define SHA2_SHFR(x, n) (x >> n)
+#define SHA2_ROTR(x, n) ((x >> n) | (x << ((sizeof(x) << 3) - n)))
+#define SHA2_ROTL(x, n) ((x << n) | (x >> ((sizeof(x) << 3) - n)))
+#define SHA2_CH(x, y, z) ((x & y) ^ (~x & z))
 #define SHA2_MAJ(x, y, z) ((x & y) ^ (x & z) ^ (y & z))
-#define SHA256_F1(x) (SHA2_ROTR(x,  2) ^ SHA2_ROTR(x, 13) ^ SHA2_ROTR(x, 22))
-#define SHA256_F2(x) (SHA2_ROTR(x,  6) ^ SHA2_ROTR(x, 11) ^ SHA2_ROTR(x, 25))
-#define SHA256_F3(x) (SHA2_ROTR(x,  7) ^ SHA2_ROTR(x, 18) ^ SHA2_SHFR(x,  3))
+#define SHA256_F1(x) (SHA2_ROTR(x, 2) ^ SHA2_ROTR(x, 13) ^ SHA2_ROTR(x, 22))
+#define SHA256_F2(x) (SHA2_ROTR(x, 6) ^ SHA2_ROTR(x, 11) ^ SHA2_ROTR(x, 25))
+#define SHA256_F3(x) (SHA2_ROTR(x, 7) ^ SHA2_ROTR(x, 18) ^ SHA2_SHFR(x, 3))
 #define SHA256_F4(x) (SHA2_ROTR(x, 17) ^ SHA2_ROTR(x, 19) ^ SHA2_SHFR(x, 10))
 #define SHA2_UNPACK32(x, str)                 \
 {                                             \

@@ -42,9 +42,9 @@ bool Server::binding() {
         return false;
 
     cout << "Server is listening to " << port << endl;
-    listen(socket_fd, 5);
+    listen(socket_fd, atoi(config["maxConnections"].c_str()));
 
-    fcntl(socket_fd, F_SETFL, fcntl(socket_fd, F_GETFL) | O_NONBLOCK);
+    fcntl(socket_fd, F_SETFL, O_NONBLOCK);
 
     max_fd = socket_fd;
     return true;
@@ -74,12 +74,39 @@ int Server::reading(const int &_socket_fd, char (*_buf)[BUFFER_SIZE]) {
 
 bool Server::writing(int _client_socket, const string &_str) {
 	int resp = send(_client_socket, _str.c_str(), strlen(_str.c_str()), 0);
+	return resp >= 0 || (cout << "Error occurred while writing to socket" << endl, false);
+}
 
-    if (resp < 0) {
-    	cout << "Error occurred while writing to socket" << endl;
-        return false;
-    }
-    return true;
+void* ping_request(void *_ping_data) {
+	size_t request_timeout = atoi(config["requestTimeout"].c_str()) * 1000;
+	t_ping* p_d = ((t_ping *)_ping_data);
+	time_t time_now = Service::timer();
+	p_d->restart_response = false;
+	while (time_now - p_d->last_message_time < request_timeout) {
+		if (p_d->restart_request) {
+			p_d->restart_request = false;
+			p_d->last_message_time = Service::timer();
+		}
+		time_now = Service::timer();
+	}
+	pthread_mutex_lock(&p_d->print_mutex);
+	if (!Server::writing(p_d->client_socket,
+					":" + config["server.name"] + " PING :" + config["server.name"] + "\n"))
+		return NULL;
+	pthread_mutex_unlock(&p_d->print_mutex);
+	p_d->response_waiting = true;
+	time_now = Service::timer();
+	time_t response_time = Service::timer();
+	size_t response_timeout = atoi(config["responseTimeout"].c_str()) * 1000;
+	while ((time_now - response_time < response_timeout) && !p_d->restart_response) {
+		time_now = Service::timer();
+	}
+	if (!p_d->restart_response) {
+		close(p_d->client_socket);
+		// delete user from userlist
+	}
+	p_d->response_waiting = false;
+	return NULL;
 }
 
 void Server::get_message() {
@@ -89,17 +116,34 @@ void Server::get_message() {
 			int _read = reading(it->getSocketFd(), &buf);
 
 			if (_read != 0) {
-				if (!strstr(buf, "\n")) {
-					message_poll += buf;
+				message_poll += buf;
+				if (!strstr(buf, "\n"))
 					continue;
-				} else {
-					message_poll += buf;
-					int code = MessageParse::handleMessage(message_poll, *it, users_list, pass, channel_list);
-					message_poll.clear();
-					switch (code) {
-						case 3: restartServer(); break;
-						default:;
+				if (it->isRegistered() && !rr_data[it->getId()].response_waiting)
+					rr_data[it->getId()].restart_request = true;
+				int code = MessageParse::handleMessage(message_poll, *it,
+													users_list,pass, channel_list);
+				message_poll.clear();
+				switch (code) {
+					case 3: restartServer(); break;
+					case 7: {
+						if (rr_data[it->getId()].last_message_time == -1) {
+							rr_data[it->getId()].last_message_time = Service::timer();
+							pthread_create(&request_thread[it->getId()], NULL, &ping_request, &rr_data[it->getId()]);
+						}
+						break;
 					}
+					case 8: {
+						if (!rr_data[it->getId()].response_waiting)
+							rr_data[it->getId()].restart_request = true;
+						else {
+							rr_data[it->getId()].restart_response = true;
+							rr_data[it->getId()].last_message_time = Service::timer();
+							pthread_create(&request_thread[it->getId()], NULL, &ping_request, &rr_data[it->getId()]);
+						}
+						break;
+					}
+					default:;
 				}
 			} else {
 				printf("%s disconnected.\n", it->getNickname().c_str());
@@ -114,6 +158,11 @@ void Server::get_message() {
 }
 
 void Server::start() {
+	int maxClients = atoi(config["maxConnections"].c_str());
+	rr_data = new t_ping[maxClients];
+	request_thread = new pthread_t[maxClients];
+	pthread_mutex_init(&rr_data->print_mutex, NULL);
+
     if (!binding()) {
         perror("Error on binding to port.\n");
     	exit(-1);
@@ -135,10 +184,12 @@ void Server::start() {
 			pair<int, string> pair = accepting();
             new_socket_fd = pair.first;
             if (FD_ISSET(socket_fd, &fd_read) ) {
-                fcntl(new_socket_fd, F_SETFL, fcntl(new_socket_fd, F_GETFL) | O_NONBLOCK);
+                fcntl(new_socket_fd, F_SETFL, O_NONBLOCK);
 
                 User user(new_socket_fd);
 				user.setRealHost(pair.second);
+				rr_data[user.getId()].client_socket = new_socket_fd;
+				rr_data[user.getId()].last_message_time = -1;
                 users_list.push_back(user);
 
                 FD_SET(new_socket_fd, &fd_read);

@@ -1,5 +1,4 @@
 #include "../server/Server.hpp"
-#include "../services/sha256.hpp"
 
 int main(int argc, char *argv[]) {
     system("clear");

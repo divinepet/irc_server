@@ -11,7 +11,6 @@
 #include <vector>
 #include <iostream>
 #include <unistd.h>
-
 #include <netdb.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -19,34 +18,37 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
-
 #include "../models/User.hpp"
 #include "../models/Channel.hpp"
 #include "../services/MessageParse.hpp"
 #include "../services/Service.hpp"
 #include "../services/YamlParser.hpp"
 #include "../services/sha256.hpp"
+
+#define BUFFER_SIZE 512
+
 static YamlParser config;
 
-#define BUFFER_SIZE 1024
-
-class Channel;
-class Service;
+typedef struct s_ping {
+	time_t last_message_time;
+	int client_socket;
+	bool response_waiting;
+	bool restart_request;
+	bool restart_response;
+	pthread_mutex_t print_mutex;
+} t_ping;
 
 using namespace std;
 
 class Server {
 private:
-    int port;
-	string pass;
-    int socket_fd, new_socket_fd;
+	int port, socket_fd, new_socket_fd, max_fd;
+	string pass, message_poll;
     socklen_t client_length;
-    int max_fd;
-    fd_set fd_accept;
-    fd_set fd_read;
-    fd_set fd_write;
+    fd_set fd_accept, fd_read, fd_write;
     timeval delay;
-	string message_poll;
+    t_ping *rr_data;
+    pthread_t *request_thread;
 public:
     list<User> users_list;
     list<Channel> channel_list;

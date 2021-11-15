@@ -1,10 +1,10 @@
 #include "Service.hpp"
 
-string Service::getTime() {
-	time_t result = time(NULL);
-	string time_now = "[" + to_string(localtime(&result)->tm_hour) + ":" + to_string(localtime(&result)->tm_min) + ":" +
-			to_string(localtime(&result)->tm_sec) + "]";
-	return time_now;
+time_t Service::timer() {
+	struct timeval start = {};
+	gettimeofday(&start, nullptr);
+	time_t msecs_time = (start.tv_sec * 1000) + (start.tv_usec / 1000);
+	return msecs_time;
 }
 
 string Service::getDate() {
@@ -16,23 +16,15 @@ string Service::getDate() {
 
 // not full-tested
 
-bool			Service::isComma(char c) {
-	if (c == ',')
-		return true;
-	return false;
-}
+bool Service::isComma(char c) { return c == ','; }
 
-bool			Service::isNotComma(char c) {
-	if (c == ',')
-		return false;
-	return true;
-}
+bool Service::isNotComma(char c) { return c != ','; }
 
-vector<string>	Service::split(const std::string& s, char c){
+vector<string>	Service::split(const std::string& s, char c) {
     typedef std::string::const_iterator iter;
     std::vector<std::string> ret;
     iter i = s.begin();
-    while(i!=s.end()){
+    while(i!=s.end()) {
         i = std::find_if(i, s.end(), isNotComma); // find the beginning of a word
         iter j= std::find_if(i, s.end(), isComma); // find the end of the same word
         if(i!=s.end()){

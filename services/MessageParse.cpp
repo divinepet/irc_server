@@ -47,8 +47,8 @@ void MessageParse::splitMessage(string _msg, vector<string> &args) {
 
 int MessageParse::defineCommandType(vector<string> &args, User& user, list<User>& users_list, string pass, list<Channel> &channel_list) {
 	if (args[0] == "PASS") { /*CommandList::pass(args, user, users_list, pass);*/ }
-	else if (args[0] == "NICK") { CommandList::nick(args, user, users_list); }
-	else if (args[0] == "USER") { /*CommandList::user(args, user);*/ }
+	else if (args[0] == "NICK") { return CommandList::nick(args, user, users_list); }
+	else if (args[0] == "USER") { /*return CommandList::user(args, user);*/ }
 	else if (!user.isRegistered()) { Service::errMsg(451, user); }
 	else if (args[0] == "ADMIN") { CommandList::admin(args, user); }
 	else if (args[0] == "AWAY") { CommandList::away(args, user); }
@@ -64,8 +64,8 @@ int MessageParse::defineCommandType(vector<string> &args, User& user, list<User>
 	else if (args[0] == "NOTICE") {}
 	else if (args[0] == "OPER") { CommandList::oper(args, user); }
 	else if (args[0] == "PART") { CommandList::part(args, user, channel_list); }
-	else if (args[0] == "PING") {}
-	else if (args[0] == "PONG") {}
+	else if (args[0] == "PING") { return CommandList::ping(args, user); }
+	else if (args[0] == "PONG") { return CommandList::pong(args, user); }
 	else if (args[0] == "PRIVMSG") {}
 	else if (args[0] == "QUIT") {}
 	else if (args[0] == "REHASH") {}

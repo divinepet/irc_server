@@ -2,32 +2,28 @@
 
 #include <iostream>
 #include <string>
-
+static int COUNTER;
 using namespace std;
 
 class User {
-	int     socket_fd;
+	int		id; // unique id for every user for ping-pong commands
+	int     socket_fd; // unique socket for every user for send message from server
 	string  nickname, username, realName, host, servername, realHost;
 	string  auto_reply;
-	int     registerPhase;
-	bool    validPass;
+	int     registerPhase; // count of register steps (user, pass and nick command passed)
+	bool    validPass; // user was written correct server password
 	bool    away;
-	bool    registered;
-	bool    oper;
+	bool    registered; // for registration
+	bool    oper; // check if user is operator of the SERVER (not channel)
     bool    invisible;
     bool    serv_notices;
     bool    wallops;
 
 public:
 	User(int _socket_fd);
-
-	const string &getRealHost() const;
-
-	void setRealHost(const string &realHost);
-
 	User(const User& _x);
 	User& operator=(const User& _x);
-	bool operator == (const User& s) const { return socket_fd == s.socket_fd && nickname == s.nickname; }
+	bool operator == (const User& s) const { return id == s.id; }
 	bool operator != (const User& s) const { return !operator==(s); }
 	~User();
 
@@ -35,6 +31,7 @@ public:
 	void setRegisterPhase(int registerPhase);
 	void setUsername(const string &username);
 	void setRealName(const string &realName);
+	void setRealHost(const string &realHost);
 	void setHost(const string &host);
 	void setServername(const string &servername);
 	void setNickname(const string &nickname);
@@ -42,15 +39,16 @@ public:
 	void setAway(bool value);
 	void setOper(bool oper);
 
+	int getId() const;
 	int getSocketFd() const;
 	int getRegisterPhase() const;
 	const string &getUsername() const;
 	const string &getRealName() const;
+	const string &getRealHost() const;
 	const string &getHost() const;
 	const string &getServername() const;
 	const string &getNickname() const;
 	const string &getAutoReply() const;
-
 	bool isValidPass() const;
 	bool isOper() const;
 	bool isAway() const;
