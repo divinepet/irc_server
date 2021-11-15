@@ -54,7 +54,6 @@ pair<int, string> Server::accepting() {
     struct sockaddr_in ClientAddr;
     client_length = sizeof(ClientAddr);
     new_socket_fd = accept(socket_fd, (struct sockaddr *) &ClientAddr, &client_length);
-
     if (new_socket_fd < 0) {
     	cout << "ERROR on accepting the connection" << endl;
         return make_pair(-1, nullptr);
@@ -67,9 +66,7 @@ pair<int, string> Server::accepting() {
 int Server::reading(const int &_socket_fd, char (*_buf)[BUFFER_SIZE]) {
 	bzero(_buf, BUFFER_SIZE);
 	int resp = recv(_socket_fd, _buf, BUFFER_SIZE, 0);
-	if (resp < 0)
-		cout << "Error occurred while reading from socket" << endl;
-	return resp;
+	return (resp < 0) ? cout << "Error occurred while reading from socket" << endl, resp : resp;
 }
 
 bool Server::writing(int _client_socket, const string &_str) {

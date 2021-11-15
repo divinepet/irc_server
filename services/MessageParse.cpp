@@ -46,33 +46,33 @@ void MessageParse::splitMessage(string _msg, vector<string> &args) {
 }
 
 int MessageParse::defineCommandType(vector<string> &args, User& user, list<User>& users_list, string pass, list<Channel> &channel_list) {
-	if (args[0] == "PASS") { /*CommandList::pass(args, user, users_list, pass);*/ }
-	else if (args[0] == "NICK") { return CommandList::nick(args, user, users_list); }
-	else if (args[0] == "USER") { /*return CommandList::user(args, user);*/ }
+	if (args[0] == "PASS") { /*CommandList::pass_cmd(args, user, users_list, pass);*/ }
+	else if (args[0] == "NICK") { return CommandList::nick_cmd(args, user, users_list); }
+	else if (args[0] == "USER") { /*return CommandList::user_cmd(args, user);*/ }
 	else if (!user.isRegistered()) { Service::errMsg(451, user); }
-	else if (args[0] == "ADMIN") { CommandList::admin(args, user); }
-	else if (args[0] == "AWAY") { CommandList::away(args, user); }
-	else if (args[0] == "JOIN") { CommandList::join(args, user, channel_list); }
-	else if (args[0] == "INFO") { CommandList::info(args, user); }
+	else if (args[0] == "ADMIN") { CommandList::admin_cmd(args, user); }
+	else if (args[0] == "AWAY") { CommandList::away_cmd(args, user); }
+	else if (args[0] == "JOIN") { CommandList::join_cmd(args, user, channel_list); }
+	else if (args[0] == "INFO") { CommandList::info_cmd(args, user); }
 	else if (args[0] == "INVITE") {}
-	else if (args[0] == "ISON") { CommandList::ison(args, user, users_list); }
-	else if (args[0] == "KICK") { CommandList::kick(args, user, channel_list); }
-	else if (args[0] == "KILL") { CommandList::kill(args, user, users_list); }
+	else if (args[0] == "ISON") { CommandList::ison_cmd(args, user, users_list); }
+	else if (args[0] == "KICK") { CommandList::kick_cmd(args, user, channel_list); }
+	else if (args[0] == "KILL") { CommandList::kill_cmd(args, user, users_list); }
 	else if (args[0] == "LIST") { CommandList::list_cmd(args, user, channel_list); }
 	else if (args[0] == "MODE") {}
 	else if (args[0] == "NAMES") {}
 	else if (args[0] == "NOTICE") {}
-	else if (args[0] == "OPER") { CommandList::oper(args, user); }
-	else if (args[0] == "PART") { CommandList::part(args, user, channel_list); }
-	else if (args[0] == "PING") { return CommandList::ping(args, user); }
-	else if (args[0] == "PONG") { return CommandList::pong(args, user); }
+	else if (args[0] == "OPER") { CommandList::oper_cmd(args, user); }
+	else if (args[0] == "PART") { CommandList::part_cmd(args, user, channel_list); }
+	else if (args[0] == "PING") { return CommandList::ping_cmd(args, user); }
+	else if (args[0] == "PONG") { return CommandList::pong_cmd(args, user); }
 	else if (args[0] == "PRIVMSG") {}
 	else if (args[0] == "QUIT") {}
-	else if (args[0] == "REHASH") { CommandList::rehash(user); }
-	else if (args[0] == "RESTART") { return CommandList::restart(user); }
-	else if (args[0] == "TIME") { CommandList::time(args, user); }
+	else if (args[0] == "REHASH") { CommandList::rehash_cmd(user); }
+	else if (args[0] == "RESTART") { return CommandList::restart_cmd(user); }
+	else if (args[0] == "TIME") { CommandList::time_cmd(args, user); }
 	else if (args[0] == "TOPIC") {}
-	else if (args[0] == "VERSION") { CommandList::version(args, user); }
+	else if (args[0] == "VERSION") { CommandList::version_cmd(args, user); }
 	else if (args[0] == "WALLOPS") {}
 	else if (args[0] == "WHO") {}
 	else if (args[0] == "WHOIS") {}
