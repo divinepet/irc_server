@@ -174,11 +174,11 @@ void CommandList::ison(std::vector<std::string> args, User& user, std::list<User
 //  JOIN #foo,#bar fubar,foobar
 void CommandList::join(vector<string> args, User &user, list<Channel> &channel_list) {
 
-    bool                    res;
-    Channel                 new_chnl;
-    vector<string>          input_channels;
-    vector<string>          input_passwords;
-    list<Channel>::iterator chnl_iter = channel_list.begin();
+    bool                                res;
+    Channel                             new_chnl;
+    vector<string>                      input_channels;
+    vector<string>                      input_passwords;
+    pair<list<Channel>::iterator, bool> chnl;
 
     if (args.size() > 1) {
         input_channels = Service::split(args[1], ',');
@@ -186,28 +186,28 @@ void CommandList::join(vector<string> args, User &user, list<Channel> &channel_l
             input_passwords = Service::split(args[2], ',');
         }
         for (size_t i = 0; i < input_channels.size(); ++i) {
-            for (; chnl_iter != channel_list.end() && chnl_iter->_channel_name != input_channels[i]; ++chnl_iter) {} // searching new chnl among the existing
-            if (chnl_iter == channel_list.end()) { // if does not exist
+            chnl = Service::isInList(channel_list.begin(), channel_list.end(), input_channels[i]); // searching new chnl among the existing
+            if (!chnl.second) { // if rqsted chnl does not exist
                 if (input_passwords.size() > i && input_passwords[i].length() > 0) {
-                    new_chnl = Channel(args[1], user, input_passwords[i]);
+                    new_chnl = Channel(input_channels[i], user, input_passwords[i]);
                 } else {
-                    new_chnl = Channel(args[1], user);
+                    new_chnl = Channel(input_channels[i], user);
                 }
                 new_chnl.addOperator(user);
                 channel_list.push_back(new_chnl);
                 Service::replyMsg(332, user, new_chnl.getChannelName(), new_chnl.getChannelTopic());
-            } else { // if exist
-                if (!chnl_iter->_invite_only) {
-                    if (input_passwords[i].length() > 0) {
-                        res = chnl_iter->addUser(user, input_passwords[i]);
-                    } else {
-                        res = chnl_iter->addUser(user);
+            } else { // if rqsted chnl exist
+                if (!chnl.first->_invite_only) {
+                    if (!input_passwords.empty() && input_passwords[i].length() > 0) { // with password
+                        res = chnl.first->addUser(user, input_passwords[i]);
+                    } else { // without password
+                        res = chnl.first->addUser(user);
                     }
-                    if (res) {
-                        Service::replyMsg(332, user, chnl_iter->getChannelName(), chnl_iter->getChannelTopic());
+                    if (res) { // if addUser is succesfull
+                        Service::replyMsg(332, user, chnl.first->getChannelName(), chnl.first->getChannelTopic());
                     }
-                } else {
-                    Service::errMsg(473, user, chnl_iter->_channel_name);
+                } else { // rqsted chnl is invite only
+                    Service::errMsg(473, user, chnl.first->_channel_name);
                 }
             }
         }
