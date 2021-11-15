@@ -559,3 +559,12 @@ int CommandList::pong(vector<string> args, User &user) {
 	: (Service::errMsg(402, user, args[1]), 0);
 }
 
+void CommandList::rehash(User &user) {
+	if (!user.isOper())
+		Service::errMsg(481, user);
+	else {
+		config.reload();
+		Service::replyMsg(382, user);
+	}
+}
+

@@ -17,6 +17,7 @@ public:
 	YamlParser();
 	virtual ~YamlParser();
 	void loadFile();
+	void reload();
 	string operator [](string const& name);
 	string const operator [](string const& name) const;
 };

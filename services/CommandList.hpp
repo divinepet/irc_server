@@ -23,6 +23,7 @@ public:
 	static int ping(vector<string> args, User &user);
 	static int pong(vector<string> args, User &user);
 	static int restart(User &user);
+	static void rehash(User &user);
 	static void time(vector<string> args, User &user);
 //	static int user(vector<string> args, User &user);
 	static void version(vector<string> args, User &user);

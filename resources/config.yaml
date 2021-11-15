@@ -9,7 +9,7 @@ server:
   release: beta
   compilationTime: 00:00:00
 operators:
-  elaronda: f8a5da214f3f6c281e008924914e7decf9a13637737204589eed04379dc600a8
+  elaronda: c7e616822f366fb1b5e0756af498cc11d2c0862edcb32ca65882f622ff39de1b
   cshells: a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3
   frariel: 8d23cf6c86e834a7aa6eded54c26ce2bb2e74903538c61bdd5d2197997ab2f72
 maxConnections: 20
