@@ -214,6 +214,30 @@ pair<list<Channel>::iterator, bool> Service::isChannelExist(list<Channel> channe
 	return make_pair(channels_list.end(), false);
 }
 
+string	Service::getUsersFromList(User &user, list<User> &userlist) {
+
+	std::string result = "";
+
+	for (list<User>::iterator it = userlist.begin(); it != userlist.end(); ++it) {
+		if (it->isInvisible() && it->getNickname() == user.getNickname()) {
+			result += it->getNickname();
+			result += " ";
+		} else if (!it->isInvisible()) {
+			result += it->getNickname();
+			result += " ";
+		}
+	}
+	return result;
+}
+
+void	Service::deleteChannelFromUser(User &user, list<User> &userlist, Channel &channel) {
+	for (list<User>::iterator it = userlist.begin(); it != userlist.end(); it++) {
+		if (user.getNickname() == it->getNickname()) {
+			it->joinedChannels.remove(channel);
+		}
+	}
+}
+
 
 // 0 JOIN
 // 1 "#abc abc, sda asdf, as, fdas # afsfa"

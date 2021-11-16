@@ -2,8 +2,13 @@
 
 #include <iostream>
 #include <string>
+#include "Channel.hpp"
+
 static int COUNTER;
 using namespace std;
+
+class Server;
+class Channel;
 
 class User {
 	int		id; // unique id for every user for ping-pong commands
@@ -38,6 +43,7 @@ public:
 	void setAutoReply(const string &autoReply);
 	void setAway(bool value);
 	void setOper(bool oper);
+	void deleteChannel(Channel &channel);
 
 	int getId() const;
 	int getSocketFd() const;
@@ -53,4 +59,6 @@ public:
 	bool isOper() const;
 	bool isAway() const;
 	bool isRegistered() const;
+	bool isInvisible() const;
+	list<Channel>	joinedChannels;
 };

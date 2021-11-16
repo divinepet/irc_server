@@ -5,6 +5,8 @@
 
 using namespace std;
 
+class User;
+
 class Channel {
 
 public:

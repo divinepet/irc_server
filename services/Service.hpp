@@ -26,7 +26,8 @@ public:
 
     static pair<list<User>::iterator, bool>     isUserExist(list<User> users_list, string name);
     static pair<list<Channel>::iterator, bool>  isChannelExist(list<Channel> channels_list, string name);
-
+	static string	getUsersFromList(User &user, list<User> &userlist);
+	static void		deleteChannelFromUser(User &user, list<User> &userlist, Channel &channel);
 private:
 	static bool	channelIsEmpty(const Channel &channel);
     static bool isChannelName(string str);

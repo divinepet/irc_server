@@ -49,6 +49,7 @@ bool User::isRegistered() const { return registered; }
 bool User::isAway() const { return away; }
 bool User::isValidPass() const { return validPass; }
 bool User::isOper() const { return oper; }
+bool User::isInvisible() const { return invisible; }
 
 void User::setNickname(const string &nickname) { User::nickname = nickname; }
 void User::setAutoReply(const string &autoReply) { auto_reply = autoReply; }
@@ -64,6 +65,10 @@ void User::setRegisterPhase(int registerPhase) {
 	User::registerPhase = registerPhase;
 	if (registerPhase == 3 && validPass) registered = true;
 }
+void User::deleteChannel(Channel &channel) {
+    joinedChannels.remove(channel);
+}
+
 
 
 
