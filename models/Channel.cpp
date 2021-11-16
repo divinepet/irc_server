@@ -48,4 +48,10 @@ list<User>::iterator Channel::getOperListBegin() { return _operator_list.begin()
 
 list<User>::iterator Channel::getOperListEnd() { return _operator_list.end(); }
 
+bool Channel::inChannel(User user) {
+	for (list<User>::iterator it = _user_list.begin(); it != _user_list.end(); ++it)
+		if (*it == user) return true;
+	return false;
+}
+
 

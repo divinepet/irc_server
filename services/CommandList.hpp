@@ -24,6 +24,7 @@ public:
 //	static void pass_cmd(vector<string> args, User &user, list<User>& userList, string pass);
 	static int ping_cmd(vector<string> args, User &user);
 	static int pong_cmd(vector<string> args, User &user);
+	static void privmsg_cmd(vector<string> args, User &user, list<User> user_list, list<Channel> channel_list);
 	static int restart_cmd(User &user);
 	static void rehash_cmd(User &user);
 	static void time_cmd(vector<string> args, User &user);

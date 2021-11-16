@@ -83,6 +83,7 @@ public:
     void deleteOperator(User &user);
 
     bool                    isInviteOnly() const;
+    bool 					inChannel(User user); // check that user in a channel
     string                  getChannelName() const;
     string                  getChannelTopic() const;
     list<User>::iterator    getOperListBegin();

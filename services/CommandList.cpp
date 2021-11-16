@@ -127,7 +127,7 @@ void CommandList::join_cmd(vector<string> args, User &user, list<Channel> &chann
 			input_passwords = Service::split(args[2], ',');
 		}
 		for (size_t i = 0; i < input_channels.size(); ++i) {
-			chnl = Service::isInList(channel_list.begin(), channel_list.end(), input_channels[i]); // searching new chnl among the existing
+			chnl = Service::isChannelExist(channel_list, input_channels[i]); // searching new chnl among the existing
 			if (!chnl.second) { // if rqsted chnl does not exist
 				if (input_passwords.size() > i && input_passwords[i].length() > 0) {
 					new_chnl = Channel(input_channels[i], user, input_passwords[i]);
@@ -443,6 +443,37 @@ int CommandList::ping_cmd(vector<string> args, User &user) {
 int CommandList::pong_cmd(vector<string> args, User &user) {
 	return (args[1] == config["server.name"]) ? 8
 	: (Service::errMsg(402, user, args[1]), 0);
+}
+
+void CommandList::privmsg_cmd(vector<string> args, User &user, list<User> user_list, list<Channel> channel_list) {
+	if (args.size() == 1)
+		Service::errMsg(411, user, args[0]);
+	else if (args.size() == 2)
+		Service::errMsg(412, user);
+	else {
+		vector<string> arg_list = Service::split(args[1], ',');
+		for (vector<string>::iterator it = arg_list.begin(); it != arg_list.end(); ++it) {
+			if (it->front() == '#' || it->front() == '&') {
+				pair<list<Channel>::iterator, bool> pair = Service::isChannelExist(channel_list, *it);
+				if (pair.second) {
+					if (pair.first->_no_outside || !pair.first->inChannel(user))
+						Service::errMsg(404, user, pair.first->getChannelName());
+					else {
+						for (list<User>::iterator ch_user = pair.first->_user_list.begin(); ch_user != pair.first->_user_list.end(); ++ch_user) {
+							Service::sendMsg(1, user, *ch_user, args[0], pair.first->getChannelName(), args[2]);
+						}
+					}
+				} else
+					Service::errMsg(401, user, *it);
+			}
+			pair<list<User>::iterator, bool> pair = Service::isUserExist(user_list, *it);
+			if (pair.second) {
+				Service::sendMsg(1, user, *(pair.first), args[0], pair.first->getNickname(), args[2]);
+				if (pair.first->isAway())
+					Service::replyMsg(301, user, pair.first->getNickname(), pair.first->getAutoReply());
+			}
+		}
+	}
 }
 
 int CommandList::restart_cmd(User &user) {

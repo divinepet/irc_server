@@ -66,7 +66,7 @@ int MessageParse::defineCommandType(vector<string> &args, User& user, list<User>
 	else if (args[0] == "PART") { CommandList::part_cmd(args, user, channel_list); }
 	else if (args[0] == "PING") { return CommandList::ping_cmd(args, user); }
 	else if (args[0] == "PONG") { return CommandList::pong_cmd(args, user); }
-	else if (args[0] == "PRIVMSG") {}
+	else if (args[0] == "PRIVMSG") { CommandList::privmsg_cmd(args, user, users_list, channel_list); }
 	else if (args[0] == "QUIT") {}
 	else if (args[0] == "REHASH") { CommandList::rehash_cmd(user); }
 	else if (args[0] == "RESTART") { return CommandList::restart_cmd(user); }

@@ -19,10 +19,12 @@ public:
 	static void errMsg(int err, User &user, string arg1="", string arg2="");
 	static void replyMsg(int code, User &user, string arg1="", string arg2="", string arg3="", string arg4="",
 												string arg5="", string arg6="", string arg7="", string arg8="");
+	static void sendMsg(int code, User &sender, User& recipient,
+												string arg1="", string arg2="", string arg3="", string arg4="");
 	static void	emptyChannel(list<Channel> &channel_list);
 
-    static pair<list<User>::iterator, bool>     isInList(list<User>::iterator first, list<User>::iterator last, string name);
-    static pair<list<Channel>::iterator, bool>  isInList(list<Channel>::iterator first, list<Channel>::iterator last, string name);
+    static pair<list<User>::iterator, bool>     isUserExist(list<User> users_list, string name);
+    static pair<list<Channel>::iterator, bool>  isChannelExist(list<Channel> channels_list, string name);
 
 private:
 	static bool	channelIsEmpty(const Channel &channel);

@@ -173,6 +173,15 @@ void Service::replyMsg(int code, User &user, string arg1, string arg2, string ar
 	Server::writing(user.getSocketFd(), msg);
 }
 
+void Service::sendMsg(int code, User &sender, User& recipient, string arg1, string arg2, string arg3, string arg4) {
+	string msg = ":" + sender.getNickname() + "!" + sender.getUsername() + "@" + sender.getRealHost() + " ";
+	switch (code) {
+		case 1: msg += arg1 + " " + arg2 + " :" + arg3 + "\n"; break;
+	}
+	Server::writing(recipient.getSocketFd(), msg);
+}
+
+
 void	Service::emptyChannel(list<Channel> &channel_list) {
 
 	channel_list.remove_if(channelIsEmpty);
@@ -193,26 +202,16 @@ bool	Service::channelIsEmpty(const Channel &channel) {
 	return (channel._user_list.size() == 0);
 }
 
-pair<list<User>::iterator, bool> Service::isInList(list<User>::iterator first, list<User>::iterator last, string name) {
-
-    list<User>::iterator tmp = first;
-
-    for (; tmp != last && first->getNickname() != name; ++tmp) {}
-    if (tmp == last) {
-        return make_pair(tmp,false);
-    }
-    return make_pair(tmp,true);
+pair<list<User>::iterator, bool> Service::isUserExist(list<User> users_list, string name) {
+	for (list<User>::iterator it = users_list.begin(); it != users_list.end(); ++it)
+    	if (it->getNickname() == name) return make_pair(it, true);
+    return make_pair(users_list.end(),true);
 }
 
-pair<list<Channel>::iterator, bool> Service::isInList(list<Channel>::iterator first, list<Channel>::iterator last, string name) {
-
-    list<Channel>::iterator tmp = first;
-
-    for (; tmp != last && first->getChannelName() != name; ++tmp) {}
-    if (tmp == last) {
-        return make_pair(tmp,false);
-    }
-    return make_pair(tmp,true);;
+pair<list<Channel>::iterator, bool> Service::isChannelExist(list<Channel> channels_list, string name) {
+	for (list<Channel>::iterator it = channels_list.begin(); it != channels_list.end(); ++it)
+		if (it->getChannelName() == name) return make_pair(it, true);
+	return make_pair(channels_list.end(), false);
 }
 
 
