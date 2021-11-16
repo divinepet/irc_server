@@ -45,34 +45,34 @@ void MessageParse::splitMessage(string _msg, vector<string> &args) {
 	cout << endl;
 }
 
-int MessageParse::defineCommandType(vector<string> &args, User& user, list<User>& users_list, string pass, list<Channel> &channel_list) {
-	if (args[0] == "PASS") { /*CommandList::pass_cmd(args, user, users_list, pass);*/ }
-	else if (args[0] == "NICK") { return CommandList::nick_cmd(args, user, users_list); }
-	else if (args[0] == "USER") { /*return CommandList::user_cmd(args, user);*/ }
+int MessageParse::defineCommandType(vector<string> &args, User& user, list<User>& userList, string pass, list<Channel> &channelList) {
+	if (args[0] == "PASS") { /*CommandList::passCmd(args, user, userList, pass);*/ }
+	else if (args[0] == "NICK") { return CommandList::nickCmd(args, user, userList); }
+	else if (args[0] == "USER") { /*return CommandList::userCmd(args, user);*/ }
 	else if (!user.isRegistered()) { Service::errMsg(451, user); }
-	else if (args[0] == "ADMIN") { CommandList::admin_cmd(args, user); }
-	else if (args[0] == "AWAY") { CommandList::away_cmd(args, user); }
-	else if (args[0] == "JOIN") { CommandList::join_cmd(args, user, channel_list); }
-	else if (args[0] == "INFO") { CommandList::info_cmd(args, user); }
+	else if (args[0] == "ADMIN") { CommandList::adminCmd(args, user); }
+	else if (args[0] == "AWAY") { CommandList::awayCmd(args, user); }
+	else if (args[0] == "JOIN") { CommandList::joinCmd(args, user, channelList); }
+	else if (args[0] == "INFO") { CommandList::infoCmd(args, user); }
 	else if (args[0] == "INVITE") {}
-	else if (args[0] == "ISON") { CommandList::ison_cmd(args, user, users_list); }
-	else if (args[0] == "KICK") { CommandList::kick_cmd(args, user, users_list, channel_list); }
-	else if (args[0] == "KILL") { CommandList::kill_cmd(args, user, users_list); }
-	else if (args[0] == "LIST") { CommandList::list_cmd(args, user, channel_list); }
+	else if (args[0] == "ISON") { CommandList::isonCmd(args, user, userList); }
+	else if (args[0] == "KICK") { CommandList::kickCmd(args, user, userList, channelList); }
+	else if (args[0] == "KILL") { CommandList::killCmd(args, user, userList); }
+	else if (args[0] == "LIST") { CommandList::listCmd(args, user, channelList); }
 	else if (args[0] == "MODE") {}
-	else if (args[0] == "NAMES") {CommandList::names_cmd(args, user, users_list, channel_list); }
+	else if (args[0] == "NAMES") {CommandList::namesCmd(args, user, userList, channelList); }
 	else if (args[0] == "NOTICE") {}
-	else if (args[0] == "OPER") { CommandList::oper_cmd(args, user); }
-	else if (args[0] == "PART") { CommandList::part_cmd(args, user, users_list, channel_list); }
-	else if (args[0] == "PING") { return CommandList::ping_cmd(args, user); }
-	else if (args[0] == "PONG") { return CommandList::pong_cmd(args, user); }
-	else if (args[0] == "PRIVMSG") { CommandList::privmsg_cmd(args, user, users_list, channel_list); }
+	else if (args[0] == "OPER") { CommandList::operCmd(args, user); }
+	else if (args[0] == "PART") { CommandList::partCmd(args, user, userList, channelList); }
+	else if (args[0] == "PING") { return CommandList::pingCmd(args, user); }
+	else if (args[0] == "PONG") { return CommandList::pongCmd(args, user); }
+	else if (args[0] == "PRIVMSG") { CommandList::privmsgCmd(args, user, userList, channelList); }
 	else if (args[0] == "QUIT") {}
-	else if (args[0] == "REHASH") { CommandList::rehash_cmd(user); }
-	else if (args[0] == "RESTART") { return CommandList::restart_cmd(user); }
-	else if (args[0] == "TIME") { CommandList::time_cmd(args, user); }
+	else if (args[0] == "REHASH") { CommandList::rehashCmd(user); }
+	else if (args[0] == "RESTART") { return CommandList::restartCmd(user); }
+	else if (args[0] == "TIME") { CommandList::timeCmd(args, user); }
 	else if (args[0] == "TOPIC") {}
-	else if (args[0] == "VERSION") { CommandList::version_cmd(args, user); }
+	else if (args[0] == "VERSION") { CommandList::versionCmd(args, user); }
 	else if (args[0] == "WALLOPS") {}
 	else if (args[0] == "WHO") {}
 	else if (args[0] == "WHOIS") {}
@@ -82,10 +82,10 @@ int MessageParse::defineCommandType(vector<string> &args, User& user, list<User>
 	return 0;
 }
 
-int MessageParse::handleMessage(string _msg, User& user, list<User>& users_list, string pass, list<Channel> &channel_list) {
+int MessageParse::handleMessage(string _msg, User& user, list<User>& userList, string pass, list<Channel> &channelList) {
 	vector<string> args;
 
 	splitMessage(_msg, args);
-	return defineCommandType(args, user, users_list, pass, channel_list);
+	return defineCommandType(args, user, userList, pass, channelList);
 
 }

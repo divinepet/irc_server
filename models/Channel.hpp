@@ -28,7 +28,7 @@ public:
 
 	Channel(std::string name, User &user) {
 	    _channel_name = name;
-	    _user_list.push_back(user);
+	    _userList.push_back(user);
         _topic = "";
         _has_password = false;
         _invite_only = false;
@@ -43,10 +43,10 @@ public:
 
 	Channel(std::string name, User &user, std::string password) {
 	    _channel_name = name;
-	    _user_list.push_back(user);
+	    _userList.push_back(user);
 	    _has_password = true;
 	    _password = password;
-	    _user_list.push_back(user);
+	    _userList.push_back(user);
         _topic = "";
         _has_password = false;
         _invite_only = false;
@@ -74,7 +74,7 @@ public:
     std::string     _topic;
 	std::string     _password;
 	std::string     _channel_name;
-	std::list<User> _user_list;
+	std::list<User> _userList;
 	std::list<User> _operator_list;
     std::list<User> _invite_list;
 

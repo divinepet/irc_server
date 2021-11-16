@@ -182,9 +182,9 @@ void Service::sendMsg(int code, User &sender, User& recipient, string arg1, stri
 }
 
 
-void	Service::emptyChannel(list<Channel> &channel_list) {
+void	Service::emptyChannel(list<Channel> &channelList) {
 
-	channel_list.remove_if(channelIsEmpty);
+	channelList.remove_if(channelIsEmpty);
 }
 bool Service::isChannelName(string str) {
 
@@ -199,19 +199,19 @@ bool Service::isChannelName(string str) {
 
 
 bool	Service::channelIsEmpty(const Channel &channel) {
-	return (channel._user_list.size() == 0);
+	return (channel._userList.size() == 0);
 }
 
-pair<list<User>::iterator, bool> Service::isUserExist(list<User> users_list, string name) {
-	for (list<User>::iterator it = users_list.begin(); it != users_list.end(); ++it)
+pair<list<User>::iterator, bool> Service::isUserExist(list<User> userList, string name) {
+	for (list<User>::iterator it = userList.begin(); it != userList.end(); ++it)
     	if (it->getNickname() == name) return make_pair(it, true);
-    return make_pair(users_list.end(),true);
+    return make_pair(userList.end(),true);
 }
 
-pair<list<Channel>::iterator, bool> Service::isChannelExist(list<Channel> channels_list, string name) {
-	for (list<Channel>::iterator it = channels_list.begin(); it != channels_list.end(); ++it)
+pair<list<Channel>::iterator, bool> Service::isChannelExist(list<Channel> channelList, string name) {
+	for (list<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it)
 		if (it->getChannelName() == name) return make_pair(it, true);
-	return make_pair(channels_list.end(), false);
+	return make_pair(channelList.end(), false);
 }
 
 string	Service::getUsersFromList(User &user, list<User> &userlist) {

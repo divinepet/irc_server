@@ -101,7 +101,7 @@ void* ping_request(void *_ping_data) {
 	if (!p_d->restart_response) {
 		close(p_d->client_socket);
 		list<User> *v;
-		v = reinterpret_cast<list<User>* >(p_d->users_list_ptr);
+		v = reinterpret_cast<list<User>* >(p_d->userList_ptr);
 		if (!v->empty())
 		for (list<User>::iterator it = v->begin(); it != v->end() ; ++it) {
 			if (it->getSocketFd() == p_d->client_socket) {
@@ -115,7 +115,7 @@ void* ping_request(void *_ping_data) {
 }
 
 void Server::get_message() {
-	for (list<User>::iterator it = users_list.begin(); it != users_list.end(); it++) {
+	for (list<User>::iterator it = userList.begin(); it != userList.end(); it++) {
 		if (FD_ISSET(it->getSocketFd(), &fd_read)) {
 			char buf[BUFFER_SIZE];
 			int _read = reading(it->getSocketFd(), &buf);
@@ -127,7 +127,7 @@ void Server::get_message() {
 				if (it->isRegistered() && !rr_data[it->getId()].response_waiting)
 					rr_data[it->getId()].restart_request = true;
 				int code = MessageParse::handleMessage(message_poll, *it,
-													users_list,pass, channel_list);
+													userList,pass, channelList);
 				message_poll.clear();
 				switch (code) {
 					case 3: restartServer(); break;
@@ -154,8 +154,8 @@ void Server::get_message() {
 			} else {
 				printf("%s disconnected.\n", it->getNickname().c_str());
 				close(it->getSocketFd());
-				users_list.remove(*it);
-                Service::emptyChannel(channel_list);
+				userList.remove(*it);
+                Service::emptyChannel(channelList);
 			}
 			break;
 		}
@@ -195,15 +195,15 @@ void Server::start() {
                 User user(new_socket_fd);
 				user.setRealHost(pair.second);
 				rr_data[user.getId()].client_socket = new_socket_fd;
-				rr_data[user.getId()].users_list_ptr = reinterpret_cast<uintptr_t>(&users_list);
+				rr_data[user.getId()].userList_ptr = reinterpret_cast<uintptr_t>(&userList);
 				rr_data[user.getId()].last_message_time = -1;
-                users_list.push_back(user);
+                userList.push_back(user);
 
                 FD_SET(new_socket_fd, &fd_read);
             }
         }
 
-        for (list<User>::iterator it = users_list.begin(); it != users_list.end(); it++) {
+        for (list<User>::iterator it = userList.begin(); it != userList.end(); it++) {
             FD_SET(it->getSocketFd(), &fd_read);
             if (it->getSocketFd() > 0 && max_fd < it->getSocketFd())
             	max_fd = it->getSocketFd();
@@ -227,7 +227,7 @@ void Server::restartServer() {
 }
 
 Server::~Server() {
-	for (list<User>::iterator it = users_list.begin(); it != users_list.end(); it++)
+	for (list<User>::iterator it = userList.begin(); it != userList.end(); it++)
 		close(it->getSocketFd());
     close(socket_fd);
 }

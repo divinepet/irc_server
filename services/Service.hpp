@@ -22,10 +22,10 @@ public:
 												string arg5="", string arg6="", string arg7="", string arg8="");
 	static void sendMsg(int code, User &sender, User& recipient,
 												string arg1="", string arg2="", string arg3="", string arg4="");
-	static void	emptyChannel(list<Channel> &channel_list);
+	static void	emptyChannel(list<Channel> &channelList);
 
-    static pair<list<User>::iterator, bool>     isUserExist(list<User> users_list, string name);
-    static pair<list<Channel>::iterator, bool>  isChannelExist(list<Channel> channels_list, string name);
+    static pair<list<User>::iterator, bool>     isUserExist(list<User> userList, string name);
+    static pair<list<Channel>::iterator, bool>  isChannelExist(list<Channel> channelList, string name);
 	static string	getUsersFromList(User &user, list<User> &userlist);
 	static void		deleteChannelFromUser(User &user, list<User> &userlist, Channel &channel);
 private:

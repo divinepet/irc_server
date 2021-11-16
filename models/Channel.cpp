@@ -5,12 +5,12 @@ Channel::Channel() {}
 Channel::~Channel() {}
 
 bool Channel::addUser(User &user) {
-    _user_list.push_back(user);
+    _userList.push_back(user);
     return true;
 }
 
 void Channel::deleteUser(User &user) {
-    _user_list.remove(user);
+    _userList.remove(user);
     _operator_list.remove(user);
 }
 
@@ -24,7 +24,7 @@ bool Channel::addUser(User &user, string password) {
         Service::errMsg(475, user, _channel_name);
         return false;
     }
-    _user_list.push_back(user);
+    _userList.push_back(user);
     return true;
 }
 
@@ -49,7 +49,7 @@ list<User>::iterator Channel::getOperListBegin() { return _operator_list.begin()
 list<User>::iterator Channel::getOperListEnd() { return _operator_list.end(); }
 
 bool Channel::inChannel(User user) {
-	for (list<User>::iterator it = _user_list.begin(); it != _user_list.end(); ++it)
+	for (list<User>::iterator it = _userList.begin(); it != _userList.end(); ++it)
 		if (*it == user) return true;
 	return false;
 }
