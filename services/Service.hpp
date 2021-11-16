@@ -17,7 +17,8 @@ public:
 	static string getDate();
 	static vector<string> split(const string &str, char c);
 	static void errMsg(int err, User &user, string arg1="", string arg2="");
-	static void replyMsg(int code, User &user, string arg1="", string arg2="", string arg3="", string arg4="",
+	static void replyMsg
+	(int code, User &user, string arg1="", string arg2="", string arg3="", string arg4="",
 												string arg5="", string arg6="", string arg7="", string arg8="");
 	static void sendMsg(int code, User &sender, User& recipient,
 												string arg1="", string arg2="", string arg3="", string arg4="");
