@@ -65,6 +65,7 @@ private:
 public:
     Server(int _port, string _pass);
     ~Server();
-    void start();
+
+	void start();
     static bool writing(int _client_socket, const string& _str);
 };
