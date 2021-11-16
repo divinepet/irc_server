@@ -29,6 +29,7 @@ public:
 	static int pingCmd(vector<string> args, User& user);
 	static int pongCmd(vector<string> args, User& user);
 	static void privmsgCmd(vector<string> args, User& user, bool isNotice);
+	static void quitCmd(User& user);
 	static int restartCmd(User& user);
 	static void rehashCmd(User& user);
 	static void timeCmd(vector<string> args, User& user);
@@ -54,7 +55,4 @@ public:
     static void setUserModeOperator(vector<string> args, User &user);
 //	static int userCmd(vector<string> args, User& user);
 	static void versionCmd(vector<string> args, User& user);
-
-//	static bool checkModeParams(vector<string> args, User &user);
-//	static bool checkModeFlags(string flags_str, User &user, int &params_num);
 };

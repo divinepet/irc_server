@@ -112,7 +112,6 @@ void CommandList::isonCmd(std::vector<std::string> args, User& user) {
 	}
 }
 
-//  JOIN #foo,#bar fubar,foobar
 void CommandList::joinCmd(vector<string> args, User &user) {
 
 	bool                                res;
@@ -827,6 +826,10 @@ void CommandList::privmsgCmd(vector<string> args, User &user, bool isNotice) {
 			}
 		}
 	}
+}
+
+void CommandList::quitCmd(User &user) {
+	Server::kickUser(user);
 }
 
 int CommandList::restartCmd(User &user) {
