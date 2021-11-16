@@ -73,7 +73,7 @@ int MessageParse::defineCommandType(vector<string> &args, User& user, string pas
 	else if (args[0] == "TIME") { CommandList::timeCmd(args, user); }
 	else if (args[0] == "TOPIC") {}
 	else if (args[0] == "VERSION") { CommandList::versionCmd(args, user); }
-	else if (args[0] == "WALLOPS") {}
+	else if (args[0] == "WALLOPS") { CommandList::wallopsCmd(args, user); }
 	else if (args[0] == "WHO") {}
 	else if (args[0] == "WHOIS") {}
 	else if (args[0] == "WHOWAS") {}

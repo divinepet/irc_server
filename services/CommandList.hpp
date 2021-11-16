@@ -55,4 +55,5 @@ public:
     static void setUserModeOperator(vector<string> args, User &user);
 //	static int userCmd(vector<string> args, User& user);
 	static void versionCmd(vector<string> args, User& user);
+	static void wallopsCmd(vector<string> args, User& user);
 };

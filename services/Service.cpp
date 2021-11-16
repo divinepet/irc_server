@@ -177,6 +177,7 @@ void Service::sendMsg(int code, User &sender, User& recipient, string arg1, stri
 	string msg = ":" + sender.getNickname() + "!" + sender.getUsername() + "@" + sender.getRealHost() + " ";
 	switch (code) {
 		case 1: msg += arg1 + " " + arg2 + " :" + arg3 + "\n"; break;
+		case 2: msg += arg1 + " :" + arg2 + "\n"; break;
 	}
 	Server::writing(recipient.getSocketFd(), msg);
 }

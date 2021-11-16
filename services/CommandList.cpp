@@ -910,3 +910,14 @@ void CommandList::topicCmd(vector<string> args, User &user) {
 		Service::errMsg(461, user, args[0]);
 	}
 }
+
+void CommandList::wallopsCmd(vector<string> args, User &user) {
+	if (args.size() < 2)
+		Service::errMsg(461, user, args[0]);
+	else {
+		for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); ++it) {
+			if (it->isOper())
+				Service::sendMsg(2, user, *it, args[0], args[1]);
+		}
+	}
+}
