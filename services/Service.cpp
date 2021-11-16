@@ -208,16 +208,24 @@ pair<list<Channel>::iterator, bool> Service::isChannelExist(string name) {
 	return make_pair(Server::channelList.end(), false);
 }
 
-pair<list<Channel>::iterator, bool> Service::isChannelExist(list<Channel> channelList, string name) {
+pair<list<Channel>::iterator, bool> Service::isChannelExist(list<Channel> &channelList, string name) {
 	for (list<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it)
-		if (it->getChannelName() == name) return make_pair(it, true);
+		if (it->getChannelName() == name)
+			return make_pair(it, true);
 		return make_pair(channelList.end(), false);
 }
+
+pair<list<User>::iterator, bool> Service::isUserExist(list<User> &usersList, string name) {
+	for (list<User>::iterator it = usersList.begin(); it != usersList.end(); ++it)
+    	if (it->getNickname() == name)
+			return make_pair(it, true);
+    return make_pair(usersList.end(), false);
+}
+
 
 string	Service::getUsersFromList(User &user, list<User> &userlist) {
 
 	std::string result = "";
-
 	for (list<User>::iterator it = userlist.begin(); it != userlist.end(); ++it) {
 		if (it->isInvisible() && it->getNickname() == user.getNickname()) {
 			result += it->getNickname();

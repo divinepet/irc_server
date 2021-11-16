@@ -32,6 +32,7 @@ public:
 	static int restartCmd(User& user);
 	static void rehashCmd(User& user);
 	static void timeCmd(vector<string> args, User& user);
+	static void topicCmd(vector<string> args, User &user);
 //	static int userCmd(vector<string> args, User& user);
 	static void versionCmd(vector<string> args, User& user);
 

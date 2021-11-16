@@ -142,8 +142,10 @@ void CommandList::joinCmd(vector<string> args, User &user) {
 				if (!chnl.first->_invite_only) {
 					if (!input_passwords.empty() && input_passwords[i].length() > 0) { // with password
 						res = chnl.first->addUser(user, input_passwords[i]);
+						user.joinedChannels.push_back(*chnl.first);
 					} else { // without password
 						res = chnl.first->addUser(user);
+						user.joinedChannels.push_back(*chnl.first);
 					}
 					if (res) { // if addUser is succesfull
 						Service::replyMsg(332, user, chnl.first->getChannelName(), chnl.first->getChannelTopic());
@@ -343,7 +345,7 @@ void CommandList::motd(User &user) {
 		Service::errMsg(422, user);
 }
 
-void CommandList::namesCmd(vector<string> args, User &user) {
+void	CommandList::namesCmd(vector<string> args, User &user) {
 
 	std::vector<std::string> channelVector;
 
@@ -361,10 +363,6 @@ void CommandList::namesCmd(vector<string> args, User &user) {
 		}
 		std::string aloneUsers = "";
 		for (list<User>::iterator usIter = Server::userList.begin(); usIter != Server::userList.end(); usIter++) {
-			cout << "Empty: " << usIter->joinedChannels.empty() << endl;
-			for (list<Channel>::iterator fuck = usIter->joinedChannels.begin(); fuck != usIter->joinedChannels.end(); fuck++) {
-				cout << fuck->getChannelName() << endl;
-			}
 			if (usIter->joinedChannels.empty() && !usIter->isInvisible())
 				aloneUsers += usIter->getNickname() + " ";
 			else if (usIter->joinedChannels.empty() && usIter->isInvisible() && usIter->getNickname() == user.getNickname())
@@ -378,7 +376,7 @@ void CommandList::namesCmd(vector<string> args, User &user) {
 		std::list<Channel>::iterator channelIter; // Check channels
 		std::vector<std::string>::iterator chVectorIter; // Check channels
 		for (size_t i = 0; i < channelVector.size(); i++) {
-			pair<list<Channel>::iterator, bool> kex = Service::isChannelExist(channelVector[i]);
+			pair<list<Channel>::iterator, bool> kex = Service::isChannelExist(Server::channelList, channelVector[i]);
 			if (kex.second) {
 				if (kex.first->_private || kex.first->_secret) {
 					if (Service::isChannelExist(user.joinedChannels, kex.first->getChannelName()).second) { // if user is in channel
@@ -654,3 +652,88 @@ void CommandList::versionCmd(std::vector<std::string> args, User &user) {
 //    return true;
 //}
 
+
+// void	CommandList::namesCmd(vector<string> args, User &user) {
+
+// 	std::vector<std::string> channelVector;
+
+// 	if (args.size() == 1) {
+// 		for (list<Channel>::iterator ch = channel_list.begin(); ch != channel_list.end(); ch++) {
+// 			if (ch->_private || ch->_secret) {
+// 				if (Service::isChannelExist(user.joinedChannels, ch->getChannelName()).second) { // if user is in channel
+// 					string userlist = Service::getUsersFromList(user, ch->_user_list);
+// 					Service::replyMsg(353, user, ch->getChannelName(), userlist);
+// 				}
+// 			} else {
+// 				string userlist = Service::getUsersFromList(user, ch->_user_list);
+// 				Service::replyMsg(353, user, ch->getChannelName(), userlist);
+// 			}
+// 		}
+// 		std::string aloneUsers = "";
+// 		for (list<User>::iterator usIter = Server::userList.begin(); usIter != Server::userList.end(); usIter++) {
+// 			if (usIter->joinedChannels.empty() && !usIter->isInvisible())
+// 				aloneUsers += usIter->getNickname() + " ";
+// 			else if (usIter->joinedChannels.empty() && usIter->isInvisible() && usIter->getNickname() == user.getNickname())
+// 				aloneUsers += usIter->getNickname() + " ";
+// 		}
+// 		Service::replyMsg(353, user, "* *", aloneUsers);
+// 		Service::replyMsg(366, user, "*");
+// 		/*listAllChannels*/
+// 	} else {
+// 		channelVector = Service::split(args[1], ',');
+// 		std::list<Channel>::iterator channelIter; // Check channels
+// 		std::vector<std::string>::iterator chVectorIter; // Check channels
+// 		for (size_t i = 0; i < channelVector.size(); i++) {
+// 			pair<list<Channel>::iterator, bool> kex = Service::isChannelExist(channel_list, channelVector[i]);
+// 			if (kex.second) {
+// 				if (kex.first->_private || kex.first->_secret) {
+// 					if (Service::isChannelExist(user.joinedChannels, kex.first->getChannelName()).second) { // if user is in channel
+// 						string userlist = Service::getUsersFromList(user, kex.first->_user_list);
+// 						Service::replyMsg(353, user, kex.first->getChannelName(), userlist);
+// 					}
+// 				} else {
+// 					string userlist = Service::getUsersFromList(user, kex.first->_user_list);
+// 					Service::replyMsg(353, user, kex.first->getChannelName(), userlist);
+// 				}
+// 				Service::replyMsg(366, user, kex.first->getChannelName());
+// 			}
+// 		}
+// 	}
+// }
+
+void CommandList::topicCmd(vector<string> args, User &user) {
+
+	if (args.size() > 1) {
+		pair<list<Channel>::iterator, bool> chPair = Service::isChannelExist(Server::channelList, args[1]);
+		if (chPair.second && args.size() == 2) {
+			if (Service::isUserExist(chPair.first->_userList, user.getNickname()).second) {
+				if (chPair.first->getChannelTopic() != "")
+					Service::replyMsg(332, user,chPair.first->getChannelName(), chPair.first->getChannelTopic());
+				else
+					Service::replyMsg(331, user,chPair.first->getChannelName());
+			} else {
+				Service::errMsg(442, user, chPair.first->getChannelName());
+			}
+		} else if (chPair.second) {
+			if (Service::isUserExist(chPair.first->_userList, user.getNickname()).second) {
+				if (chPair.first->_topic_by_oper && Service::isUserExist(chPair.first->_operator_list, user.getNickname()).second)
+				{
+					chPair.first->_topic = args[2];
+				}
+				else if (chPair.first->_topic_by_oper)
+				{
+					Service::errMsg(482, user, chPair.first->getChannelName());
+				}
+				else {
+					chPair.first->_topic = args[2];
+
+				}
+			}
+			else
+				Service::errMsg(442, user, chPair.first->getChannelName());
+		} else
+			Service::errMsg(442, user, args[1]);
+	} else {
+		Service::errMsg(461, user, args[0]);
+	}
+}
