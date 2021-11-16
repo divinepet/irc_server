@@ -68,7 +68,9 @@ void User::setRegisterPhase(int registerPhase) {
 void User::deleteChannel(Channel &channel) {
     joinedChannels.remove(channel);
 }
-
+void User::setInvisible(bool value) { invisible = value; }
+void User::setWallops(bool value) { wallops = value; }
+void User::setNoticed(bool value) { serv_notices = value; }
 
 
 
