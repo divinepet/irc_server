@@ -4,11 +4,10 @@ list<User> Server::userList;
 list<Channel> Server::channelList;
 
 Server::Server(int _port, string _pass) {
-    if (_port > 1023 && _port < 49152) {
-        initialize(_port, _pass);
-        cout << "Server will be bound to port: " << _port << endl;
-    } else
+	if (_port < 1024 || _port > 49151)
 		throw "Wrong port!";
+	initialize(_port, _pass);
+	cout << "Server will be bound to port: " << _port << endl;
 }
 
 void Server::initialize(int _port, string& _pass) {
@@ -17,6 +16,8 @@ void Server::initialize(int _port, string& _pass) {
     FD_ZERO(&fd_accept);
     FD_ZERO(&fd_read);
     FD_ZERO(&fd_write);
+    delay.tv_sec = 0;
+    delay.tv_usec = 0;
     cout << "Server initialized" << endl;
 }
 
@@ -30,25 +31,19 @@ bool Server::binding() {
     	cout << "ERROR opening socket" << endl;
         return false;
     }
-
     if (setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &optValue, sizeof(int)) == -1) {
     	cout << "ERROR setting socket options" << endl;
         return false;
     }
-
     bzero((char *) &ServerAddr, sizeof(ServerAddr));
-
     ServerAddr.sin_family = AF_INET;
     ServerAddr.sin_addr.s_addr = INADDR_ANY;
     ServerAddr.sin_port = htons(port);
     if (bind(socket_fd, (struct sockaddr *) &ServerAddr, sizeof(ServerAddr)) < 0)
         return false;
-
     cout << "Server is listening to " << port << endl;
     listen(socket_fd, atoi(config["maxConnections"].c_str()));
-
     fcntl(socket_fd, F_SETFL, O_NONBLOCK);
-
     max_fd = socket_fd;
     return true;
 }
@@ -113,48 +108,32 @@ void* ping_request(void *_ping_data) {
 	return NULL;
 }
 
-void Server::get_message() {
-	for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); it++) {
-		if (FD_ISSET(it->getSocketFd(), &fd_read)) {
-			char buf[BUFFER_SIZE];
-			int _read = reading(it->getSocketFd(), &buf);
-
-			if (_read != 0) {
-				message_poll += buf;
-				if (!strstr(buf, "\n"))
-					continue;
-				if (it->isRegistered() && !rr_data[it->getId()].response_waiting)
-					rr_data[it->getId()].restart_request = true;
-				int code = MessageParse::handleMessage(message_poll, *it, pass);
-				message_poll.clear();
-				switch (code) {
-					case 3: restartServer(); break;
-					case 7: {
-						if (rr_data[it->getId()].last_message_time == -1) {
-							rr_data[it->getId()].last_message_time = Service::timer();
-							pthread_create(&request_thread[it->getId()], NULL, &ping_request, &rr_data[it->getId()]);
-						}
-						break;
-					}
-					case 8: {
-						if (!rr_data[it->getId()].response_waiting) {
-							rr_data[it->getId()].restart_request = true;
-						}
-						else {
-							rr_data[it->getId()].restart_response = true;
-							rr_data[it->getId()].last_message_time = Service::timer();
-							pthread_create(&request_thread[it->getId()], NULL, &ping_request, &rr_data[it->getId()]);
-						}
-						break;
-					}
-					default:;
-				}
-			} else {
-				kickUser(*it);
-			}
-			break;
+void Server::get_message(char *buf, User& user) {
+	message_poll += buf;
+	if (!strstr(buf, "\n"))
+		return;
+	if (user.isRegistered() && !rr_data[user.getId()].response_waiting)
+		rr_data[user.getId()].restart_request = true;
+	int code = MessageParse::handleMessage(message_poll, user, pass);
+	message_poll.clear();
+	switch (code) {
+		case 3: restartServer(); break;
+		case 7: {
+			if (rr_data[user.getId()].last_message_time == -1) {
+				rr_data[user.getId()].last_message_time = Service::timer();
+				pthread_create(&request_thread[user.getId()], NULL, &ping_request, &rr_data[user.getId()]);
+			} break;
 		}
-
+		case 8: {
+			if (!rr_data[user.getId()].response_waiting) {
+				rr_data[user.getId()].restart_request = true;
+			}
+			else {
+				rr_data[user.getId()].restart_response = true;
+				rr_data[user.getId()].last_message_time = Service::timer();
+				pthread_create(&request_thread[user.getId()], NULL, &ping_request, &rr_data[user.getId()]);
+			} break;
+		} default:;
 	}
 }
 
@@ -164,63 +143,56 @@ void Server::start() {
 	request_thread = new pthread_t[maxClients];
 	pthread_mutex_init(&rr_data->print_mutex, NULL);
 
-    if (!binding()) {
-        perror("Error on binding to port.\n");
-    	exit(-1);
-    }
+	if (!binding()) {
+		perror("Error on binding to port.\n");
+		exit(-1);
+	}
 
-    while (true) {
-        FD_ZERO(&fd_read);
-        FD_SET(socket_fd, &fd_read);
-
-        delay.tv_sec = 0;
-		delay.tv_usec = 0;
-
+	while (true) {
+		FD_ZERO(&fd_read);
+		FD_SET(socket_fd, &fd_read);
 		if (max_fd < socket_fd)
-            max_fd = socket_fd;
-
-		int selecting = select(max_fd + 1, &fd_read, &fd_write, NULL, &delay);
-
-        if (selecting > 0) {
+			max_fd = socket_fd;
+		if (select(max_fd + 1, &fd_read, &fd_write, NULL, &delay) > 0) {
 			pair<int, string> pair = accepting();
-            new_socket_fd = pair.first;
-            if (FD_ISSET(socket_fd, &fd_read) ) {
-                fcntl(new_socket_fd, F_SETFL, O_NONBLOCK);
-
-                User user(new_socket_fd);
+			new_socket_fd = pair.first;
+			if (FD_ISSET(socket_fd, &fd_read) ) {
+				fcntl(new_socket_fd, F_SETFL, O_NONBLOCK);
+				User user(new_socket_fd);
 				user.setRealHost(pair.second);
 				rr_data[user.getId()].client_socket = new_socket_fd;
 				rr_data[user.getId()].last_message_time = -1;
 				Server::userList.push_back(user);
-
-                FD_SET(new_socket_fd, &fd_read);
-            }
-        }
-
-        for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); it++) {
-            FD_SET(it->getSocketFd(), &fd_read);
-            if (it->getSocketFd() > 0 && max_fd < it->getSocketFd())
-            	max_fd = it->getSocketFd();
-        }
-
-        delay.tv_sec = 0;
-        delay.tv_usec = 0;
-
-		selecting = select(max_fd + 1, &fd_read, &fd_write, NULL, &delay);
-
-        if (selecting > 0)
-            get_message();
-    }
+				FD_SET(new_socket_fd, &fd_read);
+			}
+		}
+		for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); it++) {
+			FD_SET(it->getSocketFd(), &fd_read);
+			if (it->getSocketFd() > 0 && max_fd < it->getSocketFd())
+				max_fd = it->getSocketFd();
+		}
+		if (select(max_fd + 1, &fd_read, &fd_write, NULL, &delay) > 0) {
+			for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); it++)
+				if (FD_ISSET(it->getSocketFd(), &fd_read)) {
+					char buf[BUFFER_SIZE];
+					(!reading(it->getSocketFd(), &buf)) ? kickUser(*it) : get_message(buf, *it);
+					break;
+				}
+		}
+	}
 }
 
-void Server::kickUser(User user) {
+void Server::kickUser(User &user) {
 	printf("%s disconnected.\n", user.getNickname().c_str());
 	close(user.getSocketFd());
-	Server::userList.remove(user);
-	Server::channelList.remove_if(Service::channelIsEmpty);
 	for (list<Channel>::iterator it = user.joinedChannels.begin(); it != user.joinedChannels.end(); ++it) {
+		pair<list<Channel>::iterator, bool> pairForChannel = Service::isChannelExist(it->getChannelName());
+		if (pairForChannel.second)
+			pairForChannel.first->deleteUser(user);
 		it->deleteUser(user);
 	}
+	Server::userList.remove(user);
+	Server::channelList.remove_if(Service::channelIsEmpty);
 }
 
 void Server::restartServer() {

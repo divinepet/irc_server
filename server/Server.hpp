@@ -59,7 +59,7 @@ private:
     bool binding();
 	pair<int, string> accepting();
     int reading(const int &_socket_fd, char (*_buf)[BUFFER_SIZE]);
-    void get_message();
+    void get_message(char *buf, User &user);
 	void restartServer();
 public:
     Server(int _port, string _pass);
@@ -67,5 +67,5 @@ public:
 
 	void start();
     static bool writing(int _client_socket, const string& _str);
-    static void kickUser(User user);
+    static void kickUser(User& user);
 };
