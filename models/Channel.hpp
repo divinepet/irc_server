@@ -24,6 +24,7 @@ public:
         _voice = true;
         _banned = false;
         _topic_by_oper = false;
+        _user_limit = 100;
     }
 
 	Channel(std::string name, User &user) {
@@ -39,6 +40,7 @@ public:
         _voice = true;
         _banned = false;
         _topic_by_oper = false;
+        _user_limit = 100;
 	};
 
 	Channel(std::string name, User &user, std::string password) {
@@ -57,6 +59,7 @@ public:
         _voice = true;
         _banned = false;
         _topic_by_oper = false;
+        _user_limit = 100;
 	};
 
 	virtual ~Channel();
@@ -71,12 +74,15 @@ public:
     bool            _banned;
     bool            _topic_by_oper;
 
-    std::string     _topic;
-	std::string     _password;
-	std::string     _channel_name;
-	std::list<User> _userList;
-	std::list<User> _operator_list;
-    std::list<User> _invite_list;
+    unsigned int    _user_limit;
+
+    string          _topic;
+	string          _password;
+	string          _channel_name;
+	list<User>      _userList;
+	list<User>      _operator_list;
+    list<User>      _invite_list;
+    list<string>    _ban_list;
 
 	bool addUser(User &user);
     bool addUser(User &user, string password);
@@ -85,11 +91,24 @@ public:
     void deleteOperator(User &user);
 
     bool                    isInviteOnly() const;
+    bool                    isPassword() const;
     bool 					inChannel(User user); // check that user in a channel
     string                  getChannelName() const;
     string                  getChannelTopic() const;
+    list<string>&           getBanList();
+    list<User>&             getOperList();
     list<User>::iterator    getOperListBegin();
     list<User>::iterator    getOperListEnd();
+
+    void setPrivateFlag(bool value);
+    void setSecretFlag(bool value);
+    void setInviteFlag(bool value);
+    void setTopicFlag(bool value);
+    void setOutsideFlag(bool value);
+    void setModeratedFlag(bool value);
+    void setUserLimit(unsigned int value);
+    void setVoiceFlag(bool value);
+    void setPassword(string pass);
 
 
 	bool operator == (const Channel& s) const { return _channel_name == s._channel_name; }

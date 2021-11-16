@@ -43,6 +43,9 @@ public:
 	void setAutoReply(const string &autoReply);
 	void setAway(bool value);
 	void setOper(bool oper);
+    void setInvisible(bool value);
+    void setWallops(bool value);
+    void setNoticed(bool value);
 	void deleteChannel(Channel &channel);
 
 	int getId() const;

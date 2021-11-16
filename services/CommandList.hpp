@@ -33,6 +33,25 @@ public:
 	static void rehashCmd(User& user);
 	static void timeCmd(vector<string> args, User& user);
 	static void topicCmd(vector<string> args, User &user);
+    static void mode(vector<string> args, User &user);
+    static bool checkModeParams(vector<string> args, User &user);
+    static void setChnlMode(vector<string> args, User &user, list<User> &user_list, Channel &chnl);
+    static void setUserMode(vector<string> args, User &user);
+    static void setChnlModeOperator(vector<string> args, User &user, list<User> &user_list, Channel &rqsted_chnl);
+    static void setChnlModePrivate(vector<string> args, User &user, Channel &rqsted_chnl);
+    static void setChnlModeSecret(vector<string> args, User &user, Channel &rqsted_chnl);
+    static void setChnlModeInvite(vector<string> args, User &user, Channel &rqsted_chnl);
+    static void setChnlModeTopic(vector<string> args, User &user, Channel &rqsted_chnl);
+    static void setChnlModeOutside(vector<string> args, User &user, Channel &rqsted_chnl);
+    static void setChnlModeModerated(vector<string> args, User &user, Channel &rqsted_chnl);
+    static void setChnlModeLimit(vector<string> args, User &user, Channel &rqsted_chnl);
+    static void setChnlModeBan(vector<string> args, User &user, Channel &rqsted_chnl);
+    static void setChnlModeVoice(vector<string> args, User &user, Channel &rqsted_chnl);
+    static void setChnlModeKey(vector<string> args, User &user, Channel &rqsted_chnl);
+    static void setUserModeInvisible(vector<string> args, User &user);
+    static void setUserModeNoticed(vector<string> args, User &user);
+    static void setUserModeWallops(vector<string> args, User &user);
+    static void setUserModeOperator(vector<string> args, User &user);
 //	static int userCmd(vector<string> args, User& user);
 	static void versionCmd(vector<string> args, User& user);
 
