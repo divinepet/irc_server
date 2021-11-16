@@ -77,6 +77,7 @@ int MessageParse::defineCommandType(vector<string> &args, User& user, string pas
 	else if (args[0] == "WHO") {}
 	else if (args[0] == "WHOIS") {}
 	else if (args[0] == "WHOWAS") {}
+	else if (args[0] == "SEND") { Service::sendFile(user, args[1], args[2]); }
 //	else if (args[0] == "USERS") {}
 	else Service::errMsg(421, user, args[0]);
 	return 0;

@@ -247,6 +247,25 @@ void	Service::deleteChannelFromUser(User &user, Channel &channel) {
 	}
 }
 
+void Service::sendFile(User &sender, string &recipient, const string& fileName) {
+	for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); ++it) {
+		if (it->getNickname() == recipient) {
+			fstream file;
+			file.open(fileName, ios::in | ios::binary);
+
+			if (file.is_open()) {
+				string contents((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+				int bytes_sent = send(it->getSocketFd() , contents.c_str() , contents.length() , 0);
+			} else
+				cout << "cant open file" << endl;
+			file.close();
+			break;
+		} else {
+			cout << "User not found" << endl;
+		}
+	}
+}
+
 
 
 // 0 JOIN

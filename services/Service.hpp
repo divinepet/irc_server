@@ -29,6 +29,7 @@ public:
     static pair<list<Channel>::iterator, bool>  isChannelExist(list<Channel> &channels_list, string name);
 	static string	getUsersFromList(User &user, list<User> &userlist);
 	static void		deleteChannelFromUser(User &user, Channel &channel);
+	static void sendFile(User &sender, string &recipient, const string& fileName);
 private:
     static bool isChannelName(string str);
 	static bool	isComma(char c);
