@@ -55,7 +55,7 @@ int MessageParse::defineCommandType(vector<string> &args, User& user, string pas
 	else if (args[0] == "AWAY") { CommandList::awayCmd(args, user); }
 	else if (args[0] == "JOIN") { CommandList::joinCmd(args, user); }
 	else if (args[0] == "INFO") { CommandList::infoCmd(args, user); }
-	else if (args[0] == "INVITE") {}
+	else if (args[0] == "INVITE") { CommandList::inviteCmd(args, user); }
 	else if (args[0] == "ISON") { CommandList::isonCmd(args, user); }
 	else if (args[0] == "KICK") { CommandList::kickCmd(args, user); }
 	else if (args[0] == "KILL") { CommandList::killCmd(args, user); }
@@ -71,7 +71,7 @@ int MessageParse::defineCommandType(vector<string> &args, User& user, string pas
 	else if (args[0] == "REHASH") { CommandList::rehashCmd(user); }
 	else if (args[0] == "RESTART") { return CommandList::restartCmd(user); }
 	else if (args[0] == "TIME") { CommandList::timeCmd(args, user); }
-	else if (args[0] == "TOPIC") {}
+	else if (args[0] == "TOPIC") { CommandList::topicCmd(args, user); }
 	else if (args[0] == "VERSION") { CommandList::versionCmd(args, user); }
 	else if (args[0] == "WALLOPS") { CommandList::wallopsCmd(args, user); }
 	else if (args[0] == "WHO") {}
