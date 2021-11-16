@@ -1,5 +1,8 @@
 #include "Server.hpp"
 
+list<User> Server::userList;
+list<Channel> Server::channelList;
+
 Server::Server(int _port, string _pass) {
     if (_port > 1023 && _port < 49152) {
         initialize(_port, _pass);
@@ -99,13 +102,9 @@ void* ping_request(void *_ping_data) {
 		time_now = Service::timer();
 	}
 	if (!p_d->restart_response) {
-		close(p_d->client_socket);
-		list<User> *v;
-		v = reinterpret_cast<list<User>* >(p_d->userList_ptr);
-		if (!v->empty())
-		for (list<User>::iterator it = v->begin(); it != v->end() ; ++it) {
+		for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end() ; ++it) {
 			if (it->getSocketFd() == p_d->client_socket) {
-				v->erase(it);
+				Server::kickUser(*it);
 				break;
 			}
 		}
@@ -115,7 +114,7 @@ void* ping_request(void *_ping_data) {
 }
 
 void Server::get_message() {
-	for (list<User>::iterator it = userList.begin(); it != userList.end(); it++) {
+	for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); it++) {
 		if (FD_ISSET(it->getSocketFd(), &fd_read)) {
 			char buf[BUFFER_SIZE];
 			int _read = reading(it->getSocketFd(), &buf);
@@ -126,8 +125,7 @@ void Server::get_message() {
 					continue;
 				if (it->isRegistered() && !rr_data[it->getId()].response_waiting)
 					rr_data[it->getId()].restart_request = true;
-				int code = MessageParse::handleMessage(message_poll, *it,
-													userList,pass, channelList);
+				int code = MessageParse::handleMessage(message_poll, *it, pass);
 				message_poll.clear();
 				switch (code) {
 					case 3: restartServer(); break;
@@ -152,10 +150,7 @@ void Server::get_message() {
 					default:;
 				}
 			} else {
-				printf("%s disconnected.\n", it->getNickname().c_str());
-				close(it->getSocketFd());
-				userList.remove(*it);
-                Service::emptyChannel(channelList);
+				kickUser(*it);
 			}
 			break;
 		}
@@ -195,15 +190,14 @@ void Server::start() {
                 User user(new_socket_fd);
 				user.setRealHost(pair.second);
 				rr_data[user.getId()].client_socket = new_socket_fd;
-				rr_data[user.getId()].userList_ptr = reinterpret_cast<uintptr_t>(&userList);
 				rr_data[user.getId()].last_message_time = -1;
-                userList.push_back(user);
+				Server::userList.push_back(user);
 
                 FD_SET(new_socket_fd, &fd_read);
             }
         }
 
-        for (list<User>::iterator it = userList.begin(); it != userList.end(); it++) {
+        for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); it++) {
             FD_SET(it->getSocketFd(), &fd_read);
             if (it->getSocketFd() > 0 && max_fd < it->getSocketFd())
             	max_fd = it->getSocketFd();
@@ -217,7 +211,13 @@ void Server::start() {
         if (selecting > 0)
             get_message();
     }
+}
 
+void Server::kickUser(User user) {
+	printf("%s disconnected.\n", user.getNickname().c_str());
+	close(user.getSocketFd());
+	Server::userList.remove(user);
+	Server::channelList.remove_if(Service::channelIsEmpty);
 }
 
 void Server::restartServer() {
@@ -227,7 +227,7 @@ void Server::restartServer() {
 }
 
 Server::~Server() {
-	for (list<User>::iterator it = userList.begin(); it != userList.end(); it++)
+	for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); it++)
 		close(it->getSocketFd());
     close(socket_fd);
 }

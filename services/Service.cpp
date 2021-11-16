@@ -181,11 +181,10 @@ void Service::sendMsg(int code, User &sender, User& recipient, string arg1, stri
 	Server::writing(recipient.getSocketFd(), msg);
 }
 
-
-void	Service::emptyChannel(list<Channel> &channelList) {
-
-	channelList.remove_if(channelIsEmpty);
+bool Service::channelIsEmpty(const Channel &channel) {
+	return (channel._userList.size() == 0);
 }
+
 bool Service::isChannelName(string str) {
 
     for (size_t i = 0; i < str.length(); i++) {
@@ -197,21 +196,22 @@ bool Service::isChannelName(string str) {
     return true;
 }
 
-
-bool	Service::channelIsEmpty(const Channel &channel) {
-	return (channel._userList.size() == 0);
+pair<list<User>::iterator, bool> Service::isUserExist(string name) {
+	for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); ++it)
+    	if (it->getNickname() == name) return make_pair(it, true);
+	return make_pair(Server::userList.end(),true);
 }
 
-pair<list<User>::iterator, bool> Service::isUserExist(list<User> userList, string name) {
-	for (list<User>::iterator it = userList.begin(); it != userList.end(); ++it)
-    	if (it->getNickname() == name) return make_pair(it, true);
-    return make_pair(userList.end(),true);
+pair<list<Channel>::iterator, bool> Service::isChannelExist(string name) {
+	for (list<Channel>::iterator it = Server::channelList.begin(); it != Server::channelList.end(); ++it)
+		if (it->getChannelName() == name) return make_pair(it, true);
+	return make_pair(Server::channelList.end(), false);
 }
 
 pair<list<Channel>::iterator, bool> Service::isChannelExist(list<Channel> channelList, string name) {
 	for (list<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it)
 		if (it->getChannelName() == name) return make_pair(it, true);
-	return make_pair(channelList.end(), false);
+		return make_pair(channelList.end(), false);
 }
 
 string	Service::getUsersFromList(User &user, list<User> &userlist) {
@@ -230,13 +230,14 @@ string	Service::getUsersFromList(User &user, list<User> &userlist) {
 	return result;
 }
 
-void	Service::deleteChannelFromUser(User &user, list<User> &userlist, Channel &channel) {
-	for (list<User>::iterator it = userlist.begin(); it != userlist.end(); it++) {
+void	Service::deleteChannelFromUser(User &user, Channel &channel) {
+	for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); it++) {
 		if (user.getNickname() == it->getNickname()) {
 			it->joinedChannels.remove(channel);
 		}
 	}
 }
+
 
 
 // 0 JOIN

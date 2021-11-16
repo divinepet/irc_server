@@ -14,5 +14,5 @@ operators:
   frariel: 8d23cf6c86e834a7aa6eded54c26ce2bb2e74903538c61bdd5d2197997ab2f72
 maxConnections: 20
 maxChannels: 20
-requestTimeout: 100
-responseTimeout: 200
+requestTimeout: 150
+responseTimeout: 300

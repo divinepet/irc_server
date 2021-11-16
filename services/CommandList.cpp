@@ -35,23 +35,23 @@ void CommandList::infoCmd(std::vector<std::string> args, User& user) {
 		Service::errMsg(402, user, args[1]);
 }
 
-void CommandList::inviteCmd(std::vector<std::string> args, User &user, list<User> userList, list<Channel> &channelList) {
+void CommandList::inviteCmd(std::vector<std::string> args, User &user) {
 
 	string                  msg;
 	string                  rqsted_user;
 	string                  rqsted_chnl_name;
-	list<User>::iterator    usr_iter = userList.begin();
-	list<Channel>::iterator chnl_iter = channelList.begin();
+	list<User>::iterator    usr_iter = Server::userList.begin();
+	list<Channel>::iterator chnl_iter = Server::channelList.begin();
 	list<User>::iterator    chnl_usr_list = chnl_iter->_userList.begin();
 	list<User>::iterator    chnl_oper_list = chnl_iter->_operator_list.begin();
 
 	if (args.size() > 2) {
 		rqsted_user = args[1];
 		rqsted_chnl_name = args[2];
-		for (; chnl_iter != channelList.end() && chnl_iter->_channel_name != rqsted_chnl_name; ++chnl_iter) {} // searching rqsted channel
-		if (chnl_iter != channelList.end()) { // if rqsted channel exists
-			for (; usr_iter != userList.end() && usr_iter->getNickname() != rqsted_user; ++usr_iter) {} // searching rqsted user
-			if (usr_iter != userList.end()) { // if rqsted user exists
+		for (; chnl_iter != Server::channelList.end() && chnl_iter->_channel_name != rqsted_chnl_name; ++chnl_iter) {} // searching rqsted channel
+		if (chnl_iter != Server::channelList.end()) { // if rqsted channel exists
+			for (; usr_iter != Server::userList.end() && usr_iter->getNickname() != rqsted_user; ++usr_iter) {} // searching rqsted user
+			if (usr_iter != Server::userList.end()) { // if rqsted user exists
 				for (; chnl_usr_list != chnl_iter->_userList.end()
 				&& chnl_usr_list->getNickname() != user.getNickname(); ++chnl_usr_list) {} // searching current user on rqsted channel
 				if (chnl_usr_list != chnl_iter->_userList.end()) { // if current user on rqsted channel
@@ -92,14 +92,14 @@ void CommandList::inviteCmd(std::vector<std::string> args, User &user, list<User
 	}
 }
 
-void CommandList::isonCmd(std::vector<std::string> args, User& user, std::list<User> userList) {
+void CommandList::isonCmd(std::vector<std::string> args, User& user) {
 
 	std::string onlineUsers = "";
 
 	if (args.size() == 1)
 		Service::errMsg(461, user);
 	else {
-		for (std::list<User>::iterator userIt = userList.begin(); userIt != userList.end(); userIt++) {
+		for (std::list<User>::iterator userIt = Server::userList.begin(); userIt != Server::userList.end(); userIt++) {
 			for (std::vector<std::string>::iterator strIt = args.begin(); strIt != args.end(); strIt++) {
 				if (*strIt == userIt->getNickname()) {
 					onlineUsers += userIt->getNickname();
@@ -113,7 +113,7 @@ void CommandList::isonCmd(std::vector<std::string> args, User& user, std::list<U
 }
 
 //  JOIN #foo,#bar fubar,foobar
-void CommandList::joinCmd(vector<string> args, User &user, list<Channel> &channelList) {
+void CommandList::joinCmd(vector<string> args, User &user) {
 
 	bool                                res;
 	Channel                             new_chnl;
@@ -127,7 +127,7 @@ void CommandList::joinCmd(vector<string> args, User &user, list<Channel> &channe
 			input_passwords = Service::split(args[2], ',');
 		}
 		for (size_t i = 0; i < input_channels.size(); ++i) {
-			chnl = Service::isChannelExist(channelList, input_channels[i]); // searching new chnl among the existing
+			chnl = Service::isChannelExist(input_channels[i]); // searching new chnl among the existing
 			if (!chnl.second) { // if rqsted chnl does not exist
 				if (input_passwords.size() > i && input_passwords[i].length() > 0) {
 					new_chnl = Channel(input_channels[i], user, input_passwords[i]);
@@ -135,7 +135,7 @@ void CommandList::joinCmd(vector<string> args, User &user, list<Channel> &channe
 					new_chnl = Channel(input_channels[i], user);
 				}
 				new_chnl.addOperator(user);
-				channelList.push_back(new_chnl);
+				Server::channelList.push_back(new_chnl);
 				user.joinedChannels.push_back(new_chnl);
 				Service::replyMsg(332, user, new_chnl.getChannelName(), new_chnl.getChannelTopic());
 			} else { // if rqsted chnl exist
@@ -158,7 +158,7 @@ void CommandList::joinCmd(vector<string> args, User &user, list<Channel> &channe
 	}
 }
 
-void CommandList::kickCmd(vector<string> args, User &user, list<User> &userList, list<Channel> &channelList) {
+void CommandList::kickCmd(vector<string> args, User &user) {
 
 	std::vector<std::string> channelVector;
 	std::vector<std::string> userVector;
@@ -178,7 +178,7 @@ void CommandList::kickCmd(vector<string> args, User &user, list<User> &userList,
 		}
 		for (int i = 0; i < channelVectorSize; i++) {
 			std::list<Channel>::iterator channelIter; // Check channels
-			for (channelIter = channelList.begin(); channelIter != channelList.end(); ++channelIter) {
+			for (channelIter = Server::channelList.begin(); channelIter != Server::channelList.end(); ++channelIter) {
 				if (channelIter->_channel_name == channelVector[i]) {
 					channelFound = true;
 					for (std::list<User>::iterator operlistIter = channelIter->_operator_list.begin(); !userIsOperator && operlistIter != channelIter->_operator_list.end(); ++operlistIter) {
@@ -190,9 +190,9 @@ void CommandList::kickCmd(vector<string> args, User &user, list<User> &userList,
 							userFoundOnChannel = true;
 							// delete user from channel
 							Service::replyMsg(258, user, "USER FOUND AND KICKED FROM CHANNEL " + channelIter->_channel_name);
-							Service::deleteChannelFromUser(*userlistIter, userList, *channelIter);
+							Service::deleteChannelFromUser(*userlistIter, *channelIter);
 							channelIter->deleteUser(*userlistIter);
-							Service::emptyChannel(channelList);
+							Server::channelList.remove_if(Service::channelIsEmpty);
 							break ;
 						}
 					}
@@ -217,19 +217,17 @@ void CommandList::kickCmd(vector<string> args, User &user, list<User> &userList,
 	}
 }
 
-//todo нестабильно работает, протестировать
-void CommandList::killCmd(vector<string> args, User &user, list<User> &userList) {
+void CommandList::killCmd(vector<string> args, User &user) {
 	if (args.size() < 3) {
 		Service::errMsg(461, user, args[0]);
 	}
 	else if (!user.isOper())
 		Service::errMsg(481, user);
 	else {
-		for (list<User>::iterator it = userList.begin(); it != userList.end(); ++it) {
+		for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); ++it) {
 			if (it->getNickname() == args[1]) {
 				Server::writing(it->getSocketFd(), args[2] + "\n");
-				close(it->getSocketFd());
-				userList.erase(it);
+				Server::kickUser(*it);
 				return;
 			}
 		}
@@ -237,13 +235,13 @@ void CommandList::killCmd(vector<string> args, User &user, list<User> &userList)
 	}
 }
 
-void CommandList::listCmd(vector<string> args, User &user, list<Channel> &channelList) {
+void CommandList::listCmd(vector<string> args, User &user) {
 
 	std::vector<std::string> channelVector;
 
 	if (args.size() == 1) {
 		Service::replyMsg(321, user);
-		for (list<Channel>::iterator ch = channelList.begin(); ch != channelList.end(); ch++) {
+		for (list<Channel>::iterator ch = Server::channelList.begin(); ch != Server::channelList.end(); ch++) {
 			if (!ch->_secret) {
 				if (!ch->_private)
 					Service::replyMsg(322, user, ch->getChannelName(), to_string(ch->_userList.size()), ch->getChannelTopic());
@@ -263,7 +261,7 @@ void CommandList::listCmd(vector<string> args, User &user, list<Channel> &channe
 			std::vector<std::string>::iterator chVectorIter; // Check channels
 			for (chVectorIter = channelVector.begin(); chVectorIter != channelVector.end(); chVectorIter++) {
 				// cout << *chVectorIter << endl;
-				for (channelIter = channelList.begin(); channelIter != channelList.end(); ++channelIter) {
+				for (channelIter = Server::channelList.begin(); channelIter != Server::channelList.end(); ++channelIter) {
 					if (*chVectorIter == channelIter->getChannelName()) {
 						if (!channelIter->_secret)
 							Service::replyMsg(322, user, channelIter->getChannelName(), to_string(channelIter->_userList.size()), channelIter->getChannelTopic());
@@ -276,23 +274,23 @@ void CommandList::listCmd(vector<string> args, User &user, list<Channel> &channe
 	}
 }
 
-//void CommandList::modeCmd(vector<string> args, User &user, list<User> &userList, list<Channel> &channelList) {
+//void CommandList::modeCmd(vector<string> args, User &user) {
 //
 //    pair<list<Channel>::iterator, bool> rqsted_chnl;
 //    pair<list<User>::iterator, bool> rqsted_user;
-//    list<Channel>::iterator chnl_iter = channelList.begin();
+//    list<Channel>::iterator chnl_iter = Server::channelList.begin();
 //    list<User>::iterator    chnl_oper_iter = chnl_iter->getOperListBegin();
-//    list<User>::iterator    user_iter = userList.begin();
+//    list<User>::iterator    user_iter = Server::userList.begin();
 //
 //    if (checkModeParams(args, user)) {
 //
 //        if (args[1][0] == '#' || args[1][0] == '&') {
-//            rqsted_chnl = Service::isInList(channelList.begin(), channelList.end(), args[1]);
+//            rqsted_chnl = Service::isChannelExist(args[1]);
 //            if (rqsted_chnl.second) { // if channel exist
 //                for (size_t i = 1; i < args[2].length(); ++i) {
 //                    switch (args[2][i]) {
 //                        case 'o': {
-//                            rqsted_user = Service::isInList(userList.begin(), userList.end(), args[3]);
+//                            rqsted_user = Service::isUserExist(args[3]);
 //                            if (rqsted_user.second) { // if input user exist
 //                                if (Service::isInList(rqsted_chnl.first->getOperListBegin(), rqsted_chnl.first->getOperListEnd(), user.getNickname()).second) { // if cuurent user operator on rqsted channel
 //                                    if (Service::isInList(rqsted_chnl.first->getOperListBegin(), rqsted_chnl.first->getOperListEnd(), args[3]).second) { // if input user not operator yet on rqsted channel
@@ -345,12 +343,12 @@ void CommandList::motd(User &user) {
 		Service::errMsg(422, user);
 }
 
-void CommandList::namesCmd(vector<string> args, User &user, list<User> &userList, list<Channel> &channelList) {
+void CommandList::namesCmd(vector<string> args, User &user) {
 
 	std::vector<std::string> channelVector;
 
 	if (args.size() == 1) {
-		for (list<Channel>::iterator ch = channelList.begin(); ch != channelList.end(); ch++) {
+		for (list<Channel>::iterator ch = Server::channelList.begin(); ch != Server::channelList.end(); ch++) {
 			if (ch->_private || ch->_secret) {
 				if (Service::isChannelExist(user.joinedChannels, ch->getChannelName()).second) { // if user is in channel
 					string userlist = Service::getUsersFromList(user, ch->_userList);
@@ -362,7 +360,7 @@ void CommandList::namesCmd(vector<string> args, User &user, list<User> &userList
 			}
 		}
 		std::string aloneUsers = "";
-		for (list<User>::iterator usIter = userList.begin(); usIter != userList.end(); usIter++) {
+		for (list<User>::iterator usIter = Server::userList.begin(); usIter != Server::userList.end(); usIter++) {
 			cout << "Empty: " << usIter->joinedChannels.empty() << endl;
 			for (list<Channel>::iterator fuck = usIter->joinedChannels.begin(); fuck != usIter->joinedChannels.end(); fuck++) {
 				cout << fuck->getChannelName() << endl;
@@ -380,7 +378,7 @@ void CommandList::namesCmd(vector<string> args, User &user, list<User> &userList
 		std::list<Channel>::iterator channelIter; // Check channels
 		std::vector<std::string>::iterator chVectorIter; // Check channels
 		for (size_t i = 0; i < channelVector.size(); i++) {
-			pair<list<Channel>::iterator, bool> kex = Service::isChannelExist(channelList, channelVector[i]);
+			pair<list<Channel>::iterator, bool> kex = Service::isChannelExist(channelVector[i]);
 			if (kex.second) {
 				if (kex.first->_private || kex.first->_secret) {
 					if (Service::isChannelExist(user.joinedChannels, kex.first->getChannelName()).second) { // if user is in channel
@@ -397,12 +395,12 @@ void CommandList::namesCmd(vector<string> args, User &user, list<User> &userList
 	}
 }
 
-int CommandList::nickCmd(std::vector<std::string> args, User& user, list<User>& userList) {
+int CommandList::nickCmd(std::vector<std::string> args, User& user) {
 	if (args.size() == 1) {
 		Service::errMsg(461, user);
 		return 0;
 	}
-	for (list<User>::iterator it = userList.begin(); it != userList.end(); ++it) {
+	for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); ++it) {
 		if (it->getNickname() == args[1]) {
 			Service::errMsg(433, user, args[1]);
 			return 0;
@@ -419,8 +417,8 @@ int CommandList::nickCmd(std::vector<std::string> args, User& user, list<User>& 
 
 }
 
-void CommandList::noticeCmd(vector<string> args, User &user, list<User> userList, list<Channel> channelList) {
-	privmsgCmd(args, user, userList, channelList, true);
+void CommandList::noticeCmd(vector<string> args, User &user) {
+	privmsgCmd(args, user, true);
 }
 
 void CommandList::operCmd(vector<string> args, User& user) {
@@ -434,9 +432,9 @@ void CommandList::operCmd(vector<string> args, User& user) {
 	}
 }
 
-void CommandList::partCmd(std::vector<std::string> args, User &user, list<User> &userList, list<Channel> &channelList) {
+void CommandList::partCmd(std::vector<std::string> args, User &user) {
 
-	list<Channel>::iterator ch = channelList.begin();
+	list<Channel>::iterator ch = Server::channelList.begin();
 	bool	channelFound = false;
 	bool	userFoundOnChannel = false;
 	std::vector<std::string> channelVector;
@@ -447,7 +445,7 @@ void CommandList::partCmd(std::vector<std::string> args, User &user, list<User> 
 		if (channelVector.size() > 0) {
 			for (int i = 0; i < channelVectorSize; i++) {
 				std::list<Channel>::iterator channelIter; // Check channels
-				for (channelIter = channelList.begin(); channelIter != channelList.end(); ++channelIter) {
+				for (channelIter = Server::channelList.begin(); channelIter != Server::channelList.end(); ++channelIter) {
 					if (channelIter->_channel_name == channelVector[i]) {
 						channelFound = true;
 						for (std::list<User>::iterator userlistIter = channelIter->_userList.begin(); userlistIter != channelIter->_userList.end(); ++userlistIter) {
@@ -455,9 +453,9 @@ void CommandList::partCmd(std::vector<std::string> args, User &user, list<User> 
 								userFoundOnChannel = true;
 								// delete user from channel
 								Service::replyMsg(258, user, "USER FOUND AND DELETED FROM CHANNEL " + channelIter->_channel_name);
-								Service::deleteChannelFromUser(user, userList, *channelIter);
+								Service::deleteChannelFromUser(user, *channelIter);
 								channelIter->deleteUser(*userlistIter);
-								Service::emptyChannel(channelList);
+								Server::channelList.remove_if(Service::channelIsEmpty);
 								break ;
 							}
 						}
@@ -479,13 +477,12 @@ void CommandList::partCmd(std::vector<std::string> args, User &user, list<User> 
 	}
 }
 
-//void CommandList::passCmd(vector<std::string> args, User &user, list<User>& userList, string pass) {
+//void CommandList::passCmd(vector<string> args, User &user, string pass) {
 //	if (user.isRegistered()) {
 //		Service::errMsg(462, user);
 //		return;
 //	} else if (user.getRegisterPhase() == 2) {
-//		close(user.getSocketFd());
-//		userList.remove(user);
+//		kickUser(user);
 //		return;
 //	}
 //	if (args[1] == pass) {
@@ -504,7 +501,7 @@ int CommandList::pongCmd(vector<string> args, User &user) {
 	: (Service::errMsg(402, user, args[1]), 0);
 }
 
-void CommandList::privmsgCmd(vector<string> args, User &user, list<User> userList, list<Channel> channelList, bool isNotice) {
+void CommandList::privmsgCmd(vector<string> args, User &user, bool isNotice) {
 	if (args.size() == 1)
 		Service::errMsg(411, user, args[0]);
 	else if (args.size() == 2)
@@ -513,7 +510,7 @@ void CommandList::privmsgCmd(vector<string> args, User &user, list<User> userLis
 		vector<string> arg_list = Service::split(args[1], ',');
 		for (vector<string>::iterator it = arg_list.begin(); it != arg_list.end(); ++it) {
 			if (it->front() == '#' || it->front() == '&') {
-				pair<list<Channel>::iterator, bool> pair = Service::isChannelExist(channelList, *it);
+				pair<list<Channel>::iterator, bool> pair = Service::isChannelExist(*it);
 				if (pair.second) {
 					if (pair.first->_no_outside || !pair.first->inChannel(user))
 						Service::errMsg(404, user, pair.first->getChannelName());
@@ -525,7 +522,7 @@ void CommandList::privmsgCmd(vector<string> args, User &user, list<User> userLis
 				} else
 					Service::errMsg(401, user, *it);
 			}
-			pair<list<User>::iterator, bool> pair = Service::isUserExist(userList, *it);
+			pair<list<User>::iterator, bool> pair = Service::isUserExist(*it);
 			if (pair.second) {
 				Service::sendMsg(1, user, *(pair.first), args[0], pair.first->getNickname(), args[2]);
 				if (pair.first->isAway() && !isNotice)
@@ -558,7 +555,7 @@ void CommandList::timeCmd(vector<string> args, User &user) {
 	: Service::replyMsg(391, user, config["server.name"], Service::getDate());
 }
 
-//int CommandList::user(std::vector<std::string> args, User &user) {
+//int CommandList::user(vector<std::string> args, User &user) {
 //	if (args.size() < 4) {
 //		Service::errMsg(461, user);
 //		return 0;
