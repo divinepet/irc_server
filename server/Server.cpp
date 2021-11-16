@@ -101,8 +101,8 @@ void* ping_request(void *_ping_data) {
 	if (!p_d->restart_response) {
 		close(p_d->client_socket);
 		list<User> *v;
-		v = reinterpret_cast<list<User>*>(p_d->users_list_ptr);
-		cout << p_d->client_socket << endl;
+		v = reinterpret_cast<list<User>* >(p_d->users_list_ptr);
+		if (!v->empty())
 		for (list<User>::iterator it = v->begin(); it != v->end() ; ++it) {
 			if (it->getSocketFd() == p_d->client_socket) {
 				v->erase(it);
@@ -139,8 +139,9 @@ void Server::get_message() {
 						break;
 					}
 					case 8: {
-						if (!rr_data[it->getId()].response_waiting)
+						if (!rr_data[it->getId()].response_waiting) {
 							rr_data[it->getId()].restart_request = true;
+						}
 						else {
 							rr_data[it->getId()].restart_response = true;
 							rr_data[it->getId()].last_message_time = Service::timer();
@@ -166,7 +167,6 @@ void Server::start() {
 	int maxClients = atoi(config["maxConnections"].c_str());
 	rr_data = new t_ping[maxClients];
 	request_thread = new pthread_t[maxClients];
-	rr_data->users_list_ptr = reinterpret_cast<uintptr_t>(&users_list);
 	pthread_mutex_init(&rr_data->print_mutex, NULL);
 
     if (!binding()) {
@@ -195,6 +195,7 @@ void Server::start() {
                 User user(new_socket_fd);
 				user.setRealHost(pair.second);
 				rr_data[user.getId()].client_socket = new_socket_fd;
+				rr_data[user.getId()].users_list_ptr = reinterpret_cast<uintptr_t>(&users_list);
 				rr_data[user.getId()].last_message_time = -1;
                 users_list.push_back(user);
 
