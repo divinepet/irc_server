@@ -61,12 +61,12 @@ int MessageParse::defineCommandType(vector<string> &args, User& user, list<User>
 	else if (args[0] == "LIST") { CommandList::listCmd(args, user, channelList); }
 	else if (args[0] == "MODE") {}
 	else if (args[0] == "NAMES") {CommandList::namesCmd(args, user, userList, channelList); }
-	else if (args[0] == "NOTICE") {}
+	else if (args[0] == "NOTICE") { CommandList::noticeCmd(args, user, userList, channelList); }
 	else if (args[0] == "OPER") { CommandList::operCmd(args, user); }
 	else if (args[0] == "PART") { CommandList::partCmd(args, user, userList, channelList); }
 	else if (args[0] == "PING") { return CommandList::pingCmd(args, user); }
 	else if (args[0] == "PONG") { return CommandList::pongCmd(args, user); }
-	else if (args[0] == "PRIVMSG") { CommandList::privmsgCmd(args, user, userList, channelList); }
+	else if (args[0] == "PRIVMSG") { CommandList::privmsgCmd(args, user, userList, channelList, false); }
 	else if (args[0] == "QUIT") {}
 	else if (args[0] == "REHASH") { CommandList::rehashCmd(user); }
 	else if (args[0] == "RESTART") { return CommandList::restartCmd(user); }
