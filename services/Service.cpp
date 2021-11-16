@@ -228,10 +228,10 @@ string	Service::getUsersFromList(User &user, list<User> &userlist) {
 
 	std::string result = "";
 	for (list<User>::iterator it = userlist.begin(); it != userlist.end(); ++it) {
-		if (it->isInvisible() && it->getNickname() == user.getNickname()) {
+		if (Service::isUserExist(it->getNickname()).first->isInvisible() && user.getNickname() == it->getNickname()) {
 			result += it->getNickname();
 			result += " ";
-		} else if (!it->isInvisible()) {
+		} else if (!Service::isUserExist(it->getNickname()).first->isInvisible()) {
 			result += it->getNickname();
 			result += " ";
 		}
