@@ -244,7 +244,7 @@ void CommandList::listCmd(vector<string> args, User &user) {
 		Service::replyMsg(321, user);
 		for (list<Channel>::iterator ch = Server::channelList.begin(); ch != Server::channelList.end(); ch++) {
 			if (!ch->_secret) {
-				if (!ch->_private)
+				if (!ch->_private || Service::isUserExist(ch->_userList, user.getNickname()).second)
 					Service::replyMsg(322, user, ch->getChannelName(), to_string(ch->_userList.size()), ch->getChannelTopic());
 				else
 					Service::replyMsg(322, user, "PRV");
