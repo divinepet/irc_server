@@ -49,6 +49,7 @@ int MessageParse::defineCommandType(vector<string> &args, User& user, string pas
 	if (args[0] == "PASS") { /*CommandList::passCmd(args, user, userList, pass);*/ }
 	else if (args[0] == "NICK") { return CommandList::nickCmd(args, user); }
 	else if (args[0] == "USER") { /*return CommandList::userCmd(args, user);*/ }
+	else if (args[0] == "QUIT") { CommandList::quitCmd(user); }
 	else if (!user.isRegistered()) { Service::errMsg(451, user); }
 	else if (args[0] == "ADMIN") { CommandList::adminCmd(args, user); }
 	else if (args[0] == "AWAY") { CommandList::awayCmd(args, user); }
@@ -67,7 +68,6 @@ int MessageParse::defineCommandType(vector<string> &args, User& user, string pas
 	else if (args[0] == "PING") { return CommandList::pingCmd(args, user); }
 	else if (args[0] == "PONG") { return CommandList::pongCmd(args, user); }
 	else if (args[0] == "PRIVMSG") { CommandList::privmsgCmd(args, user, false); }
-	else if (args[0] == "QUIT") { CommandList::quitCmd(user); }
 	else if (args[0] == "REHASH") { CommandList::rehashCmd(user); }
 	else if (args[0] == "RESTART") { return CommandList::restartCmd(user); }
 	else if (args[0] == "TIME") { CommandList::timeCmd(args, user); }
