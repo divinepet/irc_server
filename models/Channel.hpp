@@ -4,7 +4,7 @@
 #include "../server/Server.hpp"
 
 using namespace std;
-class User;
+
 class Channel {
 
 public:

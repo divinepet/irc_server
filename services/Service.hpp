@@ -24,15 +24,9 @@ public:
 												string arg1="", string arg2="", string arg3="", string arg4="");
 	static void	emptyChannel(list<Channel> &channel_list);
 
-<<<<<<< HEAD
     static pair<list<User>::iterator, bool>     isUserExist(list<User> users_list, string name);
     static pair<list<Channel>::iterator, bool>  isChannelExist(list<Channel> channels_list, string name);
 
-=======
-    static pair<list<User>::iterator, bool>     isInList(list<User>::iterator first, list<User>::iterator last, string name);
-    static pair<list<Channel>::iterator, bool>  isInList(list<Channel>::iterator first, list<Channel>::iterator last, string name);
-	static string	getUsersFromList(User &user, list<User> &userlist);
->>>>>>> origin/NAMES_cmd
 private:
 	static bool	channelIsEmpty(const Channel &channel);
     static bool isChannelName(string str);
