@@ -208,10 +208,40 @@ pair<list<User>::iterator, bool> Service::isUserExist(list<User> users_list, str
     return make_pair(users_list.end(),true);
 }
 
+<<<<<<< HEAD
 pair<list<Channel>::iterator, bool> Service::isChannelExist(list<Channel> channels_list, string name) {
 	for (list<Channel>::iterator it = channels_list.begin(); it != channels_list.end(); ++it)
 		if (it->getChannelName() == name) return make_pair(it, true);
 	return make_pair(channels_list.end(), false);
+=======
+pair<list<Channel>::iterator, bool> Service::isInList(list<Channel>::iterator first, list<Channel>::iterator last, string name) {
+
+    list<Channel>::iterator tmp = first;
+
+    for (; tmp != last && tmp->getChannelName() != name; ++tmp) {}
+    if (tmp == last) {
+		cout << "Doesn't exist " << name << endl;
+        return make_pair(tmp,false);
+    }
+	cout << "Exists " << name << endl;
+    return make_pair(tmp,true);;
+>>>>>>> origin/NAMES_cmd
+}
+
+string	Service::getUsersFromList(User &user, list<User> &userlist) {
+
+	std::string result = "";
+
+	for (list<User>::iterator it = userlist.begin(); it != userlist.end(); ++it) {
+		// if (it->isInvisible && it->getNickname() == user.getNickname()) {
+			// result += it->getNickname();
+			// result += " ";
+		// } else if (!it->isInvisible) {
+			result += it->getNickname();
+			result += " ";
+		// }
+	}
+	return result;
 }
 
 
