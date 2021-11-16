@@ -218,6 +218,9 @@ void Server::kickUser(User user) {
 	close(user.getSocketFd());
 	Server::userList.remove(user);
 	Server::channelList.remove_if(Service::channelIsEmpty);
+	for (list<Channel>::iterator it = user.joinedChannels.begin(); it != user.joinedChannels.end(); ++it) {
+		it->deleteUser(user);
+	}
 }
 
 void Server::restartServer() {
