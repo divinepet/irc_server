@@ -9,6 +9,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/Users/divinepet/Desktop/irc_server/app/RunServer.cpp" "/Users/divinepet/Desktop/irc_server/cmake-build-debug/CMakeFiles/irc_server.dir/app/RunServer.cpp.o"
+  "/Users/divinepet/Desktop/irc_server/models/Bot.cpp" "/Users/divinepet/Desktop/irc_server/cmake-build-debug/CMakeFiles/irc_server.dir/models/Bot.cpp.o"
   "/Users/divinepet/Desktop/irc_server/models/Channel.cpp" "/Users/divinepet/Desktop/irc_server/cmake-build-debug/CMakeFiles/irc_server.dir/models/Channel.cpp.o"
   "/Users/divinepet/Desktop/irc_server/models/User.cpp" "/Users/divinepet/Desktop/irc_server/cmake-build-debug/CMakeFiles/irc_server.dir/models/User.cpp.o"
   "/Users/divinepet/Desktop/irc_server/server/Server.cpp" "/Users/divinepet/Desktop/irc_server/cmake-build-debug/CMakeFiles/irc_server.dir/server/Server.cpp.o"

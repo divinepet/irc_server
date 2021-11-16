@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/irc_server.dir/app/RunServer.cpp.o"
+  "CMakeFiles/irc_server.dir/models/Bot.cpp.o"
   "CMakeFiles/irc_server.dir/models/Channel.cpp.o"
   "CMakeFiles/irc_server.dir/models/User.cpp.o"
   "CMakeFiles/irc_server.dir/server/Server.cpp.o"

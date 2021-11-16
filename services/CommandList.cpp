@@ -813,16 +813,18 @@ void CommandList::privmsgCmd(vector<string> args, User &user, bool isNotice) {
 					else {
 						for (list<User>::iterator ch_user = pair.first->_userList.begin(); ch_user != pair.first->_userList.end(); ++ch_user) {
 							Service::sendMsg(1, user, *ch_user, args[0], pair.first->getChannelName(), args[2]);
+							Bot::generateAnswer(user, args[2], args[0], pair.first->getChannelName());
 						}
 					}
 				} else
 					Service::errMsg(401, user, *it);
-			}
-			pair<list<User>::iterator, bool> pair = Service::isUserExist(*it);
-			if (pair.second) {
-				Service::sendMsg(1, user, *(pair.first), args[0], pair.first->getNickname(), args[2]);
-				if (pair.first->isAway() && !isNotice)
-					Service::replyMsg(301, user, pair.first->getNickname(), pair.first->getAutoReply());
+			} else {
+				pair<list<User>::iterator, bool> pair = Service::isUserExist(*it);
+				if (pair.second) {
+					Service::sendMsg(1, user, *(pair.first), args[0], pair.first->getNickname(), args[2]);
+					if (pair.first->isAway() && !isNotice)
+						Service::replyMsg(301, user, pair.first->getNickname(), pair.first->getAutoReply());
+				}
 			}
 		}
 	}

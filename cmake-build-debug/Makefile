@@ -153,6 +153,30 @@ app/RunServer.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/app/RunServer.cpp.s
 .PHONY : app/RunServer.cpp.s
 
+models/Bot.o: models/Bot.cpp.o
+.PHONY : models/Bot.o
+
+# target to build an object file
+models/Bot.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/models/Bot.cpp.o
+.PHONY : models/Bot.cpp.o
+
+models/Bot.i: models/Bot.cpp.i
+.PHONY : models/Bot.i
+
+# target to preprocess a source file
+models/Bot.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/models/Bot.cpp.i
+.PHONY : models/Bot.cpp.i
+
+models/Bot.s: models/Bot.cpp.s
+.PHONY : models/Bot.s
+
+# target to generate assembly for a file
+models/Bot.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/irc_server.dir/build.make CMakeFiles/irc_server.dir/models/Bot.cpp.s
+.PHONY : models/Bot.cpp.s
+
 models/Channel.o: models/Channel.cpp.o
 .PHONY : models/Channel.o
 
@@ -357,6 +381,9 @@ help:
 	@echo "... app/RunServer.o"
 	@echo "... app/RunServer.i"
 	@echo "... app/RunServer.s"
+	@echo "... models/Bot.o"
+	@echo "... models/Bot.i"
+	@echo "... models/Bot.s"
 	@echo "... models/Channel.o"
 	@echo "... models/Channel.i"
 	@echo "... models/Channel.s"

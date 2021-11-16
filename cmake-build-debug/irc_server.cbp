@@ -91,6 +91,12 @@
 		<Unit filename="/Users/divinepet/Desktop/irc_server/app/RunServer.cpp">
 			<Option target="irc_server"/>
 		</Unit>
+		<Unit filename="/Users/divinepet/Desktop/irc_server/models/Bot.cpp">
+			<Option target="irc_server"/>
+		</Unit>
+		<Unit filename="/Users/divinepet/Desktop/irc_server/models/Bot.hpp">
+			<Option target="irc_server"/>
+		</Unit>
 		<Unit filename="/Users/divinepet/Desktop/irc_server/models/Channel.cpp">
 			<Option target="irc_server"/>
 		</Unit>

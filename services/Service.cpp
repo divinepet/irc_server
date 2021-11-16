@@ -255,7 +255,7 @@ void Service::sendFile(User &sender, string &recipient, const string& fileName) 
 
 			if (file.is_open()) {
 				string contents((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-				int bytes_sent = send(it->getSocketFd() , contents.c_str() , contents.length() , 0);
+				send(it->getSocketFd() , contents.c_str() , contents.length() , 0);
 			} else
 				cout << "cant open file" << endl;
 			file.close();

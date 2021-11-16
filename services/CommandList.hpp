@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "../server/Server.hpp"
+#include "../models/Bot.hpp"
 
 class Channel;
 class User;
