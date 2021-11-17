@@ -815,7 +815,8 @@ void CommandList::privmsgCmd(vector<string> args, User &user, bool isNotice) {
 			if (it->front() == '#' || it->front() == '&') {
 				pair<list<Channel>::iterator, bool> pair = Service::isChannelExist(*it);
 				if (pair.second) {
-					if (pair.first->_no_outside || !pair.first->inChannel(user))
+					cout << "channel is : " << pair.first->_no_outside << endl;
+					if (pair.first->_no_outside && !pair.first->inChannel(user))
 						Service::errMsg(404, user, pair.first->getChannelName());
 					else {
 						for (list<User>::iterator ch_user = pair.first->_userList.begin(); ch_user != pair.first->_userList.end(); ++ch_user) {
