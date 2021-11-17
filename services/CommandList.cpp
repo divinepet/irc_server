@@ -921,3 +921,160 @@ void CommandList::wallopsCmd(vector<string> args, User &user) {
 		}
 	}
 }
+
+void CommandList::whoCmd(vector<string> args, User &user) {
+
+	list<User>	wildCardUserlist;
+	bool		operatorFlag = false;
+	if (args.size() > 2 && args[2] == "o")
+		operatorFlag = true;
+	if (args.size() == 1 || (args.size() > 1 && args[1] == "0")) {
+		for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); it++) {
+			if (it->isInvisible() && it->getNickname() == user.getNickname() && ((operatorFlag && it->isOper()) || !operatorFlag)) {
+				vector<string> whoReplyVector = getWhoReplyVector(*it);
+				Service::replyMsg(352, user, whoReplyVector[0], whoReplyVector[1], whoReplyVector[2], whoReplyVector[3], whoReplyVector[4], "H", to_string(0), whoReplyVector[5]);
+			} else if (!it->isInvisible() && ((operatorFlag && it->isOper()) || !operatorFlag)) {
+				vector<string> whoReplyVector = getWhoReplyVector(*it);
+				Service::replyMsg(352, user, whoReplyVector[0], whoReplyVector[1], whoReplyVector[2], whoReplyVector[3], whoReplyVector[4], "H", to_string(0), whoReplyVector[5]);
+			}
+		}
+	} else {
+		CommandList::getWildcardChannelName(args[1], user, wildCardUserlist);
+		if (wildCardUserlist.size() == 0) {
+			CommandList::getWildcardHostName(args[1], user, wildCardUserlist);
+			CommandList::getWildcardServerName(args[1], user, wildCardUserlist);
+			CommandList::getWildcardRealName(args[1], user, wildCardUserlist);
+			CommandList::getWildcardNickname(args[1], user, wildCardUserlist);
+		}
+		if (wildCardUserlist.size() > 0) {
+			for (list<User>::iterator it = wildCardUserlist.begin(); it != wildCardUserlist.end(); it++) {
+				if (((operatorFlag && it->isOper()) || !operatorFlag)) {
+					vector<string> whoReplyVector = getWhoReplyVector(*it);
+					Service::replyMsg(352, user, whoReplyVector[0], whoReplyVector[1], whoReplyVector[2], whoReplyVector[3], whoReplyVector[4], "H", to_string(0), whoReplyVector[5]);
+				}
+			}
+		} else {
+			Service::errMsg(403, user, args[0]);
+		}
+		Service::replyMsg(315, user, args[1]);
+	}
+}
+
+vector<string>	CommandList::getWhoReplyVector(User &user) {
+
+	vector<string> result;
+
+	if (user.joinedChannels.size() > 0 && !Service::isChannelExist(user.joinedChannels.begin()->getChannelName()).first->_secret) {
+		if (!Service::isChannelExist(user.joinedChannels.begin()->getChannelName()).first->_private)
+			result.push_back(user.joinedChannels.begin()->getChannelName());
+		else
+			result.push_back("Prv");
+	} else
+		result.push_back("*no joined channels*");
+	result.push_back(user.getUsername());
+	result.push_back(user.getRealHost());
+	result.push_back(user.getServername());
+	result.push_back(user.getNickname());
+	result.push_back(user.getRealName());
+
+	return result;
+}
+
+void	CommandList::getWildcardNickname(string str, User &user, list<User> &userlist) {
+
+	vector<string>	strVector = Service::split(str, '*');
+	list<User>		wildCardUserList;
+	string	username;
+	bool	nameMatches = false;
+
+	for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); it++) {
+		nameMatches = false;
+		username = it->getNickname();
+		nameMatches = Service::match((char*)username.c_str(), (char*)str.c_str());
+		if (nameMatches) {
+			if (!Service::isUserExist(userlist, it->getNickname()).second && (!it->isInvisible()))
+				userlist.push_back(*it);
+			else if (!Service::isUserExist(userlist, it->getNickname()).second && (it->isInvisible() && it->getNickname() == user.getNickname()))
+				userlist.push_back(*it);
+		}
+	}
+}
+
+void	CommandList::getWildcardChannelName(string str, User &user, list<User> &userlist) {
+
+	string	username;
+	string	channelName;
+	bool	nameMatches;
+
+	for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); it++) {
+		for (list<Channel>::iterator cIt = it->joinedChannels.begin(); cIt != it->joinedChannels.end(); cIt++) {
+			nameMatches = false;
+			channelName = cIt->getChannelName();
+			nameMatches = Service::match((char*)channelName.c_str(), (char*)str.c_str());
+			if (nameMatches) {
+				if (!Service::isUserExist(userlist, it->getNickname()).second && (!it->isInvisible()))
+					userlist.push_back(*it);
+				else if (!Service::isUserExist(userlist, it->getNickname()).second && (it->isInvisible() && it->getNickname() == user.getNickname()))
+					userlist.push_back(*it);
+				break;
+			}
+		}
+	}
+}
+
+void	CommandList::getWildcardHostName(string str, User &user, list<User> &userlist) {
+
+	string	realHostName;
+	bool	nameMatches = false;
+
+
+	for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); it++) {
+		nameMatches = false;
+		realHostName = it->getRealHost();
+		nameMatches = Service::match((char*)realHostName.c_str(), (char*)str.c_str());
+		if (nameMatches) {
+			if (!Service::isUserExist(userlist, it->getNickname()).second && (!it->isInvisible()))
+				userlist.push_back(*it);
+			else if (!Service::isUserExist(userlist, it->getNickname()).second && (it->isInvisible() && it->getNickname() == user.getNickname()))
+				userlist.push_back(*it);
+		}
+	}
+}
+
+void	CommandList::getWildcardServerName(string str, User &user, list<User> &userlist) {
+
+	string	serverName;
+	bool	nameMatches = false;
+
+
+	for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); it++) {
+		nameMatches = false;
+		serverName = it->getServername();
+		nameMatches = Service::match((char*)serverName.c_str(), (char*)str.c_str());
+		if (nameMatches) {
+			if (!Service::isUserExist(userlist, it->getNickname()).second && (!it->isInvisible()))
+				userlist.push_back(*it);
+			else if (!Service::isUserExist(userlist, it->getNickname()).second && (it->isInvisible() && it->getNickname() == user.getNickname()))
+				userlist.push_back(*it);
+		}
+	}
+}
+
+void	CommandList::getWildcardRealName(string str, User &user, list<User> &userlist) {
+
+	string	realName;
+	bool	nameMatches = false;
+
+
+	for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); it++) {
+		nameMatches = false;
+		realName = it->getRealName();
+		nameMatches = Service::match((char*)realName.c_str(), (char*)str.c_str());
+		if (nameMatches) {
+			if (!Service::isUserExist(userlist, it->getNickname()).second && (!it->isInvisible()))
+				userlist.push_back(*it);
+			else if (!Service::isUserExist(userlist, it->getNickname()).second && (it->isInvisible() && it->getNickname() == user.getNickname()))
+				userlist.push_back(*it);
+		}
+	}
+}

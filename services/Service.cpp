@@ -20,13 +20,23 @@ bool Service::isComma(char c) { return c == ','; }
 
 bool Service::isNotComma(char c) { return c != ','; }
 
+bool Service::isStar(char c) { return c == '*'; }
+
+bool Service::isNotStar(char c) { return c != '*'; }
+
 vector<string>	Service::split(const std::string& s, char c) {
     typedef std::string::const_iterator iter;
     std::vector<std::string> ret;
     iter i = s.begin();
+	iter j;
     while(i!=s.end()) {
-        i = std::find_if(i, s.end(), isNotComma); // find the beginning of a word
-        iter j= std::find_if(i, s.end(), isComma); // find the end of the same word
+		if (c == ',') {
+        	i = std::find_if(i, s.end(), isNotComma); // find the beginning of a word
+        	j = std::find_if(i, s.end(), isComma); // find the end of the same word
+		} else {
+			i = std::find_if(i, s.end(), isNotStar); // find the beginning of a word
+        	j = std::find_if(i, s.end(), isStar); // find the end of the same word
+		}
         if(i!=s.end()){
             ret.push_back(std::string(i, j)); //insert the word into vector
             i = j; // repeat 1,2,3 on the rest of the line.
@@ -290,6 +300,21 @@ string Service::to_string(list<User> lst, bool isOperList) {
 		result += it->getNickname();
 	}
 	return result;
+}
+
+bool	Service::match(char *s1, char *s2)
+{
+	if (*s1 == '\0' && *s2 == '\0')
+		return (true);
+	else if (*s2 == '*')
+		if (*s1 == '\0')
+			return (match(s1, s2 + 1));
+		else
+			return (match(s1 + 1, s2) || match(s1, s2 + 1));
+	else if (*s1 == *s2)
+		return (match(s1 + 1, s2 + 1));
+	else
+		return (false);
 }
 
 
