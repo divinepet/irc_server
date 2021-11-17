@@ -926,13 +926,15 @@ void CommandList::wallopsCmd(vector<string> args, User &user) {
 void CommandList::whoCmd(vector<string> args, User &user) {
 
 	list<User>	wildCardUserlist;
-
+	bool		operatorFlag = false;
+	if (args.size() > 2 && args[2] == "o")
+		operatorFlag = true;
 	if (args.size() == 1 || (args.size() > 1 && args[1] == "0")) {
 		for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); it++) {
-			if (it->isInvisible() && it->getNickname() == user.getNickname()) {
+			if (it->isInvisible() && it->getNickname() == user.getNickname() && ((operatorFlag && it->isOper()) || !operatorFlag)) {
 				vector<string> whoReplyVector = getWhoReplyVector(*it);
 				Service::replyMsg(352, user, whoReplyVector[0], whoReplyVector[1], whoReplyVector[2], whoReplyVector[3], whoReplyVector[4], "H", to_string(0), whoReplyVector[5]);
-			} else if (!it->isInvisible()) {
+			} else if (!it->isInvisible() && ((operatorFlag && it->isOper()) || !operatorFlag)) {
 				vector<string> whoReplyVector = getWhoReplyVector(*it);
 				Service::replyMsg(352, user, whoReplyVector[0], whoReplyVector[1], whoReplyVector[2], whoReplyVector[3], whoReplyVector[4], "H", to_string(0), whoReplyVector[5]);
 			}
@@ -947,8 +949,10 @@ void CommandList::whoCmd(vector<string> args, User &user) {
 		}
 		if (wildCardUserlist.size() > 0) {
 			for (list<User>::iterator it = wildCardUserlist.begin(); it != wildCardUserlist.end(); it++) {
-				vector<string> whoReplyVector = getWhoReplyVector(*it);
-				Service::replyMsg(352, user, whoReplyVector[0], whoReplyVector[1], whoReplyVector[2], whoReplyVector[3], whoReplyVector[4], "H", to_string(0), whoReplyVector[5]);
+				if (((operatorFlag && it->isOper()) || !operatorFlag)) {
+					vector<string> whoReplyVector = getWhoReplyVector(*it);
+					Service::replyMsg(352, user, whoReplyVector[0], whoReplyVector[1], whoReplyVector[2], whoReplyVector[3], whoReplyVector[4], "H", to_string(0), whoReplyVector[5]);
+				}
 			}
 		} else {
 			Service::errMsg(403, user, args[0]);
