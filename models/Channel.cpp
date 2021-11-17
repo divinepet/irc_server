@@ -18,11 +18,11 @@ void Channel::deleteOperator(User &user) {
     _operator_list.remove(user);
 }
 
-void Channel::sendToAll(User &sender, string msg) {
-
+void Channel::sendToAll(User &sender, string channelName, string msg) {
+	string prefix = ":" + sender.getNickname() + "!"
+			+ sender.getUsername() + "@" + sender.getRealHost() + " MODE " + channelName + " ";
     for (list<User>::iterator it = _userList.begin(); it != _userList.end(); ++it) {
-        if (it->getNickname() != sender.getNickname())
-            Service::sendMsg(sender, *it, sender.getNickname(), msg);
+    	Server::writing(it->getSocketFd(), prefix + msg + "\n");
     }
 }
 
@@ -48,9 +48,9 @@ void Channel::addUserToInviteList(User &user) {
     }
 }
 
-void Channel::addUserToMuteList(User &user) {
-    if (!Service::isUserExist(_mute_list, user.getNickname()).second) {
-        _mute_list.push_back(user);
+void Channel::addUserToVoiceList(User &user) {
+    if (!Service::isUserExist(_voice_list, user.getNickname()).second) {
+        _voice_list.push_back(user);
     }
 }
 
@@ -82,7 +82,7 @@ list<User>& Channel::getOperList() { return _operator_list; }
 
 list<User> &Channel::getBanList() { return _ban_list; }
 
-list<User> &Channel::getMuteList() { return _mute_list; }
+list<User> &Channel::getVoiceList() { return _voice_list; }
 
 list<User> &Channel::getUserList() { return _userList; }
 
@@ -128,8 +128,8 @@ bool Channel::isUserInvited(User &user) {
     return true;
 }
 
-bool Channel::isUserMuted(User &user) {
-    if (!Service::isUserExist(_mute_list, user.getNickname()).second) {
+bool Channel::isUserHasVoice(User &user) {
+    if (!Service::isUserExist(_voice_list, user.getNickname()).second) {
         return false;
     }
     return true;

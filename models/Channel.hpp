@@ -21,7 +21,7 @@ public:
         _private = false;
         _no_outside = false;
         _moderated = false;
-        _voice = true;
+        _voice = false;
         _banned = false;
         _topic_by_oper = false;
         _user_limit = 100;
@@ -37,7 +37,7 @@ public:
         _private = false;
         _no_outside = false;
         _moderated = false;
-        _voice = true;
+        _voice = false;
         _banned = false;
         _topic_by_oper = false;
         _user_limit = 100;
@@ -56,7 +56,7 @@ public:
         _private = false;
         _no_outside = false;
         _moderated = false;
-        _voice = true;
+        _voice = false;
         _banned = false;
         _topic_by_oper = false;
         _user_limit = 100;
@@ -82,18 +82,18 @@ public:
 	list<User>      _userList;
 	list<User>      _operator_list;
     list<User>      _invite_list;
-    list<User>      _mute_list;
+    list<User>      _voice_list;
     list<User>      _ban_list;
 
 	bool addUser(User &user);
     bool addUser(User &user, string password);
     void addUserToBanList(User &user);
     void addUserToInviteList(User &user);
-    void addUserToMuteList(User &user);
+    void addUserToVoiceList(User &user);
     void addOperator(User &user);
     void deleteUser(User &user);
     void deleteOperator(User &user);
-    void sendToAll(User &sender, string msg);
+    void sendToAll(User &sender, string channelName, string msg);
 
     bool                    isInviteOnly() const;
     bool                    isPassword() const;
@@ -101,14 +101,14 @@ public:
     bool 					inChannel(User user); // check that user in a channel
     bool                    isUserBanned(User &user);
     bool                    isUserInvited(User &user);
-    bool                    isUserMuted(User &user);
+    bool                    isUserHasVoice(User &user);
     string                  getChannelName() const;
     string                  getChannelTopic() const;
     list<User>&             getBanList();
     list<User>&             getOperList();
     list<User>&				getUserList();
     list<User>&				getInviteList();
-    list<User>&				getMuteList();
+    list<User>&				getVoiceList();
 
     void setPrivateFlag(bool value);
     void setSecretFlag(bool value);

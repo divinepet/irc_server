@@ -35,7 +35,7 @@ public:
 	static void rehashCmd(User& user);
 	static void timeCmd(vector<string> args, User& user);
 	static void topicCmd(vector<string> args, User &user);
-    static void mode(vector<string> args, User &user);
+    static void modeCmd(vector<string> args, User &user);
     static bool checkModeParams(vector<string> args, User &user);
     static void setChnlMode(vector<string> args, User &user, list<User> &user_list, Channel &chnl);
     static void setUserMode(vector<string> args, User &user);

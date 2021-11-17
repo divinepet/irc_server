@@ -60,7 +60,7 @@ int MessageParse::defineCommandType(vector<string> &args, User& user, string pas
 	else if (args[0] == "KICK") { CommandList::kickCmd(args, user); }
 	else if (args[0] == "KILL") { CommandList::killCmd(args, user); }
 	else if (args[0] == "LIST") { CommandList::listCmd(args, user); }
-	else if (args[0] == "MODE") { CommandList::mode(args, user); }
+	else if (args[0] == "MODE") { CommandList::modeCmd(args, user); }
 	else if (args[0] == "NAMES") {CommandList::namesCmd(args, user); }
 	else if (args[0] == "NOTICE") { CommandList::noticeCmd(args, user); }
 	else if (args[0] == "OPER") { CommandList::operCmd(args, user); }
