@@ -739,47 +739,44 @@ void CommandList::operCmd(vector<string> args, User& user) {
 }
 
 void CommandList::partCmd(std::vector<std::string> args, User &user) {
-
 	list<Channel>::iterator ch = Server::channelList.begin();
 	bool	channelFound = false;
 	bool	userFoundOnChannel = false;
 	std::vector<std::string> channelVector;
-
-	if (args.size() > 1) {
-		channelVector = Service::split(args[1], ',');
-		int channelVectorSize = channelVector.size();
-		if (channelVector.size() > 0) {
-			for (int i = 0; i < channelVectorSize; i++) {
-				std::list<Channel>::iterator channelIter; // Check channels
-				for (channelIter = Server::channelList.begin(); channelIter != Server::channelList.end(); ++channelIter) {
-					if (channelIter->_channel_name == channelVector[i]) {
-						channelFound = true;
-						for (std::list<User>::iterator userlistIter = channelIter->_userList.begin(); userlistIter != channelIter->_userList.end(); ++userlistIter) {
-							if (user.getNickname() == userlistIter->getNickname()) {
-								userFoundOnChannel = true;
-								// delete user from channel
-								Service::replyMsg(258, user, "USER FOUND AND DELETED FROM CHANNEL " + channelIter->_channel_name);
-								Service::deleteChannelFromUser(user, *channelIter);
-								channelIter->deleteUser(*userlistIter);
-								Server::channelList.remove_if(Service::channelIsEmpty);
-								break ;
-							}
-						}
-						if (userFoundOnChannel)
-							break ;
-					}
-				}
-				if (!channelFound) {
-					Service::errMsg(403, user, args[1]);
-				} else if (!userFoundOnChannel) {
-					Service::errMsg(442, user, args[1]);
-				}
-				channelFound = false;
-				userFoundOnChannel = false;
-			}
-		}
-	} else {
+	if (args.size() < 2)
 		Service::errMsg(461, user, "PART");
+	else {
+		channelVector = Service::split(args[1], ',');
+
+		for (size_t i = 0; i < channelVector.size(); i++) {
+			std::list<Channel>::iterator channelIter; // Check channels
+			for (channelIter = Server::channelList.begin(); channelIter != Server::channelList.end(); ++channelIter) {
+				if (channelIter->_channel_name == channelVector[i]) {
+					channelFound = true;
+					for (std::list<User>::iterator userlistIter = channelIter->_userList.begin(); userlistIter != channelIter->_userList.end(); ++userlistIter) {
+						if (user.getNickname() == userlistIter->getNickname()) {
+							userFoundOnChannel = true;
+							// delete user from channel
+							for (list<User>::iterator usr_in_ch = channelIter->getUserList().begin(); usr_in_ch != channelIter->getUserList().end(); ++usr_in_ch)
+								Service::sendMsg(2, user, *usr_in_ch, args[0], channelIter->getChannelName());
+							Service::deleteChannelFromUser(user, *channelIter);
+							channelIter->deleteUser(*userlistIter);
+							Server::channelList.remove_if(Service::channelIsEmpty);
+							break ;
+						}
+					}
+					if (userFoundOnChannel)
+						break ;
+				}
+			}
+			if (!channelFound) {
+				Service::errMsg(403, user, channelVector[i]);
+			} else if (!userFoundOnChannel) {
+				Service::errMsg(442, user, args[1]);
+			}
+			channelFound = false;
+			userFoundOnChannel = false;
+		}
 	}
 }
 
