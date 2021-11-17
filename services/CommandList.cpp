@@ -37,42 +37,35 @@ void CommandList::infoCmd(std::vector<std::string> args, User& user) {
 
 void CommandList::inviteCmd(std::vector<std::string> args, User &user) {
 
-	string                  msg;
-	string                  rqsted_user;
-	string                  rqsted_chnl_name;
-	list<User>::iterator    usr_iter = Server::userList.begin();
-	list<Channel>::iterator chnl_iter = Server::channelList.begin();
-	list<User>::iterator    chnl_usr_list = chnl_iter->_userList.begin();
-	list<User>::iterator    chnl_oper_list = chnl_iter->_operator_list.begin();
+	string                              rqsted_user;
+	string                              rqsted_chnl_name;
+	pair<list<User>::iterator, bool>    usr_iter;// = Server::userList.begin();
+	pair<list<User>::iterator, bool>    chnl_usr_list;// = chnl_iter.first->_userList.begin();
+    pair<list<User>::iterator, bool>    chnl_oper_list;// = chnl_iter->_operator_list.begin();
+    pair<list<Channel>::iterator, bool> chnl_iter;// = Server::channelList.begin();
 
 	if (args.size() > 2) {
 		rqsted_user = args[1];
 		rqsted_chnl_name = args[2];
-		for (; chnl_iter != Server::channelList.end() && chnl_iter->_channel_name != rqsted_chnl_name; ++chnl_iter) {} // searching rqsted channel
-		if (chnl_iter != Server::channelList.end()) { // if rqsted channel exists
-			for (; usr_iter != Server::userList.end() && usr_iter->getNickname() != rqsted_user; ++usr_iter) {} // searching rqsted user
-			if (usr_iter != Server::userList.end()) { // if rqsted user exists
-				for (; chnl_usr_list != chnl_iter->_userList.end()
-				&& chnl_usr_list->getNickname() != user.getNickname(); ++chnl_usr_list) {} // searching current user on rqsted channel
-				if (chnl_usr_list != chnl_iter->_userList.end()) { // if current user on rqsted channel
-					chnl_usr_list = chnl_iter->_userList.begin();
-					for (; chnl_usr_list != chnl_iter->_userList.end()
-					&& chnl_usr_list->getNickname() != rqsted_user; ++chnl_usr_list) {} // searching rqsted user on rqsted channel
-					if (chnl_usr_list == chnl_iter->_userList.end()) { // if rqsted user NOT on rqsted channel
-						if (chnl_iter->_invite_only) { // if rqsted channel is invite only
-							for (; chnl_oper_list != chnl_iter->_operator_list.end()
-							&& chnl_oper_list->getNickname() != user.getNickname(); ++chnl_oper_list) {} // searching current user in operator list of rqsted channel
-							if (chnl_oper_list == chnl_iter->_operator_list.end()) { // cuurent user not operator on invite only channel
+		chnl_iter = Service::isChannelExist(rqsted_chnl_name); // searching rqsted channel
+		if (chnl_iter.second) { // if rqsted channel exists
+		    usr_iter = Service::isUserExist(rqsted_user); // searching rqsted user
+			if (usr_iter.second) { // if rqsted user exists
+				if (Service::isUserExist(chnl_iter.first->getUserList(), user.getNickname()).second) { // if current user on rqsted channel
+					if (!Service::isUserExist(chnl_iter.first->getUserList(), rqsted_user).second) { // if rqsted user NOT on rqsted channel
+						if (chnl_iter.first->isInviteOnly()) { // if rqsted channel is invite only
+							if (!Service::isUserExist(chnl_iter.first->getOperList(), user.getNickname()).second) { // cuurent user not operator on invite only channel
 								Service::errMsg(482, user,rqsted_chnl_name);
 								return ;
 							}
 						}
-						if (!usr_iter->isAway()) { // rqsted user is available
-							chnl_iter->_invite_list.push_back(*usr_iter);
-							Service::sendMsg(user, *usr_iter, args[0], usr_iter->getNickname(), rqsted_chnl_name);
+						if (!usr_iter.first->isAway()) { // rqsted user is available
+							chnl_iter.first->addUserToInviteList(*usr_iter.first);
+							// usr_iter.first->addInvitedChnl(*chnl_iter.first);
 							Service::replyMsg(341, user, rqsted_chnl_name, rqsted_user);
+							Service::sendMsg(user, *usr_iter.first, args[0], usr_iter.first->getNickname(), rqsted_chnl_name);
 						} else { // rqsted user has AWAY status
-							Service::replyMsg(301, user, rqsted_user, usr_iter->getAutoReply());
+							Service::replyMsg(301, user, rqsted_user, usr_iter.first->getAutoReply());
 						}
 					} else { // rqsted user already on channel
 						Service::errMsg(443, user, rqsted_user, rqsted_chnl_name);
@@ -81,10 +74,10 @@ void CommandList::inviteCmd(std::vector<std::string> args, User &user) {
 					Service::errMsg(442, user, rqsted_chnl_name);
 				}
 			} else { // rqsted user does not exist
-				Service::errMsg(401, user, args[1]);
+				Service::errMsg(401, user, rqsted_user);
 			}
 		} else { //rqsted channel does not exist
-			return ;
+		    Service::errMsg(403, user, rqsted_chnl_name);
 		}
 	} else { // not enough params
 		Service::errMsg(461, user, args[0]);
@@ -125,41 +118,53 @@ void CommandList::joinCmd(vector<string> args, User &user) {
 			input_passwords = Service::split(args[2], ',');
 		}
 		for (size_t i = 0; i < input_channels.size(); ++i) {
-			chnl = Service::isChannelExist(input_channels[i]); // searching new chnl among the existing
-			if (!chnl.second) { // if rqsted chnl does not exist
-				if (input_passwords.size() > i && input_passwords[i].length() > 0) {
-					new_chnl = Channel(input_channels[i], user, input_passwords[i]);
-				} else {
-					new_chnl = Channel(input_channels[i], user);
-				}
-				new_chnl.addOperator(user);
-				Server::channelList.push_back(new_chnl);
-				user.joinedChannels.push_back(new_chnl);
-				Service::sendMsg(user, user, args[0], new_chnl.getChannelName());
-				Service::replyMsg(331, user, new_chnl.getChannelName(), new_chnl.getChannelTopic());
-				Service::replyMsg(353, user, new_chnl.getChannelName(), "@" + user.getNickname());
-				Service::replyMsg(366, user, new_chnl.getChannelName());
-			} else { // if rqsted chnl exist
-				if (!chnl.first->_invite_only) {
-					if (!input_passwords.empty() && input_passwords[i].length() > 0) { // with password
-						res = chnl.first->addUser(user, input_passwords[i]);
-						user.joinedChannels.push_back(*chnl.first);
-					} else { // without password
-						res = chnl.first->addUser(user);
-						user.joinedChannels.push_back(*chnl.first);
+			if (Service::isChannelName(input_channels[i])) { // if chnl name is valid
+				chnl = Service::isChannelExist(input_channels[i]); // searching new chnl among the existing
+				if (!chnl.second) { // if rqsted chnl does not exist
+					if (input_passwords.size() > i && input_passwords[i].length() > 0) {
+						new_chnl = Channel(input_channels[i], user, input_passwords[i]);
+					} else {
+						new_chnl = Channel(input_channels[i], user);
 					}
-					if (res) { // if addUser is succesfull
-						for (list<User>::iterator usr_in_ch = chnl.first->getUserList().begin(); usr_in_ch != chnl.first->getUserList().end(); ++usr_in_ch)
-							Service::sendMsg(user, *usr_in_ch, args[0], chnl.first->getChannelName());
-						Service::sendMsg(user, user, args[0], chnl.first->getChannelName());
-						Service::replyMsg(331, user, chnl.first->getChannelName(), chnl.first->getChannelTopic());
-						Service::replyMsg(353, user, chnl.first->getChannelName(),Service::to_string(chnl.first->getOperList(), true)
-																			+ Service::to_string(chnl.first->getUserList(), *(chnl.first)));
-						Service::replyMsg(366, user, chnl.first->getChannelName());
+					new_chnl.addOperator(user);
+					Server::channelList.push_back(new_chnl);
+					user.joinedChannels.push_back(new_chnl);
+					Service::sendMsg(user, user, args[0], new_chnl.getChannelName());
+					Service::replyMsg(331, user, new_chnl.getChannelName(), new_chnl.getChannelTopic());
+					Service::replyMsg(353, user, new_chnl.getChannelName(), "@" + user.getNickname());
+					Service::replyMsg(366, user, new_chnl.getChannelName());
+				} else { // if rqsted chnl exist
+					if (!Service::isUserExist(chnl.first->getUserList(), user.getNickname()).second) { // if user not on rqsted chnl
+						if (!Service::isUserExist(chnl.first->getBanList(), user.getNickname()).second) { // if user not banned on chnl
+							if (!chnl.first->isInviteOnly() || (chnl.first->isInviteOnly() && chnl.first->isUserInvited(user))) {
+								if (!input_passwords.empty() && input_passwords[i].length() > 0) { // with password
+									res = chnl.first->addUser(user, input_passwords[i]);
+									user.joinedChannels.push_back(*chnl.first);
+								} else { // without password
+									res = chnl.first->addUser(user);
+									user.joinedChannels.push_back(*chnl.first);
+								}
+								if (res) { // if addUser is succesfull
+									for (list<User>::iterator usr_in_ch = chnl.first->getUserList().begin(); usr_in_ch != chnl.first->getUserList().end(); ++usr_in_ch)
+										Service::sendMsg(user, *usr_in_ch, args[0], chnl.first->getChannelName());
+									Service::sendMsg(user, user, args[0], chnl.first->getChannelName());
+									Service::replyMsg(331, user, chnl.first->getChannelName(), chnl.first->getChannelTopic());
+									Service::replyMsg(353, user, chnl.first->getChannelName(),Service::to_string(chnl.first->getOperList(), true)
+									+ Service::to_string(chnl.first->getUserList(), *(chnl.first)));
+									Service::replyMsg(366, user, chnl.first->getChannelName());
+								}
+							} else { // rqsted chnl is invite only
+								Service::errMsg(473, user, chnl.first->_channel_name);
+							}
+						} else { // user banned on chnl
+							Service::errMsg(474, user, input_channels[i]);
+						}
+					} else { // user already on rqsted chnl
+						Service::errMsg(443, user, chnl.first->getChannelName());
 					}
-				} else { // rqsted chnl is invite only
-					Service::errMsg(473, user, chnl.first->_channel_name);
 				}
+			} else { // chnl name is invalid
+				Service::errMsg(403, user, input_channels[i]);
 			}
 		}
 	} else { // not enough params
@@ -306,17 +311,21 @@ bool CommandList::checkModeParams(vector<string> args, User &user) {
                             return false;
                         }
                     } else { // unknown flag
-                        Service::errMsg(472, user, to_string(args[2][i]));
+                        Service::errMsg(472, user, string(1, args[2][i]));
                         return false;
                     }
-                    if (special_flags == true && args[2].length() > 2) { // if flags [o l b k] not single in line
-                        Service::errMsg(472, user, args[2]);
-                        return false;
-                    }
+//                    if (special_flags == true && args[2].length() > 2) { // if flags [o l b k] not single in line
+//                        Service::errMsg(472, user, args[2]);
+//                        return false;
+//                    }
                     if (args[2][i] == 'o' || args[2][i] == 'l'
-                        || args[2][i] == 'k' || args[2][i] == 't') {
+                    || args[2][i] == 'k' || args[2][i] == 'v') {
                         special_flags = true;
                     }
+                }
+                if (special_flags && args[2].length() > 2) { // if flags [o l b k] not single in line
+                    Service::errMsg(472, user, args[2]);
+                    return false;
                 }
                 if (special_flags && args[3].empty()) { // number of expected params is invalid (for chnl MODE)
                     Service::errMsg(461, user, args[0]);
@@ -331,7 +340,7 @@ bool CommandList::checkModeParams(vector<string> args, User &user) {
                             return false;
                         }
                     } else { // unknown flag
-                        Service::errMsg(472, user, to_string(args[2][i]));
+                        Service::errMsg(472, user, args[2]);
                         return false;
                     }
                 }
@@ -349,28 +358,33 @@ bool CommandList::checkModeParams(vector<string> args, User &user) {
 
 void CommandList::setChnlModeOperator(vector<string> args, User &user, list<User> &user_list, Channel &rqsted_chnl) {
 
+    string                              msg;
     pair<list<User>::iterator, bool>    rqsted_user;
 
     rqsted_user = Service::isUserExist(user_list, args[3]);
     if (rqsted_user.second) { // if input user exist
-        if (Service::isUserExist(rqsted_chnl.getOperList(), args[3]).second) { // if input user not operator yet on rqsted channel
-            if (args[2][0] == '+') {
-                Service::replyMsg(221,user, args[3] + "is already operator on " + args[1]);
-                return;
+        if (Service::isUserExist(rqsted_chnl.getUserList(), rqsted_user.first->getNickname()).second) { // if rqsted user on rqsted chnl
+            if (Service::isUserExist(rqsted_chnl.getOperList(), args[3]).second) { // if input user not operator yet on rqsted channel
+                if (args[2][0] == '+') {
+                    Service::replyMsg(221,user, args[3] + " is already operator on " + args[1]);
+                } else {
+                    msg = args[3] + " removed from operator list on " + args[1];
+                    rqsted_chnl.deleteOperator(*rqsted_user.first);
+                    Service::replyMsg(221,user, msg);
+                    Service::sendMsg(user, *rqsted_user.first, msg);
+                }
             } else {
-                rqsted_chnl.deleteOperator(*rqsted_user.first);
-                Service::replyMsg(221,user, args[3] + "removed from operator list on " + args[1]);
-                return;
+                if (args[2][0] == '+') {
+                    msg = args[3] + " is now operator on " + args[1];
+                    rqsted_chnl.addOperator(*rqsted_user.first);
+                    Service::replyMsg(221,user, msg);
+                    Service::sendMsg(user, *rqsted_user.first, msg);
+                } else {
+                    Service::replyMsg(221,user, args[3] + " is already not an operator on " + args[1]);
+                }
             }
-        } else {
-            if (args[2][0] == '+') {
-                rqsted_chnl.addOperator(*rqsted_user.first);
-                Service::replyMsg(221,user, args[3] + "is now operator on " + args[1]);
-                return;
-            } else {
-                Service::replyMsg(221,user, args[3] + "is already not an operator on " + args[1]);
-                return;
-            }
+        } else { // rqsted user not on rqsted chnl
+            Service::errMsg(441, user, rqsted_user.first->getNickname(), rqsted_chnl.getChannelName());
         }
     } else { // NO such user
         Service::errMsg(401, user, args[3]);
@@ -378,68 +392,105 @@ void CommandList::setChnlModeOperator(vector<string> args, User &user, list<User
 }
 
 void CommandList::setChnlModePrivate(vector<string> args, User &user, Channel &rqsted_chnl) {
+    string  msg;
+
     if (args[2][0] == '+') {
+        msg = "private mode on " + args[1] + " is enabled";
         rqsted_chnl.setPrivateFlag(true);
-        Service::replyMsg(221,user, "private mode on " + args[1] + " is enabled");
+        Service::replyMsg(221,user, msg);
+        rqsted_chnl.sendToAll(2, user, msg);
     } else {
-        Service::replyMsg(221,user, "private mode on " + args[1] + " is disabled");
+        msg = "private mode on " + args[1] + " is disabled";
         rqsted_chnl.setPrivateFlag(false);
+        Service::replyMsg(221,user, msg);
+        rqsted_chnl.sendToAll(2, user, msg);
     }
 }
 
 void CommandList::setChnlModeSecret(vector<string> args, User &user, Channel &rqsted_chnl) {
+    string  msg;
+
     if (args[2][0] == '+') {
+        msg = "secret mode on " + args[1] + " is enabled";
         rqsted_chnl.setSecretFlag(true);
-        Service::replyMsg(221,user, "secret mode on " + args[1] + " is enabled");
+        Service::replyMsg(221,user, msg);
+        rqsted_chnl.sendToAll(2, user, msg);
     } else {
-        Service::replyMsg(221,user, "secret mode on " + args[1] + " is disabled");
+        msg = "secret mode on " + args[1] + " is disabled";
         rqsted_chnl.setSecretFlag(false);
+        Service::replyMsg(221,user, msg);
+        rqsted_chnl.sendToAll(2, user, msg);
     }
 }
 
 void CommandList::setChnlModeInvite(vector<string> args, User &user, Channel &rqsted_chnl) {
+    string  msg;
+
     if (args[2][0] == '+') {
+        msg = "invite_only mode on " + args[1] + " is enabled";
         rqsted_chnl.setInviteFlag(true);
-        Service::replyMsg(221,user, "invite_only mode on " + args[1] + " is enabled");
+        Service::replyMsg(221,user, msg);
+        rqsted_chnl.sendToAll(2, user, msg);
     } else {
-        Service::replyMsg(221,user, "invite_only mode on " + args[1] + " is disabled");
+        msg = "invite_only mode on " + args[1] + " is disabled";
         rqsted_chnl.setInviteFlag(false);
+        Service::replyMsg(221,user, msg);
+        rqsted_chnl.sendToAll(2, user, msg);
     }
 }
 
 void CommandList::setChnlModeTopic(vector<string> args, User &user, Channel &rqsted_chnl) {
+    string  msg;
+
     if (args[2][0] == '+') {
+        msg = "topic_settable_by_channel_operator mode on " + args[1] + " is enabled";
         rqsted_chnl.setTopicFlag(true);
-        Service::replyMsg(221,user, "topic_settable_by_channel_operator mode on " + args[1] + " is enabled");
+        Service::replyMsg(221,user, msg);
+        rqsted_chnl.sendToAll(2, user, msg);
     } else {
-        Service::replyMsg(221,user, "topic_settable_by_channel_operator mode on " + args[1] + " is disabled");
+        msg = "topic_settable_by_channel_operator mode on " + args[1] + " is disabled";
         rqsted_chnl.setTopicFlag(false);
+        Service::replyMsg(221,user, msg);
+        rqsted_chnl.sendToAll(2, user, msg);
     }
 }
 
 void CommandList::setChnlModeOutside(vector<string> args, User &user, Channel &rqsted_chnl) {
+    string  msg;
+
     if (args[2][0] == '+') {
+        msg = "no_messages_to_channel_from_clients_on_the_outside mode on " + args[1] + " is enabled";
         rqsted_chnl.setOutsideFlag(true);
-        Service::replyMsg(221,user, "no_messages_to_channel_from_clients_on_the_outside mode on " + args[1] + " is enabled");
+        Service::replyMsg(221,user, msg);
+        rqsted_chnl.sendToAll(2, user, msg);
     } else {
-        Service::replyMsg(221,user, "no_messages_to_channel_from_clients_on_the_outside mode on " + args[1] + " is disabled");
+        msg = "no_messages_to_channel_from_clients_on_the_outside mode on " + args[1] + " is disabled";
         rqsted_chnl.setOutsideFlag(false);
+        Service::replyMsg(221,user, msg);
+        rqsted_chnl.sendToAll(2, user, msg);
     }
 }
 
 void CommandList::setChnlModeModerated(vector<string> args, User &user, Channel &rqsted_chnl) {
+    string  msg;
+
     if (args[2][0] == '+') {
+        msg = "no_messages_to_channel_from_clients_on_the_outside mode on " + args[1] + " is enabled";
         rqsted_chnl.setModeratedFlag(true);
-        Service::replyMsg(221,user, "no_messages_to_channel_from_clients_on_the_outside mode on " + args[1] + " is enabled");
+        Service::replyMsg(221,user, msg);
+        rqsted_chnl.sendToAll(2, user, msg);
     } else {
-        Service::replyMsg(221,user, "no_messages_to_channel_from_clients_on_the_outside mode on " + args[1] + " is disabled");
+        msg = "no_messages_to_channel_from_clients_on_the_outside mode on " + args[1] + " is disabled";
         rqsted_chnl.setModeratedFlag(false);
+        Service::replyMsg(221,user, msg);
+        rqsted_chnl.sendToAll(2, user, msg);
     }
 }
 
 void CommandList::setChnlModeLimit(vector<string> args, User &user, Channel &rqsted_chnl) {
 
-    unsigned int result;
+    string          msg;
+    unsigned int    result;
 
     for (size_t i = 0; i < args[3].length(); ++i) {
         if (args[2][0] == '-' || args[3][0] == '0' || !isnumber(args[3][i])) {
@@ -449,57 +500,142 @@ void CommandList::setChnlModeLimit(vector<string> args, User &user, Channel &rqs
     }
     try {
         result = stoi(args[3]);
-        Service::replyMsg(221,user, "user_limit mode on " + args[1] + " is now " + to_string(result));
+        msg = "user_limit mode on " + args[1] + " is now " + to_string(result);
+        Service::replyMsg(221,user, msg);
         rqsted_chnl.setUserLimit(result);
+        rqsted_chnl.sendToAll(2, user, msg);
     } catch (std::exception) {
         Service::errMsg(501, user, args[3]);
         return;
     }
 }
 
+//void CommandList::setChnlModeBan(vector<string> args, User &user, Channel &rqsted_chnl) {
+//
+//    string          msg;
+//    list<string>    ban_list = rqsted_chnl.getBanList();
+//
+//    if (args[2][0] == '+') {
+//        if (args.size() < 4) { // single +b
+//            for (list<string>::iterator it = ban_list.begin(); it != ban_list.end(); ++it) {
+//                Service::replyMsg(367, user, rqsted_chnl.getChannelName() + *it);
+//            }
+//            Service::replyMsg(368, user, rqsted_chnl.getChannelName());
+//
+//        } else { // +b with params
+//            msg = rqsted_chnl.getChannelName() + args[3] + " has been banned";
+//            ban_list.push_back(args[3]);
+//            Service::replyMsg(367, user, msg);
+//            rqsted_chnl.sendToAll(2, user, msg);
+//        }
+//    } else {
+//        if (args.size() > 3) { // -b with params
+//            msg = args[3] + " has been unbanned";
+//            ban_list.remove(args[3]);
+//            Service::replyMsg(367, user, rqsted_chnl.getChannelName(), msg);
+//            rqsted_chnl.sendToAll(2, user, msg);
+//        } else { // -b without params
+//            Service::errMsg(461, user, args[0]);
+//            return ;
+//        }
+//    }
+//}
+
 void CommandList::setChnlModeBan(vector<string> args, User &user, Channel &rqsted_chnl) {
 
-    list<string> ban_list = rqsted_chnl.getBanList();
+    string                              msg;
+    list<User>                          ban_list = rqsted_chnl.getBanList();
+    pair<list<User>::iterator, bool>    rqsted_user;
 
-    if (args[2][0] == '+') {
-        if (args.size() < 4) { // single +b
-            for (list<string>::iterator it = ban_list.begin(); it != ban_list.end(); ++it) {
-                Service::replyMsg(367, user, rqsted_chnl.getChannelName() + *it);
+    rqsted_user = Service::isUserExist(args[4]);
+    if (rqsted_user.second) { // if rqsted user exists
+        if (Service::isUserExist(rqsted_chnl.getUserList(), args[4]).second) { // if rqsted user on rqasted chnl
+            if (args[2][0] == '+') { // +b
+                if (args.size() > 3) { // +b with params
+                    if (!Service::isUserExist(rqsted_chnl.getBanList(), args[4]).second) { // if rqsted user NOT in ban list
+                        msg = rqsted_chnl.getChannelName() + args[3] + " has been banned";
+                        rqsted_chnl.addUserToBanList(*rqsted_user.first);
+                        Service::replyMsg(221, user, msg);
+                        rqsted_chnl.sendToAll(2, user, msg);
+                    } else { // rqsted user already in ban list
+                        Service::replyMsg(221, user, args[4] + " is already banned on " + args[1]);
+                    }
+                } else { // single +b
+                    for (list<User>::iterator it = ban_list.begin(); it != ban_list.end(); ++it) {
+                        Service::replyMsg(367, user, rqsted_chnl.getChannelName() + it->getNickname());
+                    }
+                    Service::replyMsg(368, user, rqsted_chnl.getChannelName());
+                }
+            } else { // -b
+                if (Service::isUserExist(rqsted_chnl.getBanList(), args[4]).second) { // if rqsted user exist in ban list
+                    msg = rqsted_chnl.getChannelName() + args[3] + " has been unbanned";
+                    rqsted_chnl.getBanList().remove(*rqsted_user.first);
+                    Service::replyMsg(221, user, msg);
+                    rqsted_chnl.sendToAll(2, user, msg);
+                } else { // rqsted user already in mute list
+                    Service::replyMsg(221, user, args[4] + " is already unbanned on " + args[1]);
+                }
             }
-            Service::replyMsg(368, user, rqsted_chnl.getChannelName());
-
-        } else { // +b with params
-            ban_list.push_back(args[3]);
-            Service::replyMsg(367, user, rqsted_chnl.getChannelName(), args[3], " has been added to ban list");
+        } else { // rqsted user not on rqsted chnl
+            Service::errMsg(442, *rqsted_user.first, rqsted_chnl.getChannelName());
         }
-    } else {
-        if (args.size() > 3) { // -b with params
-            ban_list.remove(args[3]);
-            Service::replyMsg(367, user, rqsted_chnl.getChannelName(), args[3], " has been removed from ban list");
-        } else { // -b without params
-            Service::errMsg(461, user, args[0]);
-            return ;
-        }
+    } else { // rqsted user not found
+        Service::errMsg(401, user, args[4]);
     }
-
 }
 
 void CommandList::setChnlModeVoice(vector<string> args, User &user, Channel &rqsted_chnl) {
-    if (args[2][0] == '+') {
-        rqsted_chnl.setVoiceFlag(true);
-        Service::replyMsg(221,user, "the ability to speak on a moderated channel mode on " + args[1] + " is enabled");
-    } else {
-        Service::replyMsg(221,user, "the ability to speak on a moderated channel mode on " + args[1] + " is disabled");
-        rqsted_chnl.setVoiceFlag(false);
+
+    string                              msg;
+    pair<list<User>::iterator, bool>    rqsted_user;
+
+    rqsted_user = Service::isUserExist(args[4]);
+    if (rqsted_user.second) { // if rqsted user exists
+        if (Service::isUserExist(rqsted_chnl.getUserList(), args[4]).second) { // if rqsted user on rqasted chnl
+            if (args[2][0] == '+') { // +v
+                if (!Service::isUserExist(rqsted_chnl.getMuteList(), args[4]).second) { // if rqsted user NOT in mute list
+                    msg = rqsted_chnl.getChannelName() + args[3] + " has been muted";
+                    rqsted_chnl.addUserToMuteList(*rqsted_user.first);
+                    Service::replyMsg(221, user, msg);
+                    rqsted_chnl.sendToAll(2, user, msg);
+                } else { // rqsted user already in mute list
+                    Service::replyMsg(221, user, args[4] + " is already muted on " + args[1]);
+                }
+            } else { // -v
+                if (Service::isUserExist(rqsted_chnl.getMuteList(), args[4]).second) { // if rqsted user exist in mute list
+                    msg = rqsted_chnl.getChannelName() + args[3] + " has been unmuted";
+                    rqsted_chnl.getMuteList().remove(*rqsted_user.first);
+                    Service::replyMsg(221, user, msg);
+                    rqsted_chnl.sendToAll(2, user, msg);
+                } else { // rqsted user already in mute list
+                    Service::replyMsg(221, user, args[4] + " is already unmuted on " + args[1]);
+                }
+            }
+        } else { // rqsted user not on rqsted chnl
+            Service::errMsg(442, *rqsted_user.first, rqsted_chnl.getChannelName());
+        }
+    } else { // rqsted user not found
+        Service::errMsg(401, user, args[4]);
     }
 }
 
 void CommandList::setChnlModeKey(vector<string> args, User &user, Channel &rqsted_chnl) {
-    if (!rqsted_chnl.isPassword()) {
-        rqsted_chnl.setPassword(args[3]);
-        Service::replyMsg(324, user, rqsted_chnl.getChannelName(), "KEY", args[3]);
+    string  msg;
+
+    if (args[2][0] == '+') {
+        if (!rqsted_chnl.isPassword()) {
+            msg = rqsted_chnl.getChannelName() + "channel key is now " + args[3];
+            rqsted_chnl.setPassword(args[3]);
+            Service::replyMsg(324, user, msg);
+            rqsted_chnl.sendToAll(2, user, msg);
+        } else {
+            Service::errMsg(467, user, rqsted_chnl.getChannelName());
+        }
     } else {
-        Service::errMsg(467, user, rqsted_chnl.getChannelName());
+        msg = rqsted_chnl.getChannelName() + "channel key has been removed";
+        rqsted_chnl.resetPassword();
+        Service::replyMsg(324, user, msg);
+        rqsted_chnl.sendToAll(2, user, msg);
     }
 }
 
@@ -817,8 +953,8 @@ void CommandList::privmsgCmd(vector<string> args, User &user, bool isNotice) {
 			if (it->front() == '#' || it->front() == '&') {
 				pair<list<Channel>::iterator, bool> pair = Service::isChannelExist(*it);
 				if (pair.second) {
-					cout << "channel is m: " << pair.first->_moderated << endl;
-					cout << "user is v: " << pair.first->_voice << endl;
+//					cout << "channel is m: " << pair.first->_moderated << endl;
+//					cout << "user is v: " << pair.first->_voice << endl;
 					if ((pair.first->_no_outside && !pair.first->inChannel(user))
 						/*|| (pair.first->_moderated && !Service::isUserExist(pair.first.getVoiceList, user.getNickname()).second)*/)
 						Service::errMsg(404, user, pair.first->getChannelName());

@@ -67,3 +67,8 @@ private:
 	static void	getWildcardHostName(string str, User &user, list<User> &userlist);
 	static vector<string> getWhoReplyVector(User &user);
 };
+
+
+// simple_example
+
+// *ple*ample

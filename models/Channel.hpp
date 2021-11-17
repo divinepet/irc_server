@@ -70,7 +70,6 @@ public:
     bool            _private;
     bool            _no_outside;
     bool            _moderated;
-    bool            _voice;
     bool            _banned;
     bool            _topic_by_oper;
 
@@ -82,23 +81,33 @@ public:
 	list<User>      _userList;
 	list<User>      _operator_list;
     list<User>      _invite_list;
-    list<string>    _ban_list;
+    list<User>      _mute_list;
+    list<User>      _ban_list;
 
 	bool addUser(User &user);
     bool addUser(User &user, string password);
+    void addUserToBanList(User &user);
+    void addUserToInviteList(User &user);
+    void addUserToMuteList(User &user);
     void addOperator(User &user);
     void deleteUser(User &user);
     void deleteOperator(User &user);
+    void sendToAll(int code, User &sender, string msg);
 
     bool                    isInviteOnly() const;
     bool                    isPassword() const;
     bool                    isOperator(User &user) const;
     bool 					inChannel(User user); // check that user in a channel
+    bool                    isUserBanned(User &user);
+    bool                    isUserInvited(User &user);
+    bool                    isUserMuted(User &user);
     string                  getChannelName() const;
     string                  getChannelTopic() const;
-    list<string>&           getBanList();
+    list<User>&             getBanList();
     list<User>&             getOperList();
     list<User>&				getUserList();
+    list<User>&				getInviteList();
+    list<User>&				getMuteList();
 
     void setPrivateFlag(bool value);
     void setSecretFlag(bool value);
@@ -107,8 +116,8 @@ public:
     void setOutsideFlag(bool value);
     void setModeratedFlag(bool value);
     void setUserLimit(unsigned int value);
-    void setVoiceFlag(bool value);
     void setPassword(string pass);
+    void resetPassword();
 
 
 	bool operator == (const Channel& s) const { return _channel_name == s._channel_name; }
