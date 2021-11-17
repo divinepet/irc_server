@@ -200,7 +200,7 @@ bool Service::isChannelName(string str) {
 pair<list<User>::iterator, bool> Service::isUserExist(string name) {
 	for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); ++it)
     	if (it->getNickname() == name) return make_pair(it, true);
-	return make_pair(Server::userList.end(),true);
+	return make_pair(Server::userList.end(),false);
 }
 
 pair<list<Channel>::iterator, bool> Service::isChannelExist(string name) {
