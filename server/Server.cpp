@@ -185,11 +185,16 @@ void Server::start() {
 void Server::kickUser(User &user) {
 	printf("%s disconnected.\n", user.getNickname().c_str());
 	close(user.getSocketFd());
-	for (list<Channel>::iterator it = user.joinedChannels.begin(); it != user.joinedChannels.end(); ++it) {
-		pair<list<Channel>::iterator, bool> pairForChannel = Service::isChannelExist(it->getChannelName());
-		if (pairForChannel.second)
+	for (list<Channel>::iterator it_ch = user.joinedChannels.begin(); it_ch != user.joinedChannels.end(); ++it_ch) {
+		pair<list<Channel>::iterator, bool> pairForChannel = Service::isChannelExist(it_ch->getChannelName());
+		if (pairForChannel.second) {
 			pairForChannel.first->deleteUser(user);
-		it->deleteUser(user);
+		}
+		it_ch->deleteUser(user);
+		list<User> lst = pairForChannel.first->getUserList();
+		for (list<User>::iterator it_usr = lst.begin(); it_usr != lst.end(); ++it_usr) {
+			Service::sendMsg(2, user, *it_usr, "QUIT", "Client exited");
+		}
 	}
 	Server::userList.remove(user);
 	Server::channelList.remove_if(Service::channelIsEmpty);
