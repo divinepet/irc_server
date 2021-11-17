@@ -173,12 +173,11 @@ void Service::replyMsg(int code, User &user, string arg1, string arg2, string ar
 	Server::writing(user.getSocketFd(), msg);
 }
 
-void Service::sendMsg(int code, User &sender, User& recipient, string arg1, string arg2, string arg3, string arg4) {
+//static void sendMsg(User &sender, User& recipient, string arg1="", string arg2="", string arg3="");
+
+void Service::sendMsg(User &sender, User& recipient, string arg1, string arg2, string arg3) {
 	string msg = ":" + sender.getNickname() + "!" + sender.getUsername() + "@" + sender.getRealHost() + " ";
-	switch (code) {
-		case 1: msg += arg1 + " " + arg2 + " :" + arg3 + "\n"; break;
-		case 2: msg += arg1 + " :" + arg2 + "\n"; break;
-	}
+	msg = (arg3 == "") ? msg + arg1 + " :" + arg2 + "\n" : msg + arg1 + " " + arg2 + " :" + arg3 + "\n";
 	Server::writing(recipient.getSocketFd(), msg);
 }
 

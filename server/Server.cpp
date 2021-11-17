@@ -74,15 +74,22 @@ bool Server::writing(int _client_socket, const string &_str) {
 
 void* ping_request(void *_ping_data) {
 	size_t request_timeout = atoi(config["requestTimeout"].c_str()) * 1000;
+	cout << "request: " << request_timeout << endl;
 	t_ping* p_d = ((t_ping *)_ping_data);
+	pthread_mutex_lock(&p_d->print_mutex);
 	time_t time_now = Service::timer();
+	pthread_mutex_unlock(&p_d->print_mutex);
 	p_d->restart_response = false;
 	while (time_now - p_d->last_message_time < request_timeout) {
 		if (p_d->restart_request) {
 			p_d->restart_request = false;
+			pthread_mutex_lock(&p_d->print_mutex);
 			p_d->last_message_time = Service::timer();
+			pthread_mutex_unlock(&p_d->print_mutex);
 		}
+		pthread_mutex_lock(&p_d->print_mutex);
 		time_now = Service::timer();
+		pthread_mutex_unlock(&p_d->print_mutex);
 	}
 	pthread_mutex_lock(&p_d->print_mutex);
 	if (!Server::writing(p_d->client_socket,
@@ -90,16 +97,23 @@ void* ping_request(void *_ping_data) {
 		return NULL;
 	pthread_mutex_unlock(&p_d->print_mutex);
 	p_d->response_waiting = true;
+	pthread_mutex_lock(&p_d->print_mutex);
 	time_now = Service::timer();
 	time_t response_time = Service::timer();
+	pthread_mutex_unlock(&p_d->print_mutex);
 	size_t response_timeout = atoi(config["responseTimeout"].c_str()) * 1000;
+	cout << "response: " << response_timeout << endl;
 	while ((time_now - response_time < response_timeout) && !p_d->restart_response) {
+		pthread_mutex_lock(&p_d->print_mutex);
 		time_now = Service::timer();
+		pthread_mutex_unlock(&p_d->print_mutex);
 	}
 	if (!p_d->restart_response) {
 		for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end() ; ++it) {
 			if (it->getSocketFd() == p_d->client_socket) {
+				pthread_mutex_lock(&p_d->print_mutex);
 				Server::kickUser(*it);
+				pthread_mutex_unlock(&p_d->print_mutex);
 				break;
 			}
 		}
@@ -193,7 +207,7 @@ void Server::kickUser(User &user) {
 		it_ch->deleteUser(user);
 		list<User> lst = pairForChannel.first->getUserList();
 		for (list<User>::iterator it_usr = lst.begin(); it_usr != lst.end(); ++it_usr) {
-			Service::sendMsg(2, user, *it_usr, "QUIT", "Client exited");
+			Service::sendMsg(user, *it_usr, "QUIT", "Client exited");
 		}
 	}
 	Server::userList.remove(user);

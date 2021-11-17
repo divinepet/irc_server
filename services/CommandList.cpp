@@ -69,8 +69,7 @@ void CommandList::inviteCmd(std::vector<std::string> args, User &user) {
 						}
 						if (!usr_iter->isAway()) { // rqsted user is available
 							chnl_iter->_invite_list.push_back(*usr_iter);
-							msg = ":" + user.getNickname() + "!t127.0.0.1 INVITE" + rqsted_user + " :" +rqsted_chnl_name;
-							Server::writing(usr_iter->getSocketFd(), msg);
+							Service::sendMsg(user, *usr_iter, args[0], usr_iter->getNickname(), rqsted_chnl_name);
 							Service::replyMsg(341, user, rqsted_chnl_name, rqsted_user);
 						} else { // rqsted user has AWAY status
 							Service::replyMsg(301, user, rqsted_user, usr_iter->getAutoReply());
@@ -136,7 +135,7 @@ void CommandList::joinCmd(vector<string> args, User &user) {
 				new_chnl.addOperator(user);
 				Server::channelList.push_back(new_chnl);
 				user.joinedChannels.push_back(new_chnl);
-				Service::sendMsg(2, user, user, args[0], new_chnl.getChannelName());
+				Service::sendMsg(user, user, args[0], new_chnl.getChannelName());
 				Service::replyMsg(331, user, new_chnl.getChannelName(), new_chnl.getChannelTopic());
 				Service::replyMsg(353, user, new_chnl.getChannelName(), "@" + user.getNickname());
 				Service::replyMsg(366, user, new_chnl.getChannelName());
@@ -151,8 +150,8 @@ void CommandList::joinCmd(vector<string> args, User &user) {
 					}
 					if (res) { // if addUser is succesfull
 						for (list<User>::iterator usr_in_ch = chnl.first->getUserList().begin(); usr_in_ch != chnl.first->getUserList().end(); ++usr_in_ch)
-							Service::sendMsg(2, user, *usr_in_ch, args[0], chnl.first->getChannelName());
-						Service::sendMsg(2, user, user, args[0], chnl.first->getChannelName());
+							Service::sendMsg(user, *usr_in_ch, args[0], chnl.first->getChannelName());
+						Service::sendMsg(user, user, args[0], chnl.first->getChannelName());
 						Service::replyMsg(331, user, chnl.first->getChannelName(), chnl.first->getChannelTopic());
 						Service::replyMsg(353, user, chnl.first->getChannelName(),Service::to_string(chnl.first->getOperList(), true)
 																			+ Service::to_string(chnl.first->getUserList(), *(chnl.first)));
@@ -200,7 +199,7 @@ void CommandList::kickCmd(vector<string> args, User &user) {
 							userFoundOnChannel = true;
 							// delete user from channel
 							for (list<User>::iterator usr_in_ch = channelIter->getUserList().begin(); usr_in_ch != channelIter->getUserList().end(); ++usr_in_ch)
-								Service::sendMsg(1, user, *usr_in_ch, args[0], channelIter->getChannelName(), args[3]);
+								Service::sendMsg(user, *usr_in_ch, args[0], channelIter->getChannelName(), args[3]);
 							Service::deleteChannelFromUser(*userlistIter, *channelIter);
 							channelIter->deleteUser(*userlistIter);
 							Server::channelList.remove_if(Service::channelIsEmpty);
@@ -758,7 +757,7 @@ void CommandList::partCmd(std::vector<std::string> args, User &user) {
 							userFoundOnChannel = true;
 							// delete user from channel
 							for (list<User>::iterator usr_in_ch = channelIter->getUserList().begin(); usr_in_ch != channelIter->getUserList().end(); ++usr_in_ch)
-								Service::sendMsg(2, user, *usr_in_ch, args[0], channelIter->getChannelName());
+								Service::sendMsg(user, *usr_in_ch, args[0], channelIter->getChannelName());
 							Service::deleteChannelFromUser(user, *channelIter);
 							channelIter->deleteUser(*userlistIter);
 							Server::channelList.remove_if(Service::channelIsEmpty);
@@ -822,7 +821,7 @@ void CommandList::privmsgCmd(vector<string> args, User &user, bool isNotice) {
 						Service::errMsg(404, user, pair.first->getChannelName());
 					else {
 						for (list<User>::iterator ch_user = pair.first->_userList.begin(); ch_user != pair.first->_userList.end(); ++ch_user) {
-							Service::sendMsg(1, user, *ch_user, args[0], pair.first->getChannelName(), args[2]);
+							Service::sendMsg(user, *ch_user, args[0], pair.first->getChannelName(), args[2]);
 							Bot::generateAnswer(user, args[2], args[0], pair.first->getChannelName());
 						}
 					}
@@ -831,7 +830,7 @@ void CommandList::privmsgCmd(vector<string> args, User &user, bool isNotice) {
 			} else {
 				pair<list<User>::iterator, bool> pair = Service::isUserExist(*it);
 				if (pair.second) {
-					Service::sendMsg(1, user, *(pair.first), args[0], pair.first->getNickname(), args[2]);
+					Service::sendMsg(user, *(pair.first), args[0], pair.first->getNickname(), args[2]);
 					if (pair.first->isAway() && !isNotice)
 						Service::replyMsg(301, user, pair.first->getNickname(), pair.first->getAutoReply());
 				}
@@ -908,7 +907,7 @@ void CommandList::topicCmd(vector<string> args, User &user) {
 			Service::errMsg(482, user, chPair.first->getChannelName());
 		chPair.first->_topic = args[2];
 		for (list<User>::iterator usr_in_ch = chPair.first->getUserList().begin(); usr_in_ch != chPair.first->getUserList().end(); ++usr_in_ch)
-			Service::sendMsg(1, user, *usr_in_ch, args[0], chPair.first->getChannelName(), args[2]);
+			Service::sendMsg(user, *usr_in_ch, args[0], chPair.first->getChannelName(), args[2]);
 	}
 }
 
@@ -918,7 +917,7 @@ void CommandList::wallopsCmd(vector<string> args, User &user) {
 	else {
 		for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); ++it) {
 			if (it->isOper())
-				Service::sendMsg(2, user, *it, args[0], args[1]);
+				Service::sendMsg(user, *it, args[0], args[1]);
 		}
 	}
 }
