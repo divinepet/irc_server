@@ -36,7 +36,7 @@ vector<string>	Service::split(const std::string& s, char c) {
 }
 
 void Service::errMsg(int err, User &user, string arg1, string arg2) {
-	string msg = ":" + config["server.name"] + " " + to_string(err) + " " + user.getNickname();
+	string msg = ":" + config["server.name"] + " " + std::to_string(err) + " " + user.getNickname();
 	switch (err) {
 		case 401: msg += " " + arg1 + " :No such nick/channel\n"; break;
 		case 402: msg += " " + arg1 + " :No such server\n"; break;
@@ -89,7 +89,7 @@ void Service::errMsg(int err, User &user, string arg1, string arg2) {
 
 void Service::replyMsg(int code, User &user, string arg1, string arg2, string arg3, string arg4,
 									string arg5, string arg6, string arg7, string arg8) {
-	string msg = ":" + config["server.name"] + " " + to_string(code) + " " + user.getNickname() + " ";
+	string msg = ":" + config["server.name"] + " " + std::to_string(code) + " " + user.getNickname() + " ";
 	switch (code) {
 		case 302: msg += ":" + arg1 + "\n"; break;
 		case 303: msg += ":" + arg1 + "\n"; break;
@@ -266,6 +266,29 @@ void Service::sendFile(User &sender, string &recipient, const string& fileName) 
 	}
 }
 
+string Service::to_string(list<User> lst, Channel &channel) {
+	string result = "";
+	for (list<User>::iterator it = lst.begin(); it != lst.end(); ++it) {
+		if (it != lst.begin())
+			result += " ";
+		if (channel.isOperator(*it))
+			continue;
+		result += it->getNickname();
+	}
+	return result;
+}
+
+string Service::to_string(list<User> lst, bool isOperList) {
+	string result = "";
+	for (list<User>::iterator it = lst.begin(); it != lst.end(); ++it) {
+		if (it != lst.begin())
+			result += " ";
+		if (isOperList)
+			result += "@";
+		result += it->getNickname();
+	}
+	return result;
+}
 
 
 // 0 JOIN

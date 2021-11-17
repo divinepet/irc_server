@@ -136,7 +136,10 @@ void CommandList::joinCmd(vector<string> args, User &user) {
 				new_chnl.addOperator(user);
 				Server::channelList.push_back(new_chnl);
 				user.joinedChannels.push_back(new_chnl);
-				Service::replyMsg(332, user, new_chnl.getChannelName(), new_chnl.getChannelTopic());
+				Service::sendMsg(2, user, user, args[0], new_chnl.getChannelName());
+				Service::replyMsg(331, user, new_chnl.getChannelName(), new_chnl.getChannelTopic());
+				Service::replyMsg(353, user, new_chnl.getChannelName(), "@" + user.getNickname());
+				Service::replyMsg(366, user, new_chnl.getChannelName());
 			} else { // if rqsted chnl exist
 				if (!chnl.first->_invite_only) {
 					if (!input_passwords.empty() && input_passwords[i].length() > 0) { // with password
@@ -147,7 +150,11 @@ void CommandList::joinCmd(vector<string> args, User &user) {
 						user.joinedChannels.push_back(*chnl.first);
 					}
 					if (res) { // if addUser is succesfull
-						Service::replyMsg(332, user, chnl.first->getChannelName(), chnl.first->getChannelTopic());
+						Service::sendMsg(2, user, user, args[0], chnl.first->getChannelName());
+						Service::replyMsg(331, user, chnl.first->getChannelName(), chnl.first->getChannelTopic());
+						Service::replyMsg(353, user, chnl.first->getChannelName(),Service::to_string(chnl.first->getOperList(), true)
+																			+ Service::to_string(chnl.first->getUserList(), *(chnl.first)));
+						Service::replyMsg(366, user, chnl.first->getChannelName());
 					}
 				} else { // rqsted chnl is invite only
 					Service::errMsg(473, user, chnl.first->_channel_name);

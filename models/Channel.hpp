@@ -92,13 +92,13 @@ public:
 
     bool                    isInviteOnly() const;
     bool                    isPassword() const;
+    bool                    isOperator(User &user) const;
     bool 					inChannel(User user); // check that user in a channel
     string                  getChannelName() const;
     string                  getChannelTopic() const;
     list<string>&           getBanList();
     list<User>&             getOperList();
-    list<User>::iterator    getOperListBegin();
-    list<User>::iterator    getOperListEnd();
+    list<User>&				getUserList();
 
     void setPrivateFlag(bool value);
     void setSecretFlag(bool value);

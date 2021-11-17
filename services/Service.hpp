@@ -30,11 +30,12 @@ public:
 	static string	getUsersFromList(User &user, list<User> &userlist);
 	static void		deleteChannelFromUser(User &user, Channel &channel);
 	static void sendFile(User &sender, string &recipient, const string& fileName);
+	static string to_string(list<User> lst, Channel &channel);
+	static string to_string(list<User> lst, bool isOperList);
 private:
     static bool isChannelName(string str);
 	static bool	isComma(char c);
     static bool isNotComma(char c);
-
 };
 
 #include "../server/Server.hpp"

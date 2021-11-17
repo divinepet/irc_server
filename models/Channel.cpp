@@ -38,6 +38,12 @@ void Channel::addOperator(User &user) {
     }
 }
 
+bool Channel::inChannel(User user) {
+	for (list<User>::iterator it = _userList.begin(); it != _userList.end(); ++it)
+		if (*it == user) return true;
+		return false;
+}
+
 bool Channel::isInviteOnly() const { return _invite_only; }
 
 bool Channel::isPassword() const { return _has_password; }
@@ -50,15 +56,7 @@ list<User>& Channel::getOperList() { return _operator_list; }
 
 list<string> &Channel::getBanList() { return _ban_list; }
 
-list<User>::iterator Channel::getOperListBegin() { return _operator_list.begin(); }
-
-list<User>::iterator Channel::getOperListEnd() { return _operator_list.end(); }
-
-bool Channel::inChannel(User user) {
-	for (list<User>::iterator it = _userList.begin(); it != _userList.end(); ++it)
-		if (*it == user) return true;
-	return false;
-}
+list<User> &Channel::getUserList() { return _userList; }
 
 void Channel::setPrivateFlag(bool value) { _private = value; }
 
@@ -77,4 +75,13 @@ void Channel::setUserLimit(unsigned int value) { _user_limit = value; }
 void Channel::setVoiceFlag(bool value) { _voice = value; }
 
 void Channel::setPassword(string pass) { _password = pass; _has_password = true; }
+
+bool Channel::isOperator(User &user) const {
+	for (list<User>::const_iterator it = _operator_list.begin(); it != _operator_list.end(); ++it) {
+		if (user.getNickname() == it->getNickname())
+			return true;
+	}
+	return false;
+}
+
 
