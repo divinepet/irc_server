@@ -10,7 +10,7 @@ void MessageParse::splitMessage(string _msg, vector<string> &args) {
 
 	string::iterator new_end = unique(_msg.begin(), _msg.end(), bothAreSpaces);
 	_msg.erase(new_end, _msg.end());
-	if (_msg.size() > 0 && _msg[0] == ' ') _msg.erase(_msg.begin());
+	if (!_msg.empty() && _msg[0] == ' ') _msg.erase(_msg.begin());
 	if (_msg[_msg.size() - 1] == ' ') _msg.erase(_msg.end() - 1);
 
 
@@ -78,12 +78,12 @@ int MessageParse::defineCommandType(vector<string> &args, User& user, string pas
 	else if (args[0] == "WHOIS") {}
 	else if (args[0] == "WHOWAS") {}
 	else if (args[0] == "SEND") { Service::sendFile(user, args[1], args[2]); }
-//	else if (args[0] == "USERS") {}
 	else Service::errMsg(421, user, args[0]);
 	return 0;
 }
 
 int MessageParse::handleMessage(string _msg, User& user, string pass) {
+	if (_msg == "\n") return 0;
 	vector<string> args;
 
 	splitMessage(_msg, args);
