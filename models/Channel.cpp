@@ -18,11 +18,11 @@ void Channel::deleteOperator(User &user) {
     _operator_list.remove(user);
 }
 
-void Channel::sendToAll(int code, User &sender, string msg) {
+void Channel::sendToAll(User &sender, string msg) {
 
     for (list<User>::iterator it = _userList.begin(); it != _userList.end(); ++it) {
         if (it->getNickname() != sender.getNickname())
-            Service::sendMsg(code, sender, *it, sender.getNickname(), msg);
+            Service::sendMsg(sender, *it, sender.getNickname(), msg);
     }
 }
 

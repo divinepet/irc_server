@@ -200,12 +200,19 @@ void Server::kickUser(User &user) {
 	printf("%s disconnected.\n", user.getNickname().c_str());
 	close(user.getSocketFd());
 	for (list<Channel>::iterator it_ch = user.joinedChannels.begin(); it_ch != user.joinedChannels.end(); ++it_ch) {
-		pair<list<Channel>::iterator, bool> pairForChannel = Service::isChannelExist(it_ch->getChannelName());
-		if (pairForChannel.second) {
-			pairForChannel.first->deleteUser(user);
+		pair<list<Channel>::iterator, bool> pair = Service::isChannelExist(it_ch->getChannelName());
+		if (pair.second) {
+			/* Check for last operator */
+			if (Service::isUserExist(pair.first->_operator_list, user.getNickname()).second
+			&& pair.first->_operator_list.size() == 1 && pair.first->_userList.size() != 1) {
+				User usr = *(++pair.first->_userList.begin());
+				pair.first->addOperator(usr);
+				Service::sendMsg(user, usr, "MODE", pair.first->getChannelName(), usr.getNickname() + " is operator now");
+			}
+			pair.first->deleteUser(user);
 		}
 		it_ch->deleteUser(user);
-		list<User> lst = pairForChannel.first->getUserList();
+		list<User> lst = pair.first->getUserList();
 		for (list<User>::iterator it_usr = lst.begin(); it_usr != lst.end(); ++it_usr) {
 			Service::sendMsg(user, *it_usr, "QUIT", "Client exited");
 		}

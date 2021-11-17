@@ -72,6 +72,7 @@ public:
     bool            _moderated;
     bool            _banned;
     bool            _topic_by_oper;
+    bool 			_voice;
 
     unsigned int    _user_limit;
 
@@ -92,7 +93,7 @@ public:
     void addOperator(User &user);
     void deleteUser(User &user);
     void deleteOperator(User &user);
-    void sendToAll(int code, User &sender, string msg);
+    void sendToAll(User &sender, string msg);
 
     bool                    isInviteOnly() const;
     bool                    isPassword() const;

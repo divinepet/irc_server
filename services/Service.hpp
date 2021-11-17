@@ -31,8 +31,8 @@ public:
 	static string to_string(list<User> lst, Channel &channel);
 	static string to_string(list<User> lst, bool isOperList);
 	static bool	match(char *s1, char *s2);
-private:
     static bool isChannelName(string str);
+private:
 	static bool	isComma(char c);
     static bool isNotComma(char c);
 	static bool	isStar(char c);

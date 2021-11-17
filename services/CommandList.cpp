@@ -205,6 +205,13 @@ void CommandList::kickCmd(vector<string> args, User &user) {
 							// delete user from channel
 							for (list<User>::iterator usr_in_ch = channelIter->getUserList().begin(); usr_in_ch != channelIter->getUserList().end(); ++usr_in_ch)
 								Service::sendMsg(user, *usr_in_ch, args[0], channelIter->getChannelName(), args[3]);
+							/* Check for last operator */
+							if (Service::isUserExist(channelIter->_operator_list, user.getNickname()).second
+							&& channelIter->_operator_list.size() == 1 && channelIter->_userList.size() != 1) {
+								User usr = *(++channelIter->_userList.begin());
+								channelIter->addOperator(usr);
+								Service::sendMsg(user, usr, "MODE", channelIter->getChannelName(), usr.getNickname() + " is operator now");
+							}
 							Service::deleteChannelFromUser(*userlistIter, *channelIter);
 							channelIter->deleteUser(*userlistIter);
 							Server::channelList.remove_if(Service::channelIsEmpty);
@@ -398,12 +405,12 @@ void CommandList::setChnlModePrivate(vector<string> args, User &user, Channel &r
         msg = "private mode on " + args[1] + " is enabled";
         rqsted_chnl.setPrivateFlag(true);
         Service::replyMsg(221,user, msg);
-        rqsted_chnl.sendToAll(2, user, msg);
+        rqsted_chnl.sendToAll(user, msg);
     } else {
         msg = "private mode on " + args[1] + " is disabled";
         rqsted_chnl.setPrivateFlag(false);
         Service::replyMsg(221,user, msg);
-        rqsted_chnl.sendToAll(2, user, msg);
+        rqsted_chnl.sendToAll(user, msg);
     }
 }
 
@@ -414,12 +421,12 @@ void CommandList::setChnlModeSecret(vector<string> args, User &user, Channel &rq
         msg = "secret mode on " + args[1] + " is enabled";
         rqsted_chnl.setSecretFlag(true);
         Service::replyMsg(221,user, msg);
-        rqsted_chnl.sendToAll(2, user, msg);
+        rqsted_chnl.sendToAll(user, msg);
     } else {
         msg = "secret mode on " + args[1] + " is disabled";
         rqsted_chnl.setSecretFlag(false);
         Service::replyMsg(221,user, msg);
-        rqsted_chnl.sendToAll(2, user, msg);
+        rqsted_chnl.sendToAll(user, msg);
     }
 }
 
@@ -430,12 +437,12 @@ void CommandList::setChnlModeInvite(vector<string> args, User &user, Channel &rq
         msg = "invite_only mode on " + args[1] + " is enabled";
         rqsted_chnl.setInviteFlag(true);
         Service::replyMsg(221,user, msg);
-        rqsted_chnl.sendToAll(2, user, msg);
+        rqsted_chnl.sendToAll(user, msg);
     } else {
         msg = "invite_only mode on " + args[1] + " is disabled";
         rqsted_chnl.setInviteFlag(false);
         Service::replyMsg(221,user, msg);
-        rqsted_chnl.sendToAll(2, user, msg);
+        rqsted_chnl.sendToAll(user, msg);
     }
 }
 
@@ -446,12 +453,12 @@ void CommandList::setChnlModeTopic(vector<string> args, User &user, Channel &rqs
         msg = "topic_settable_by_channel_operator mode on " + args[1] + " is enabled";
         rqsted_chnl.setTopicFlag(true);
         Service::replyMsg(221,user, msg);
-        rqsted_chnl.sendToAll(2, user, msg);
+        rqsted_chnl.sendToAll(user, msg);
     } else {
         msg = "topic_settable_by_channel_operator mode on " + args[1] + " is disabled";
         rqsted_chnl.setTopicFlag(false);
         Service::replyMsg(221,user, msg);
-        rqsted_chnl.sendToAll(2, user, msg);
+        rqsted_chnl.sendToAll(user, msg);
     }
 }
 
@@ -462,12 +469,12 @@ void CommandList::setChnlModeOutside(vector<string> args, User &user, Channel &r
         msg = "no_messages_to_channel_from_clients_on_the_outside mode on " + args[1] + " is enabled";
         rqsted_chnl.setOutsideFlag(true);
         Service::replyMsg(221,user, msg);
-        rqsted_chnl.sendToAll(2, user, msg);
+        rqsted_chnl.sendToAll(user, msg);
     } else {
         msg = "no_messages_to_channel_from_clients_on_the_outside mode on " + args[1] + " is disabled";
         rqsted_chnl.setOutsideFlag(false);
         Service::replyMsg(221,user, msg);
-        rqsted_chnl.sendToAll(2, user, msg);
+        rqsted_chnl.sendToAll(user, msg);
     }
 }
 
@@ -478,12 +485,12 @@ void CommandList::setChnlModeModerated(vector<string> args, User &user, Channel 
         msg = "no_messages_to_channel_from_clients_on_the_outside mode on " + args[1] + " is enabled";
         rqsted_chnl.setModeratedFlag(true);
         Service::replyMsg(221,user, msg);
-        rqsted_chnl.sendToAll(2, user, msg);
+        rqsted_chnl.sendToAll(user, msg);
     } else {
         msg = "no_messages_to_channel_from_clients_on_the_outside mode on " + args[1] + " is disabled";
         rqsted_chnl.setModeratedFlag(false);
         Service::replyMsg(221,user, msg);
-        rqsted_chnl.sendToAll(2, user, msg);
+        rqsted_chnl.sendToAll(user, msg);
     }
 }
 
@@ -503,7 +510,7 @@ void CommandList::setChnlModeLimit(vector<string> args, User &user, Channel &rqs
         msg = "user_limit mode on " + args[1] + " is now " + to_string(result);
         Service::replyMsg(221,user, msg);
         rqsted_chnl.setUserLimit(result);
-        rqsted_chnl.sendToAll(2, user, msg);
+        rqsted_chnl.sendToAll(user, msg);
     } catch (std::exception) {
         Service::errMsg(501, user, args[3]);
         return;
@@ -556,7 +563,7 @@ void CommandList::setChnlModeBan(vector<string> args, User &user, Channel &rqste
                         msg = rqsted_chnl.getChannelName() + args[3] + " has been banned";
                         rqsted_chnl.addUserToBanList(*rqsted_user.first);
                         Service::replyMsg(221, user, msg);
-                        rqsted_chnl.sendToAll(2, user, msg);
+                        rqsted_chnl.sendToAll(user, msg);
                     } else { // rqsted user already in ban list
                         Service::replyMsg(221, user, args[4] + " is already banned on " + args[1]);
                     }
@@ -571,7 +578,7 @@ void CommandList::setChnlModeBan(vector<string> args, User &user, Channel &rqste
                     msg = rqsted_chnl.getChannelName() + args[3] + " has been unbanned";
                     rqsted_chnl.getBanList().remove(*rqsted_user.first);
                     Service::replyMsg(221, user, msg);
-                    rqsted_chnl.sendToAll(2, user, msg);
+                    rqsted_chnl.sendToAll(user, msg);
                 } else { // rqsted user already in mute list
                     Service::replyMsg(221, user, args[4] + " is already unbanned on " + args[1]);
                 }
@@ -597,7 +604,7 @@ void CommandList::setChnlModeVoice(vector<string> args, User &user, Channel &rqs
                     msg = rqsted_chnl.getChannelName() + args[3] + " has been muted";
                     rqsted_chnl.addUserToMuteList(*rqsted_user.first);
                     Service::replyMsg(221, user, msg);
-                    rqsted_chnl.sendToAll(2, user, msg);
+                    rqsted_chnl.sendToAll(user, msg);
                 } else { // rqsted user already in mute list
                     Service::replyMsg(221, user, args[4] + " is already muted on " + args[1]);
                 }
@@ -606,7 +613,7 @@ void CommandList::setChnlModeVoice(vector<string> args, User &user, Channel &rqs
                     msg = rqsted_chnl.getChannelName() + args[3] + " has been unmuted";
                     rqsted_chnl.getMuteList().remove(*rqsted_user.first);
                     Service::replyMsg(221, user, msg);
-                    rqsted_chnl.sendToAll(2, user, msg);
+                    rqsted_chnl.sendToAll(user, msg);
                 } else { // rqsted user already in mute list
                     Service::replyMsg(221, user, args[4] + " is already unmuted on " + args[1]);
                 }
@@ -627,7 +634,7 @@ void CommandList::setChnlModeKey(vector<string> args, User &user, Channel &rqste
             msg = rqsted_chnl.getChannelName() + "channel key is now " + args[3];
             rqsted_chnl.setPassword(args[3]);
             Service::replyMsg(324, user, msg);
-            rqsted_chnl.sendToAll(2, user, msg);
+            rqsted_chnl.sendToAll(user, msg);
         } else {
             Service::errMsg(467, user, rqsted_chnl.getChannelName());
         }
@@ -635,7 +642,7 @@ void CommandList::setChnlModeKey(vector<string> args, User &user, Channel &rqste
         msg = rqsted_chnl.getChannelName() + "channel key has been removed";
         rqsted_chnl.resetPassword();
         Service::replyMsg(324, user, msg);
-        rqsted_chnl.sendToAll(2, user, msg);
+        rqsted_chnl.sendToAll(user, msg);
     }
 }
 
@@ -897,6 +904,13 @@ void CommandList::partCmd(std::vector<std::string> args, User &user) {
 							// delete user from channel
 							for (list<User>::iterator usr_in_ch = channelIter->getUserList().begin(); usr_in_ch != channelIter->getUserList().end(); ++usr_in_ch)
 								Service::sendMsg(user, *usr_in_ch, args[0], channelIter->getChannelName());
+							/* Check for last operator */
+							if (Service::isUserExist(channelIter->_operator_list, user.getNickname()).second
+							&& channelIter->_operator_list.size() == 1 && channelIter->_userList.size() != 1) {
+								User usr = *(++channelIter->_userList.begin());
+								channelIter->addOperator(usr);
+								Service::sendMsg(user, usr, "MODE", channelIter->getChannelName(), usr.getNickname() + " is operator now");
+							}
 							Service::deleteChannelFromUser(user, *channelIter);
 							channelIter->deleteUser(*userlistIter);
 							Server::channelList.remove_if(Service::channelIsEmpty);
