@@ -27,7 +27,7 @@ public:
     static pair<list<Channel>::iterator, bool>  isChannelExist(string name);
     static pair<list<User>::iterator, bool>     isUserExist(list<User> &users_list, string name);
     static pair<list<Channel>::iterator, bool>  isChannelExist(list<Channel> &channels_list, string name);
-	static string	getUsersFromList(User &user, list<User> &userlist);
+	static string	getUsersFromList(User &user, list<User> &userlist, Channel &channel);
 	static void		deleteChannelFromUser(User &user, Channel &channel);
 	static void sendFile(User &sender, string &recipient, const string& fileName);
 	static string to_string(list<User> lst, Channel &channel);

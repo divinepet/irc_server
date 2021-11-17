@@ -224,10 +224,13 @@ pair<list<User>::iterator, bool> Service::isUserExist(list<User> &usersList, str
 }
 
 
-string	Service::getUsersFromList(User &user, list<User> &userlist) {
-
+string	Service::getUsersFromList(User &user, list<User> &userlist, Channel &channel) {
+	list<User> operList = channel.getOperList();
 	std::string result = "";
 	for (list<User>::iterator it = userlist.begin(); it != userlist.end(); ++it) {
+		for (list<User>::iterator op = operList.begin(); op != operList.end(); ++op) {
+			if (op->getNickname() == it->getNickname()) { result += "@"; break; }
+		}
 		if (Service::isUserExist(it->getNickname()).first->isInvisible() && user.getNickname() == it->getNickname()) {
 			result += it->getNickname();
 			result += " ";

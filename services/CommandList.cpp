@@ -661,11 +661,11 @@ void	CommandList::namesCmd(vector<string> args, User &user) {
 		for (list<Channel>::iterator ch = Server::channelList.begin(); ch != Server::channelList.end(); ch++) {
 			if (ch->_private || ch->_secret) {
 				if (Service::isChannelExist(user.joinedChannels, ch->getChannelName()).second) { // if user is in channel
-					string userlist = Service::getUsersFromList(user, ch->_userList);
+					string userlist = Service::getUsersFromList(user, ch->_userList, *ch);
 					Service::replyMsg(353, user, ch->getChannelName(), userlist);
 				}
 			} else {
-				string userlist = Service::getUsersFromList(user, ch->_userList);
+				string userlist = Service::getUsersFromList(user, ch->_userList, *ch);
 				Service::replyMsg(353, user, ch->getChannelName(), userlist);
 			}
 		}
@@ -688,11 +688,11 @@ void	CommandList::namesCmd(vector<string> args, User &user) {
 			if (kex.second) {
 				if (kex.first->_private || kex.first->_secret) {
 					if (Service::isChannelExist(user.joinedChannels, kex.first->getChannelName()).second) { // if user is in channel
-						string userlist = Service::getUsersFromList(user, kex.first->_userList);
+						string userlist = Service::getUsersFromList(user, kex.first->_userList, *kex.first);
 						Service::replyMsg(353, user, kex.first->getChannelName(), userlist);
 					}
 				} else {
-					string userlist = Service::getUsersFromList(user, kex.first->_userList);
+					string userlist = Service::getUsersFromList(user, kex.first->_userList, *kex.first);
 					Service::replyMsg(353, user, kex.first->getChannelName(), userlist);
 				}
 				Service::replyMsg(366, user, kex.first->getChannelName());
