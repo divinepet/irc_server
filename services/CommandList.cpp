@@ -889,32 +889,24 @@ void CommandList::versionCmd(std::vector<std::string> args, User &user) {
 
 void CommandList::topicCmd(vector<string> args, User &user) {
 
-	if (args.size() < 2)
+	if (args.size() < 2) {
 		Service::errMsg(461, user, args[0]);
-	else {
-		pair<list<Channel>::iterator, bool> chPair = Service::isChannelExist(Server::channelList, args[1]);
-		if (chPair.second && args.size() == 2) {
-			if (Service::isUserExist(chPair.first->_userList, user.getNickname()).second) {
-				if (chPair.first->getChannelTopic() != "")
-					Service::replyMsg(332, user,chPair.first->getChannelName(), chPair.first->getChannelTopic());
-				else
-					Service::replyMsg(331, user,chPair.first->getChannelName());
-			} else {
-				Service::errMsg(442, user, chPair.first->getChannelName());
-			}
-		} else if (chPair.second) {
-			if (Service::isUserExist(chPair.first->_userList, user.getNickname()).second) {
-				if (chPair.first->_topic_by_oper && Service::isUserExist(chPair.first->_operator_list, user.getNickname()).second) {
-					chPair.first->_topic = args[2];
-				} else if (chPair.first->_topic_by_oper) {
-					Service::errMsg(482, user, chPair.first->getChannelName());
-				} else {
-					chPair.first->_topic = args[2];
-				}
-			} else
-				Service::errMsg(442, user, chPair.first->getChannelName());
-		} else
-			Service::errMsg(442, user, args[1]);
+		return;
+	}
+	pair<list<Channel>::iterator, bool> chPair = Service::isChannelExist(Server::channelList, args[1]);
+	if (!chPair.second || !Service::isUserExist(chPair.first->_userList, user.getNickname()).second) {
+		Service::errMsg(442, user, args[1]);
+		return;
+	}
+	if (args.size() == 2) {
+		if (chPair.first->getChannelTopic() != "")
+			Service::replyMsg(332, user,chPair.first->getChannelName(), chPair.first->getChannelTopic());
+		else
+			Service::replyMsg(331, user,chPair.first->getChannelName());
+	} else {
+		if (chPair.first->_topic_by_oper && !Service::isUserExist(chPair.first->_operator_list, user.getNickname()).second)
+			Service::errMsg(482, user, chPair.first->getChannelName());
+		chPair.first->_topic = args[2];
 	}
 }
 
