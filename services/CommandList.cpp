@@ -961,8 +961,8 @@ vector<string>	CommandList::getWhoReplyVector(User &user) {
 
 	vector<string> result;
 
-	if (user.joinedChannels.size() > 0 && !user.joinedChannels.begin()->_secret) {
-		if (!user.joinedChannels.begin()->_private)
+	if (user.joinedChannels.size() > 0 && !Service::isChannelExist(user.joinedChannels.begin()->getChannelName()).first->_secret) {
+		if (!Service::isChannelExist(user.joinedChannels.begin()->getChannelName()).first->_private)
 			result.push_back(user.joinedChannels.begin()->getChannelName());
 		else
 			result.push_back("Prv");
