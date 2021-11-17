@@ -58,3 +58,8 @@ public:
 	static void versionCmd(vector<string> args, User& user);
 	static void wallopsCmd(vector<string> args, User& user);
 };
+
+
+// simple_example
+
+// *ple*ample

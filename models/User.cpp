@@ -68,6 +68,13 @@ void User::setRegisterPhase(int registerPhase) {
 void User::deleteChannel(Channel &channel) {
     joinedChannels.remove(channel);
 }
+
+//void User::addInvitedChnl(Channel &channel) {
+//    if (!Service::isChannelExist(invitedChannels, channel.getChannelName()).second) {
+//        invitedChannels.push_back(channel);
+//    }
+//}
+
 void User::setInvisible(bool value) { invisible = value; }
 void User::setWallops(bool value) { wallops = value; }
 void User::setNoticed(bool value) { serv_notices = value; }
