@@ -57,4 +57,13 @@ public:
 //	static int userCmd(vector<string> args, User& user);
 	static void versionCmd(vector<string> args, User& user);
 	static void wallopsCmd(vector<string> args, User& user);
+	static void whoCmd(vector<string> args, User& user);
+
+private:
+	static void	getWildcardNickname(string str, User &user, list<User> &userlist);
+	static void	getWildcardServerName(string str, User &user, list<User> &userlist);
+	static void	getWildcardRealName(string str, User &user, list<User> &userlist);
+	static void	getWildcardChannelName(string str, User &user, list<User> &userlist);
+	static void	getWildcardHostName(string str, User &user, list<User> &userlist);
+	static vector<string> getWhoReplyVector(User &user);
 };
