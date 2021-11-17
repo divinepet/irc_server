@@ -74,7 +74,6 @@ bool Server::writing(int _client_socket, const string &_str) {
 
 void* ping_request(void *_ping_data) {
 	size_t request_timeout = atoi(config["requestTimeout"].c_str()) * 1000;
-	cout << "request: " << request_timeout << endl;
 	t_ping* p_d = ((t_ping *)_ping_data);
 	pthread_mutex_lock(&p_d->print_mutex);
 	time_t time_now = Service::timer();
@@ -102,7 +101,6 @@ void* ping_request(void *_ping_data) {
 	time_t response_time = Service::timer();
 	pthread_mutex_unlock(&p_d->print_mutex);
 	size_t response_timeout = atoi(config["responseTimeout"].c_str()) * 1000;
-	cout << "response: " << response_timeout << endl;
 	while ((time_now - response_time < response_timeout) && !p_d->restart_response) {
 		pthread_mutex_lock(&p_d->print_mutex);
 		time_now = Service::timer();
