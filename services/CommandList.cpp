@@ -150,6 +150,8 @@ void CommandList::joinCmd(vector<string> args, User &user) {
 						user.joinedChannels.push_back(*chnl.first);
 					}
 					if (res) { // if addUser is succesfull
+						for (list<User>::iterator usr_in_ch = chnl.first->getUserList().begin(); usr_in_ch != chnl.first->getUserList().end(); ++usr_in_ch)
+							Service::sendMsg(2, user, *usr_in_ch, args[0], chnl.first->getChannelName());
 						Service::sendMsg(2, user, user, args[0], chnl.first->getChannelName());
 						Service::replyMsg(331, user, chnl.first->getChannelName(), chnl.first->getChannelTopic());
 						Service::replyMsg(353, user, chnl.first->getChannelName(),Service::to_string(chnl.first->getOperList(), true)
@@ -197,7 +199,8 @@ void CommandList::kickCmd(vector<string> args, User &user) {
 						if (userVector[i] == userlistIter->getNickname()) {
 							userFoundOnChannel = true;
 							// delete user from channel
-							Service::replyMsg(258, user, "USER FOUND AND KICKED FROM CHANNEL " + channelIter->_channel_name);
+							for (list<User>::iterator usr_in_ch = channelIter->getUserList().begin(); usr_in_ch != channelIter->getUserList().end(); ++usr_in_ch)
+								Service::sendMsg(1, user, *usr_in_ch, args[0], channelIter->getChannelName(), args[3]);
 							Service::deleteChannelFromUser(*userlistIter, *channelIter);
 							channelIter->deleteUser(*userlistIter);
 							Server::channelList.remove_if(Service::channelIsEmpty);
@@ -864,7 +867,7 @@ void CommandList::timeCmd(vector<string> args, User &user) {
 	: Service::replyMsg(391, user, config["server.name"], Service::getDate());
 }
 
-//int CommandList::user(vector<std::string> args, User &user) {
+//int CommandList::userCmd(vector<std::string> args, User &user) {
 //	if (args.size() < 4) {
 //		Service::errMsg(461, user);
 //		return 0;
@@ -886,7 +889,9 @@ void CommandList::versionCmd(std::vector<std::string> args, User &user) {
 
 void CommandList::topicCmd(vector<string> args, User &user) {
 
-	if (args.size() > 1) {
+	if (args.size() < 2)
+		Service::errMsg(461, user, args[0]);
+	else {
 		pair<list<Channel>::iterator, bool> chPair = Service::isChannelExist(Server::channelList, args[1]);
 		if (chPair.second && args.size() == 2) {
 			if (Service::isUserExist(chPair.first->_userList, user.getNickname()).second) {
@@ -899,24 +904,17 @@ void CommandList::topicCmd(vector<string> args, User &user) {
 			}
 		} else if (chPair.second) {
 			if (Service::isUserExist(chPair.first->_userList, user.getNickname()).second) {
-				if (chPair.first->_topic_by_oper && Service::isUserExist(chPair.first->_operator_list, user.getNickname()).second)
-				{
+				if (chPair.first->_topic_by_oper && Service::isUserExist(chPair.first->_operator_list, user.getNickname()).second) {
 					chPair.first->_topic = args[2];
-				}
-				else if (chPair.first->_topic_by_oper)
-				{
+				} else if (chPair.first->_topic_by_oper) {
 					Service::errMsg(482, user, chPair.first->getChannelName());
-				}
-				else {
+				} else {
 					chPair.first->_topic = args[2];
 				}
-			}
-			else
+			} else
 				Service::errMsg(442, user, chPair.first->getChannelName());
 		} else
 			Service::errMsg(442, user, args[1]);
-	} else {
-		Service::errMsg(461, user, args[0]);
 	}
 }
 
