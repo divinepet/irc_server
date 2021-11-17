@@ -172,9 +172,9 @@ void CommandList::kickCmd(vector<string> args, User &user) {
 	std::vector<std::string> channelVector;
 	std::vector<std::string> userVector;
 	bool	channelFound = false;
+	bool	kickedUserFoundOnChannel = false;
 	bool	userFoundOnChannel = false;
 	bool	userIsOperator = false;
-
 
 	if (args.size() > 2) {
 		channelVector = Service::split(args[1], ',');
@@ -182,7 +182,7 @@ void CommandList::kickCmd(vector<string> args, User &user) {
 		int channelVectorSize = channelVector.size();
 		if (channelVectorSize != userVector.size())
 		{
-			Service::errMsg(461, user, "PART");
+			Service::errMsg(461, user, "KICK");
 			return ;
 		}
 		for (int i = 0; i < channelVectorSize; i++) {
@@ -190,13 +190,13 @@ void CommandList::kickCmd(vector<string> args, User &user) {
 			for (channelIter = Server::channelList.begin(); channelIter != Server::channelList.end(); ++channelIter) {
 				if (channelIter->_channel_name == channelVector[i]) {
 					channelFound = true;
-					for (std::list<User>::iterator operlistIter = channelIter->_operator_list.begin(); !userIsOperator && operlistIter != channelIter->_operator_list.end(); ++operlistIter) {
-						if (operlistIter->getNickname() == user.getNickname())
-							userIsOperator = true;{}
-					}
+					if (Service::isUserExist(channelIter->getUserList(), user.getNickname()).second)
+						userFoundOnChannel = true;
+					if (Service::isUserExist(channelIter->getOperList(), user.getNickname()).second)
+						userIsOperator = true;
 					for (std::list<User>::iterator userlistIter = channelIter->_userList.begin(); userIsOperator && userlistIter != channelIter->_userList.end(); ++userlistIter) {
 						if (userVector[i] == userlistIter->getNickname()) {
-							userFoundOnChannel = true;
+							kickedUserFoundOnChannel = true;
 							// delete user from channel
 							for (list<User>::iterator usr_in_ch = channelIter->getUserList().begin(); usr_in_ch != channelIter->getUserList().end(); ++usr_in_ch)
 								Service::sendMsg(user, *usr_in_ch, args[0], channelIter->getChannelName(), args[3]);
@@ -206,19 +206,22 @@ void CommandList::kickCmd(vector<string> args, User &user) {
 							break ;
 						}
 					}
-					if (userFoundOnChannel)
+					if (kickedUserFoundOnChannel)
 						break ;
 				}
 			}
 			if (!channelFound) {
 				Service::errMsg(403, user, args[1]);
+			} else if (!userFoundOnChannel) {
+				Service::errMsg(442, user, channelIter->_channel_name);
 			} else if (!userIsOperator) {
 				Service::errMsg(482, user, channelIter->_channel_name);
 			}
-			else if (!userFoundOnChannel) {
-				Service::errMsg(442, user, args[1]);
+			else if (!kickedUserFoundOnChannel) {
+				Service::errMsg(401, user, args[1]);
 			}
 			channelFound = false;
+			kickedUserFoundOnChannel = false;
 			userFoundOnChannel = false;
 			userIsOperator = false;
 		}
