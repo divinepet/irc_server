@@ -907,6 +907,8 @@ void CommandList::topicCmd(vector<string> args, User &user) {
 		if (chPair.first->_topic_by_oper && !Service::isUserExist(chPair.first->_operator_list, user.getNickname()).second)
 			Service::errMsg(482, user, chPair.first->getChannelName());
 		chPair.first->_topic = args[2];
+		for (list<User>::iterator usr_in_ch = chPair.first->getUserList().begin(); usr_in_ch != chPair.first->getUserList().end(); ++usr_in_ch)
+			Service::sendMsg(1, user, *usr_in_ch, args[0], chPair.first->getChannelName(), args[2]);
 	}
 }
 
