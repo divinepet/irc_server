@@ -152,7 +152,10 @@ void CommandList::joinCmd(vector<string> args, User &user) {
 							        user.joinedChannels.push_back(*chnl.first);
 							        for (list<User>::iterator usr_in_ch = chnl.first->getUserList().begin(); usr_in_ch != chnl.first->getUserList().end(); ++usr_in_ch)
 							            Service::sendMsg(user, *usr_in_ch, args[0], chnl.first->getChannelName());
-							        Service::replyMsg(332, user, chnl.first->getChannelName(), chnl.first->getChannelTopic());
+							        if (chnl.first->getChannelTopic() != "")
+							        	Service::replyMsg(332, user, chnl.first->getChannelName(), chnl.first->getChannelTopic());
+							        else
+							        	Service::replyMsg(331, user, chnl.first->getChannelName());
 							        Service::replyMsg(353, user, chnl.first->getChannelName(),Service::to_string(chnl.first->getOperList(), true)
 							        + Service::to_string(chnl.first->getUserList(), *(chnl.first)));
 							        Service::replyMsg(366, user, chnl.first->getChannelName());
@@ -1000,7 +1003,7 @@ void CommandList::topicCmd(vector<string> args, User &user) {
 		if (chPair.first->getChannelTopic() != "")
 			Service::replyMsg(332, user,chPair.first->getChannelName(), chPair.first->getChannelTopic());
 		else
-			Service::replyMsg(331, user,chPair.first->getChannelName());
+			Service::replyMsg(331, user, chPair.first->getChannelName());
 	} else {
 		if (chPair.first->_topic_by_oper && !Service::isUserExist(chPair.first->_operator_list, user.getNickname()).second)
 			Service::errMsg(482, user, chPair.first->getChannelName());
