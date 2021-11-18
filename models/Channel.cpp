@@ -142,8 +142,21 @@ void Channel::muteAll() {
 }
 
 void Channel::unmuteAll() {
-    for (list<User>::iterator it = _userList.begin(); it != _userList.end(); ++it) {
+    for (list<User>::iterator it = _voice_list.begin(); it != _voice_list.end(); ++it) {
         _voice_list.remove(*it);
+    }
+}
+
+void Channel::banAllNonMember() {
+    for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); ++it) {
+        if (!Service::isUserExist(_userList, it->getNickname()).second)
+            addUserToBanList(*it);
+    }
+}
+
+void Channel::unbanAllNonMember() {
+    for (list<User>::iterator it = _userList.begin(); it != _userList.end(); ++it) {
+        _ban_list.remove(*it);
     }
 }
 

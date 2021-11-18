@@ -87,6 +87,8 @@ public:
     void sendToAll(User &sender, string channelName, string msg);
     void muteAll();
     void unmuteAll();
+    void banAllNonMember();
+    void unbanAllNonMember();
 
     bool                    isInviteOnly() const;
     bool                    isPassword() const;

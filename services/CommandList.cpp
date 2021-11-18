@@ -512,7 +512,11 @@ void CommandList::setChnlModeBan(vector<string> args, User &user, Channel &rqste
         if (Service::isUserExist(rqsted_chnl.getUserList(), args[3]).second) { // if rqsted user on rqasted chnl
             if (args[2][0] == '+') { // +b
                 if (args.size() > 3) { // +b with params
-                    if (!Service::isUserExist(rqsted_chnl.getBanList(), args[3]).second) { // if rqsted user NOT in ban list
+                    if (args[3] == "*!*@*") {
+                        msg = args[3] + " all non member users have been banned";
+                        rqsted_chnl.banAllNonMember();
+                        rqsted_chnl.sendToAll(user, args[1], msg);
+                    } else if (!Service::isUserExist(rqsted_chnl.getBanList(), args[3]).second) { // if rqsted user NOT in ban list
                         msg = args[3] + " has been banned";
                         rqsted_chnl.addUserToBanList(*rqsted_user.first);
                         rqsted_chnl.sendToAll(user, args[1], msg);
