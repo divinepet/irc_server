@@ -21,8 +21,6 @@ public:
         _private = false;
         _no_outside = false;
         _moderated = false;
-        _voice = false;
-        _banned = false;
         _topic_by_oper = false;
         _user_limit = 100;
     }
@@ -37,8 +35,6 @@ public:
         _private = false;
         _no_outside = false;
         _moderated = false;
-        _voice = false;
-        _banned = false;
         _topic_by_oper = false;
         _user_limit = 100;
 	};
@@ -50,14 +46,11 @@ public:
 	    _password = password;
 	    _userList.push_back(user);
         _topic = "";
-        _has_password = false;
         _invite_only = false;
         _secret = false;
         _private = false;
         _no_outside = false;
         _moderated = false;
-        _voice = false;
-        _banned = false;
         _topic_by_oper = false;
         _user_limit = 100;
 	};
@@ -70,9 +63,7 @@ public:
     bool            _private;
     bool            _no_outside;
     bool            _moderated;
-    bool            _banned;
     bool            _topic_by_oper;
-    bool 			_voice;
 
     unsigned int    _user_limit;
 

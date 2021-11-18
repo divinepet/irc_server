@@ -121,7 +121,7 @@ void CommandList::joinCmd(vector<string> args, User &user) {
 			if (Service::isChannelName(input_channels[i])) { // if chnl name is valid
 				chnl = Service::isChannelExist(input_channels[i]); // searching new chnl among the existing
 				if (!chnl.second) { // if rqsted chnl does not exist
-					if (input_passwords.size() > i && input_passwords[i].length() > 0) {
+				    if (!input_passwords.empty() && input_passwords[i].length() > 0) { // input_passwords.size() > i &&
 						new_chnl = Channel(input_channels[i], user, input_passwords[i]);
 					} else {
 						new_chnl = Channel(input_channels[i], user);
@@ -136,20 +136,27 @@ void CommandList::joinCmd(vector<string> args, User &user) {
 				} else { // if rqsted chnl exist
 					if (!Service::isUserExist(chnl.first->getUserList(), user.getNickname()).second) { // if user not on rqsted chnl
 						if (!Service::isUserExist(chnl.first->getBanList(), user.getNickname()).second) { // if user not banned on chnl
-							if (!chnl.first->isInviteOnly() || (chnl.first->isInviteOnly() && chnl.first->isUserInvited(user))) {
-								if (!input_passwords.empty() && input_passwords[i].length() > 0) // with password
-									res = chnl.first->addUser(user, input_passwords[i]);
-								else // without password
-									res = chnl.first->addUser(user);
-								user.joinedChannels.push_back(*chnl.first);
-								if (res) { // if addUser is succesfull
-									for (list<User>::iterator usr_in_ch = chnl.first->getUserList().begin(); usr_in_ch != chnl.first->getUserList().end(); ++usr_in_ch)
-										Service::sendMsg(user, *usr_in_ch, args[0], chnl.first->getChannelName());
-									Service::replyMsg(332, user, chnl.first->getChannelName(), chnl.first->getChannelTopic());
-									Service::replyMsg(353, user, chnl.first->getChannelName(),Service::to_string(chnl.first->getOperList(), true)
-									+ Service::to_string(chnl.first->getUserList(), *(chnl.first)));
-									Service::replyMsg(366, user, chnl.first->getChannelName());
-								}
+							if (!chnl.first->isInviteOnly() || (chnl.first->isInviteOnly() && chnl.first->isUserInvited(user))) { // if rqsted chnl (is NOT invite_only || is invite_only and user has been invited)
+							    if (!chnl.first->isPassword()) { // if rqsted chnl is NOT protected by password
+							        res = chnl.first->addUser(user);
+							    } else { // rqsted chnl is protected by password
+							        if (!input_passwords.empty() && input_passwords[i].length() > 0) { // if password is passed
+							            res = chnl.first->addUser(user, input_passwords[i]);
+							        }
+							        else {  // password NOT passed
+							            Service::errMsg(475, user,chnl.first->getChannelName());
+							            return ;
+							        }
+							    }
+							    if (res) { // if addUser is succesfull
+							        user.joinedChannels.push_back(*chnl.first);
+							        for (list<User>::iterator usr_in_ch = chnl.first->getUserList().begin(); usr_in_ch != chnl.first->getUserList().end(); ++usr_in_ch)
+							            Service::sendMsg(user, *usr_in_ch, args[0], chnl.first->getChannelName());
+							        Service::replyMsg(332, user, chnl.first->getChannelName(), chnl.first->getChannelTopic());
+							        Service::replyMsg(353, user, chnl.first->getChannelName(),Service::to_string(chnl.first->getOperList(), true)
+							        + Service::to_string(chnl.first->getUserList(), *(chnl.first)));
+							        Service::replyMsg(366, user, chnl.first->getChannelName());
+							    }
 							} else { // rqsted chnl is invite only
 								Service::errMsg(473, user, chnl.first->_channel_name);
 							}
@@ -570,15 +577,15 @@ void CommandList::setChnlModeVoice(vector<string> args, User &user, Channel &rqs
 void CommandList::setChnlModeKey(vector<string> args, User &user, Channel &rqsted_chnl) {
     string  msg;
 
-    if (args[2][0] == '+') {
-        if (!rqsted_chnl.isPassword()) {
-            msg = "channel with key now";
+    if (args[2][0] == '+') { // +k
+        if (!rqsted_chnl.isPassword()) { // no password on chnl
+            msg = "channel has been protected with key: " + args[3];
             rqsted_chnl.setPassword(args[3]);
             rqsted_chnl.sendToAll(user, args[1], msg);
-        } else {
+        } else { // chnl key is already set
             Service::errMsg(467, user, rqsted_chnl.getChannelName());
         }
-    } else {
+    } else { // -k
         msg = "channel key has been removed";
         rqsted_chnl.resetPassword();
         rqsted_chnl.sendToAll(user, args[1], msg);
