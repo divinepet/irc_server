@@ -121,13 +121,12 @@ void CommandList::joinCmd(vector<string> args, User &user) {
 			if (Service::isChannelName(input_channels[i])) { // if chnl name is valid
 				chnl = Service::isChannelExist(input_channels[i]); // searching new chnl among the existing
 				if (!chnl.second) { // if rqsted chnl does not exist
-				    if (input_passwords[i].length() > 0) { // input_passwords.size() > i &&
+				    if (!input_passwords.empty() && input_passwords[i].length() > 0) { // input_passwords.size() > i &&
 						new_chnl = Channel(input_channels[i], user, input_passwords[i]);
 					} else {
 						new_chnl = Channel(input_channels[i], user);
 					}
 					new_chnl.addOperator(user);
-				    std::cout << new_chnl.isPassword() << std::endl;
 					Server::channelList.push_back(new_chnl);
 					user.joinedChannels.push_back(new_chnl);
 					Service::sendMsg(user, user, args[0], new_chnl.getChannelName());
