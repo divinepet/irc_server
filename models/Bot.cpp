@@ -24,12 +24,11 @@ void Bot::generateAnswer(User &user, string msg, const string& cmd, const string
 			f2("how", "are")
 			? prompt + "I feel complete, as i've never felt before\n" :
 			f1("time")
-			? prompt + "Type TIME command to know the time.\n" : 0;
+			? prompt + "Type TIME command to know the time.\n" :
 			f1("bye")
-			? prompt + "I'm looking forward to seeing you again!\n" : 0;
+			? prompt + "I'm looking forward to seeing you again!\n" :
 			f2("command", "channel")
-			? prompt + "You can use TOPIC !\n" : 0;
-
+			? prompt + "Check RFC1459 protocol, they are too many\n" : 0;
 
 	send(user.getSocketFd(), answer.c_str(), answer.length(), 0 );
 }

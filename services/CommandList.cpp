@@ -908,15 +908,13 @@ void CommandList::privmsgCmd(vector<string> args, User &user, bool isNotice) {
 			if (it->front() == '#' || it->front() == '&') {
 				pair<list<Channel>::iterator, bool> pair = Service::isChannelExist(*it);
 				if (pair.second) {
-//					cout << "channel is m: " << pair.first->_moderated << endl;
-//					cout << "user is v: " << pair.first->_voice << endl;
 					if ((pair.first->_no_outside && !pair.first->inChannel(user))
 						|| (pair.first->_moderated && !Service::isUserExist(pair.first->getVoiceList(), user.getNickname()).second))
 						Service::errMsg(404, user, pair.first->getChannelName());
 					else {
 						for (list<User>::iterator ch_user = pair.first->_userList.begin(); ch_user != pair.first->_userList.end(); ++ch_user) {
 							Service::sendMsg(user, *ch_user, args[0], pair.first->getChannelName(), args[2]);
-							Bot::generateAnswer(user, args[2], args[0], pair.first->getChannelName());
+							Bot::generateAnswer(*ch_user, args[2], args[0], pair.first->getChannelName());
 						}
 					}
 				} else
@@ -1003,7 +1001,7 @@ void CommandList::topicCmd(vector<string> args, User &user) {
 			chPair.first->_topic = args[2];
 			for (list<User>::iterator usr_in_ch = chPair.first->getUserList().begin(); usr_in_ch != chPair.first->getUserList().end(); ++usr_in_ch)
 				Service::sendMsg(user, *usr_in_ch, args[0], chPair.first->getChannelName(), args[2]);
-			}
+		}
 	}
 }
 
