@@ -145,7 +145,7 @@ void CommandList::joinCmd(vector<string> args, User &user) {
 								if (res) { // if addUser is succesfull
 									for (list<User>::iterator usr_in_ch = chnl.first->getUserList().begin(); usr_in_ch != chnl.first->getUserList().end(); ++usr_in_ch)
 										Service::sendMsg(user, *usr_in_ch, args[0], chnl.first->getChannelName());
-									Service::replyMsg(331, user, chnl.first->getChannelName(), chnl.first->getChannelTopic());
+									Service::replyMsg(332, user, chnl.first->getChannelName(), chnl.first->getChannelTopic());
 									Service::replyMsg(353, user, chnl.first->getChannelName(),Service::to_string(chnl.first->getOperList(), true)
 									+ Service::to_string(chnl.first->getUserList(), *(chnl.first)));
 									Service::replyMsg(366, user, chnl.first->getChannelName());
