@@ -114,22 +114,8 @@ bool Channel::isOperator(User &user) const {
 	return false;
 }
 
-bool Channel::isUserBanned(User &user) {
-    if (!Service::isUserExist(_ban_list, user.getNickname()).second) {
-        return false;
-    }
-    return true;
-}
-
 bool Channel::isUserInvited(User &user) {
     if (!Service::isUserExist(_invite_list, user.getNickname()).second) {
-        return false;
-    }
-    return true;
-}
-
-bool Channel::isUserHasVoice(User &user) {
-    if (!Service::isUserExist(_voice_list, user.getNickname()).second) {
         return false;
     }
     return true;
@@ -154,9 +140,4 @@ void Channel::banAllNonMember() {
     }
 }
 
-void Channel::unbanAllNonMember() {
-    for (list<User>::iterator it = _userList.begin(); it != _userList.end(); ++it) {
-        _ban_list.remove(*it);
-    }
-}
 

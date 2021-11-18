@@ -44,7 +44,6 @@ public:
 	    _userList.push_back(user);
 	    _has_password = true;
 	    _password = password;
-	    _userList.push_back(user);
         _topic = "";
         _invite_only = false;
         _secret = false;
@@ -64,7 +63,6 @@ public:
     bool            _no_outside;
     bool            _moderated;
     bool            _topic_by_oper;
-
     unsigned int    _user_limit;
 
     string          _topic;
@@ -88,15 +86,12 @@ public:
     void muteAll();
     void unmuteAll();
     void banAllNonMember();
-    void unbanAllNonMember();
 
     bool                    isInviteOnly() const;
     bool                    isPassword() const;
     bool                    isOperator(User &user) const;
     bool 					inChannel(User user); // check that user in a channel
-    bool                    isUserBanned(User &user);
     bool                    isUserInvited(User &user);
-    bool                    isUserHasVoice(User &user);
     string                  getChannelName() const;
     string                  getChannelTopic() const;
     list<User>&             getBanList();
@@ -115,11 +110,6 @@ public:
     void setPassword(string pass);
     void resetPassword();
 
-
 	bool operator == (const Channel& s) const { return _channel_name == s._channel_name; }
 
 };
-
-//bool operator==(const Channel& ch1, const Channel& ch2) {
-//    return ch1.channel_name == ch2.channel_name;
-//}

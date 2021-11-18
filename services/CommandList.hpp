@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vector>
 #include "../server/Server.hpp"
 #include "../models/Bot.hpp"
 
@@ -67,11 +66,6 @@ private:
 	static void	getWildcardChannelName(string str, User &user, list<User> &userlist);
 	static void	getWildcardHostName(string str, User &user, list<User> &userlist);
 	static vector<string> getWhoReplyVector(User &user);
-	static string	getJoinedChannelsString(User &user, User &initiator);
-	static string	channelFlags(Channel &channel);
+	static string getJoinedChannelsString(User &user, User &initiator);
+	static string channelFlags(Channel &channel);
 };
-
-
-// simple_example
-
-// *ple*ample

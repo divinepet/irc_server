@@ -46,8 +46,6 @@ public:
     void setInvisible(bool value);
     void setWallops(bool value);
     void setNoticed(bool value);
-	void deleteChannel(Channel &channel);
-//	void addInvitedChnl(Channel &channel);
 
 	int getId() const;
 	int getSocketFd() const;
@@ -65,5 +63,4 @@ public:
 	bool isRegistered() const;
 	bool isInvisible() const;
 	list<Channel>	joinedChannels;
-//	list<Channel>	invitedChannels;
 };

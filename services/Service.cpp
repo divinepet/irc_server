@@ -14,7 +14,6 @@ string Service::getDate() {
 	return result.substr(0, result.length() - 1);
 }
 
-// not full-tested
 
 bool Service::isComma(char c) { return c == ','; }
 
@@ -37,7 +36,7 @@ vector<string>	Service::split(const std::string& s, char c) {
     std::vector<std::string> ret;
     iter i = s.begin();
 	iter j;
-    while(i!=s.end()) {
+    while(i != s.end()) {
 		if (c == ',') {
         	i = std::find_if(i, s.end(), isNotComma); // find the beginning of a word
         	j = std::find_if(i, s.end(), isComma); // find the end of the same word
@@ -52,7 +51,7 @@ vector<string>	Service::split(const std::string& s, char c) {
 			i = std::find_if(i, s.end(), isNotEnter); // find the beginning of a word
         	j = std::find_if(i, s.end(), isEnter); // find the end of the same word
 		}
-        if(i!=s.end()){
+        if (i!=s.end()) {
             ret.push_back(std::string(i, j)); //insert the word into vector
             i = j; // repeat 1,2,3 on the rest of the line.
         }
@@ -156,7 +155,7 @@ void Service::replyMsg(int code, User &user, string arg1, string arg2, string ar
 		case 382: msg += arg1 + " :Rehashing\n"; break;
 		case 391: msg += arg1 + " :" + arg2 + "\n"; break;
 		case 392: msg += ":UserID   Terminal  Host\n"; break;
-		case 393: msg += ":%-8s %-9s %-8s\n"; break; // строка длиной 8 символов
+		case 393: msg += ":%-8s %-9s %-8s\n"; break;
 		case 394: msg += ":End of users\n"; break;
 		case 395: msg += ":Nobody logged in\n"; break;
 		case 200: msg += "Link " + arg1 + " " + arg2 + " " + arg3 + "\n"; break;
@@ -199,6 +198,8 @@ void Service::replyMsg(int code, User &user, string arg1, string arg2, string ar
 }
 
 void Service::sendMsg(User &sender, User& recipient, string arg1, string arg2, string arg3) {
+	if (sender.getNickname() == recipient.getNickname())
+		return;
 	string msg = ":" + sender.getNickname() + "!" + sender.getUsername() + "@" + sender.getRealHost() + " ";
 	msg = (arg2 == "") ? msg + arg1 + "\n" : (arg3 == "") ? msg + arg1 + " :" + arg2 + "\n" : msg + arg1 + " " + arg2 + " :" + arg3 + "\n";
 	Server::writing(recipient.getSocketFd(), msg);
@@ -272,179 +273,82 @@ void	Service::deleteChannelFromUser(User &user, Channel &channel) {
 	}
 }
 
-class Client_socket{
+class FileTransfer {
     fstream file;
-
-    string    _ip;
-    int        _PORT;
-
-    int general_socket_descriptor;
-
+    string _ip;
+    int _port;
+    string _filename;
+    int socket_fd;
     struct sockaddr_in address;
     int address_length;
-
 public:
-    Client_socket(string ip, int PORT){
-        create_socket();
-        _ip = ip;
-        _PORT = PORT;
-
-        address.sin_family = AF_INET;
-        address.sin_port = htons( PORT );
-        address_length = sizeof(address);
-        if(inet_pton(AF_INET, _ip.c_str(), &address.sin_addr)<=0) {
-            cout<<"[ERROR] : Invalid address\n";
-        }
-
-        create_connection();
-
-        file.open("text.txt", ios::out | ios::trunc | ios::binary);
-        if(file.is_open()){
-            cout<<"[LOG] : File Creted.\n";
-        }
-        else{
-            cout<<"[ERROR] : File creation failed, Exititng.\n";
-            exit(EXIT_FAILURE);
-        }
+	FileTransfer (string ip, int port, string filename) : _ip(ip), _port(port), _filename(filename) {
+		try {
+			get_file();
+		} catch (exception &e) {
+			throw "error";
+		}
     }
 
-    void create_socket(){
-        if ((general_socket_descriptor = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+    ~FileTransfer() {
+		close(socket_fd);
+	}
+
+    void get_file() {
+        if ((socket_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
             perror("[ERROR] : Socket failed.\n");
             exit(EXIT_FAILURE);
         }
-        cout<<"[LOG] : Socket Created Successfully.\n";
-    }
-
-    void create_connection(){
-        if (connect(general_socket_descriptor, (struct sockaddr *)&address, sizeof(address)) < 0) {
-            perror("[ERROR] : connection attempt failed.\n");
-            exit(EXIT_FAILURE);
+        address.sin_family = AF_INET;
+        address.sin_port = htons(_port);
+        address_length = sizeof(address);
+        if (inet_pton(AF_INET, _ip.c_str(), &address.sin_addr) <= 0) {
+        	cout<< "[ERROR] : Invalid address" << endl;
+        	throw "error";
         }
-        cout<<"[LOG] : Connection Successfull.\n";
+        if (connect(socket_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
+        	perror("[ERROR] : connection attempt failed.\n");
+        	throw "error";
+        }
+        file.open(_filename, ios::out | ios::trunc | ios::binary);
+        if (!file.is_open()) { throw "error"; }
     }
 
-    void receive_file(size_t fsize){
-        char *buffer = new char[fsize];
-        int valread = read(general_socket_descriptor , buffer, 1024);
-        cout<<"[LOG] : Data received "<<valread<<" bytes\n";
-        cout<<"[LOG] : Saving data to file.\n";
-
-        file<<buffer;
-        cout<<"[LOG] : File Saved.\n";
-    }
+    void recieve_file(size_t filesize) {
+		char *buffer = new char[filesize];
+		read(socket_fd , buffer, filesize);
+		file << buffer;
+		cout<<"[LOG]: file saved" << endl;
+	}
 };
 
-//static char* hex_to_ip(const char *input)
-//{
-//    char *output = (char*)malloc(sizeof(char) * 16);
-//    unsigned int a, b, c, d;
-//
-//    if (sscanf(input, "%2x%2x%2x%2x", &a, &b, &c, &d) != 4)
-//        return output;
-//    sprintf(output, "%u.%u.%u.%u", a, b, c, d);
-//    return output;
-//}
+void Service::sendFile(const string& server_info) {
+	vector<string> info = split(server_info, ' ');
+	string filename = info[2].erase(0, 1);
+    filename = filename.erase(filename.size() - 1, 1);
+	int ip;
+	int port;
+	size_t filesize;
 
-//int i = 2130706433; // some 32-bit integer
-//string msg =  to_string((i >> 24) & 0xFF) + ".";
-//msg +=  to_string((i >> 16) & 0xFF) + ".";
-//msg +=  to_string((i >> 8) & 0xFF) + ".";
-//msg +=  to_string(i & 0xFF);
+	try {
+		ip = stoi(info[3]);
+		port = stoi(info[4]);
+		filesize = stoi(info[5]);
+	} catch (exception &e) {
+		cout << e.what() << endl;
+		return;
+	}
+    string ip_str =  std::to_string((ip >> 24) & 0xFF) + ".";
+    ip_str +=  std::to_string((ip >> 16) & 0xFF) + ".";
+    ip_str +=  std::to_string((ip >> 8) & 0xFF) + ".";
+    ip_str +=  std::to_string(ip & 0xFF);
 
-void Service::sendFile(User &sender, string &recipient, const string& fileName, int socket) {
-
-
-    vector<string> msg = split(fileName, ' ');
-
-    string fname = msg[2].erase(0, 1);
-    fname = fname.erase(fname.size() - 1, 1);
-    int ip = stoi(msg[3]);
-    int port = stoi(msg[4]);
-    size_t fsize = stoi(msg[5]);
-
-    int i = ip; // some 32-bit integer
-    string ip_str =  std::to_string((i >> 24) & 0xFF) + ".";
-    ip_str +=  std::to_string((i >> 16) & 0xFF) + ".";
-    ip_str +=  std::to_string((i >> 8) & 0xFF) + ".";
-    ip_str +=  std::to_string(i & 0xFF);
-
-    Client_socket cl(ip_str, port);
-
-    cl.receive_file(fsize);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    size_t index1 = fileName.find('"');
-//
-//    fname = fileName.substr(index1 + 1);
-//    fname = fname.substr(0, fname.find('"'));
-//
-//    char    *buffer = new char[236];
-//    fstream file;
-
-
-
-
-
-
-
-
-//    file.open(fname, ios_base::out | ios_base::binary);
-//    if (file.is_open()) {
-//
-//        int valread = recv(Service::isUserExist(recipient).first->getSocketFd(), buffer, 236, 0);
-//        cout<<"[LOG] : Data received "<< valread <<" bytes\n";
-//        cout<<"[LOG] : Saving data to file.\n";
-//
-//        file.write(buffer, 236);
-//
-////        std::cout << buffer << std::endl;
-////        file << buffer;
-//        cout<<"[LOG] : File Saved.\n";
-//    } else {
-//        std::cout << "cant open" << std::endl;
-//    }
-//    file.close();
-
-
-
-
-
-
-
-//	for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end(); ++it) {
-//		if (it->getNickname() == recipient) {
-//			fstream file;
-//			file.open(fname, ios::in | ios::binary);
-//			if (file.is_open()) {
-//				string contents((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-//				send(it->getSocketFd() , contents.c_str() , contents.length() , 0);
-//			} else
-//				cout << "cant open file" << endl;
-//			file.close();
-//			break;
-//		} else {
-//			cout << "User not found" << endl;
-//		}
-//	}
+    try {
+    	FileTransfer cl(ip_str, port, filename);
+    	cl.recieve_file(filesize);
+    } catch (exception &e) {
+    	return;
+    }
 }
 
 string Service::to_string(list<User> lst, Channel &channel) {
@@ -487,5 +391,3 @@ bool	Service::match(char *s1, char *s2)
 }
 
 
-// 0 JOIN
-// 1 "#abc abc, sda asdf, as, fdas # afsfa"

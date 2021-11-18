@@ -1,10 +1,4 @@
 #pragma once
-#include <iostream>
-#include <string>
-#include <vector>
-#include <list>
-#include <sys/time.h>
-
 #include "../server/Server.hpp"
 
 using namespace std;
@@ -27,7 +21,7 @@ public:
     static pair<list<Channel>::iterator, bool>  isChannelExist(list<Channel> &channels_list, string name);
 	static string	getUsersFromList(User &user, list<User> &userlist, Channel &channel);
 	static void		deleteChannelFromUser(User &user, Channel &channel);
-	static void sendFile(User &sender, string &recipient, const string& fileName, int socket);
+	static void sendFile(const string& server_info);
 	static string to_string(list<User> lst, Channel &channel);
 	static string to_string(list<User> lst, bool isOperList);
 	static bool	match(char *s1, char *s2);

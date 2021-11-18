@@ -42,7 +42,6 @@ const string &User::getNickname() const { return nickname; }
 const string &User::getAutoReply() const { return auto_reply; }
 const string &User::getUsername() const { return username; }
 const string &User::getRealName() const { return realName; }
-const string &User::getHost() const { return host; }
 const string &User::getServername() const { return servername; }
 const string &User::getRealHost() const { return realHost; }
 bool User::isRegistered() const { return registered; }
@@ -61,23 +60,14 @@ void User::setServername(const string &servername) { User::servername = serverna
 void User::setValidPass(bool validPass) { User::validPass = validPass; }
 void User::setOper(bool oper) { User::oper = oper; }
 void User::setRealHost(const string &realHost) { User::realHost = realHost; }
+void User::setInvisible(bool value) { invisible = value; }
+void User::setWallops(bool value) { wallops = value; }
+void User::setNoticed(bool value) { serv_notices = value; }
 void User::setRegisterPhase(int registerPhase) {
 	User::registerPhase = registerPhase;
 	if (registerPhase == 3 && validPass) registered = true;
 }
-void User::deleteChannel(Channel &channel) {
-    joinedChannels.remove(channel);
-}
 
-//void User::addInvitedChnl(Channel &channel) {
-//    if (!Service::isChannelExist(invitedChannels, channel.getChannelName()).second) {
-//        invitedChannels.push_back(channel);
-//    }
-//}
-
-void User::setInvisible(bool value) { invisible = value; }
-void User::setWallops(bool value) { wallops = value; }
-void User::setNoticed(bool value) { serv_notices = value; }
 
 
 

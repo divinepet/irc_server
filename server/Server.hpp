@@ -1,21 +1,8 @@
 #pragma once
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <cstring>
-#include <string>
-#include <sstream>
-#include <fstream>
-#include <cstdio>
 #include <list>
-#include <vector>
-#include <iostream>
 #include <unistd.h>
-#include <netdb.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/wait.h>
-#include <netinet/in.h>
+#include <sys/time.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include "../models/User.hpp"

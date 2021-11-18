@@ -292,7 +292,6 @@ void CommandList::listCmd(vector<string> args, User &user) {
 			std::list<Channel>::iterator channelIter; // Check channels
 			std::vector<std::string>::iterator chVectorIter; // Check channels
 			for (chVectorIter = channelVector.begin(); chVectorIter != channelVector.end(); chVectorIter++) {
-				// cout << *chVectorIter << endl;
 				for (channelIter = Server::channelList.begin(); channelIter != Server::channelList.end(); ++channelIter) {
 					if (*chVectorIter == channelIter->getChannelName()) {
 						if (!channelIter->_secret)
@@ -328,10 +327,6 @@ bool CommandList::checkModeParams(vector<string> args, User &user) {
                         Service::errMsg(472, user, string(1, args[2][i]));
                         return false;
                     }
-//                    if (special_flags == true && args[2].length() > 2) { // if flags [o l b k] not single in line
-//                        Service::errMsg(472, user, args[2]);
-//                        return false;
-//                    }
                     if (args[2][i] == 'o' || args[2][i] == 'l' || args[2][i] == 'v') {
                         special_flags = true;
                     }
@@ -758,7 +753,6 @@ void CommandList::motd(User &user) {
 void CommandList::namesCmd(vector<string> args, User &user) {
 
 	std::vector<std::string> channelVector;
-
 	if (args.size() == 1) {
 		for (list<Channel>::iterator ch = Server::channelList.begin(); ch != Server::channelList.end(); ch++) {
 			if (ch->_private || ch->_secret) {
@@ -921,6 +915,8 @@ void CommandList::privmsgCmd(vector<string> args, User &user, bool isNotice) {
 		Service::errMsg(411, user, args[0]);
 	else if (args.size() == 2)
 		Service::errMsg(412, user);
+	else if (args[2].find("GCC SEND") != string::npos)
+		Service::sendFile(args[2]);
 	else {
 		vector<string> arg_list = Service::split(args[1], ',');
 		for (vector<string>::iterator it = arg_list.begin(); it != arg_list.end(); ++it) {
@@ -933,8 +929,8 @@ void CommandList::privmsgCmd(vector<string> args, User &user, bool isNotice) {
 					else {
 						for (list<User>::iterator ch_user = pair.first->_userList.begin(); ch_user != pair.first->_userList.end(); ++ch_user) {
 							Service::sendMsg(user, *ch_user, args[0], pair.first->getChannelName(), args[2]);
-							Bot::generateAnswer(*ch_user, args[2], args[0], pair.first->getChannelName());
 						}
+						Bot::generateAnswer(user, args[2], args[0], pair.first->getChannelName());
 					}
 				} else
 					Service::errMsg(401, user, *it);
@@ -1203,7 +1199,6 @@ string	CommandList::channelFlags(Channel &channel)  {
 	}
 	return result;
 }
-
 
 void CommandList::getWildcardNickname(string str, User &user, list<User> &userlist) {
 

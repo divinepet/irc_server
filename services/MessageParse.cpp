@@ -7,8 +7,6 @@ void MessageParse::splitMessage(string _msg, vector<string> &args) {
 	size_t pos;
 	string prefix;
 
-//	while (_msg.find("\r\n") != string::npos)
-//		_msg.replace(_msg.find("\r\n"), 2, "\n");
 	string::iterator new_end = unique(_msg.begin(), _msg.end(), bothAreSpaces);
 	_msg.erase(new_end, _msg.end());
 	if (!_msg.empty() && _msg[0] == ' ') _msg.erase(_msg.begin());
@@ -78,7 +76,6 @@ int MessageParse::defineCommandType(vector<string> &args, User& user, string pas
 	else if (args[0] == "WHO") { CommandList::whoCmd(args, user); }
 	else if (args[0] == "WHOIS") { CommandList::whoisCmd(args, user); }
 	else if (args[0] == "WHOWAS") { CommandList::whoWasCmd(args, user); }
-	else if (args[0] == "SEND") { Service::sendFile(user, args[1], args[2], socket); }
 	else Service::errMsg(421, user, args[0]);
 	return 0;
 }

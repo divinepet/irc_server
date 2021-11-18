@@ -129,12 +129,9 @@ void Server::get_message(char *buf, User& user) {
 	if (user.isRegistered() && !rr_data[user.getId()].response_waiting) {
 		rr_data[user.getId()].restart_request = true;
 	}
-//	cout << "\"" << message_poll << "\"" << " -> MESSAGE POLL" << endl;
 	vector<string> cmdVector = Service::split(message_poll, '\n');
 	for (size_t i = 0; i < cmdVector.size(); i++) {
 	    int code = MessageParse::handleMessage(cmdVector[i], user, socket_fd, pass);
-//		int code = MessageParse::handleMessage(message_poll, user, pass);
-//		message_poll.clear();
 		switch (code) {
 			case 3: restartServer(); break;
 			case 7: {
