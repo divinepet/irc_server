@@ -8,6 +8,8 @@ void MessageParse::splitMessage(string _msg, vector<string> &args) {
 	size_t pos;
 	string prefix;
 
+	while (_msg.find("\r\n") != string::npos)
+		_msg.replace(_msg.find("\r\n"), 2, "\n");
 	string::iterator new_end = unique(_msg.begin(), _msg.end(), bothAreSpaces);
 	_msg.erase(new_end, _msg.end());
 	if (!_msg.empty() && _msg[0] == ' ') _msg.erase(_msg.begin());
