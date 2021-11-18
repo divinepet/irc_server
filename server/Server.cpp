@@ -121,8 +121,10 @@ void* ping_request(void *_ping_data) {
 }
 
 void Server::get_message(char *buf, User& user) {
+	while (message_poll.find("\r\n") != string::npos)
+		message_poll.replace(message_poll.find("\r\n"), 2, "\n");
 	message_poll += buf;
-	if (!strstr(buf, "\r\n"))
+	if (message_poll[message_poll.size() - 1] != '\n')
 		return;
 	if (user.isRegistered() && !rr_data[user.getId()].response_waiting) {
 		rr_data[user.getId()].restart_request = true;
