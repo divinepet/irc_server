@@ -19,14 +19,14 @@ public:
 	static void kickCmd(vector<string> args, User& user);
 	static void killCmd(vector<string> args, User& user);
 	static void	listCmd(vector<string> args, User& user);
-//	static void modeCmd(vector<string> args, User& user);
+	static void modeCmd(vector<string> args, User &user);
 	static void motd(User& user);
 	static void	namesCmd(vector<string> args, User& user);
 	static int nickCmd(vector<string> args, User& user);
 	static void noticeCmd(vector<string> args, User& user);
 	static void operCmd(vector<string> args, User& user);
 	static void partCmd(vector<string> args, User& user);
-//	static void passCmd(vector<string> args, User& user, string pass);
+	static void passCmd(vector<string> args, User& user, string pass);
 	static int pingCmd(vector<string> args, User& user);
 	static int pongCmd(vector<string> args, User& user);
 	static void privmsgCmd(vector<string> args, User& user, bool isNotice);
@@ -35,7 +35,6 @@ public:
 	static void rehashCmd(User& user);
 	static void timeCmd(vector<string> args, User& user);
 	static void topicCmd(vector<string> args, User &user);
-    static void modeCmd(vector<string> args, User &user);
     static bool checkModeParams(vector<string> args, User &user);
     static void setChnlMode(vector<string> args, User &user, list<User> &user_list, Channel &chnl);
     static void setUserMode(vector<string> args, User &user);
@@ -54,7 +53,7 @@ public:
     static void setUserModeNoticed(vector<string> args, User &user);
     static void setUserModeWallops(vector<string> args, User &user);
     static void setUserModeOperator(vector<string> args, User &user);
-//	static int userCmd(vector<string> args, User& user);
+	static int userCmd(vector<string> args, User& user);
 	static void versionCmd(vector<string> args, User& user);
 	static void wallopsCmd(vector<string> args, User& user);
 	static void whoCmd(vector<string> args, User& user);

@@ -46,9 +46,9 @@ void MessageParse::splitMessage(string _msg, vector<string> &args) {
 }
 
 int MessageParse::defineCommandType(vector<string> &args, User& user, string pass) {
-	if (args[0] == "PASS") { /*CommandList::passCmd(args, user, userList, pass);*/ }
+	if (args[0] == "PASS") { CommandList::passCmd(args, user, pass); }
 	else if (args[0] == "NICK") { return CommandList::nickCmd(args, user); }
-	else if (args[0] == "USER") { /*return CommandList::userCmd(args, user);*/ }
+	else if (args[0] == "USER") { return CommandList::userCmd(args, user); }
 	else if (args[0] == "QUIT") { CommandList::quitCmd(user); }
 	else if (!user.isRegistered()) { Service::errMsg(451, user); }
 	else if (args[0] == "ADMIN") { CommandList::adminCmd(args, user); }
