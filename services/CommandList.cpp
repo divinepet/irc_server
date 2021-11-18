@@ -999,7 +999,8 @@ void CommandList::topicCmd(vector<string> args, User &user) {
 	} else {
 		if (chPair.first->_topic_by_oper && !Service::isUserExist(chPair.first->_operator_list, user.getNickname()).second)
 			Service::errMsg(482, user, chPair.first->getChannelName());
-		chPair.first->_topic = args[2];
+		else
+			chPair.first->_topic = args[2];
 		for (list<User>::iterator usr_in_ch = chPair.first->getUserList().begin(); usr_in_ch != chPair.first->getUserList().end(); ++usr_in_ch)
 			Service::sendMsg(user, *usr_in_ch, args[0], chPair.first->getChannelName(), args[2]);
 	}
@@ -1079,6 +1080,36 @@ void CommandList::whoWasCmd(vector<string> args, User &user) {
 	Service::replyMsg(369, user, args[1]);
 }
 
+void CommandList::whoisCmd(vector<string> args, User &user) {
+
+	vector<string>	splittedUserlist;
+
+	if (args.size() > 1) {
+		splittedUserlist = Service::split(args[1], ',');
+		for (size_t i = 0; i < splittedUserlist.size(); i++) {
+			list<User>		resultUserlist;
+			CommandList::getWildcardNickname(splittedUserlist[i], user, resultUserlist);
+			for (list<User>::iterator it = resultUserlist.begin(); it != resultUserlist.end(); it++) {
+				time_t afk = (Service::timer() - Server::rr_data[it->getId()].last_message_time) / 1000;
+				Service::replyMsg(311, user, it->getNickname(), it->getUsername(), it->getRealHost(), it->getRealName());
+				if (it->isAway())
+					Service::replyMsg(301, user, it->getNickname(), it->getAutoReply());
+				if (it->isOper())
+					Service::replyMsg(313, user, it->getNickname());
+				Service::replyMsg(317, user, it->getNickname(), to_string(afk));
+				string joinedChannels = CommandList::getJoinedChannelsString(*Service::isUserExist(it->getNickname()).first, user);
+				if (joinedChannels.size() != 0)
+					Service::replyMsg(319, user, it->getNickname(), joinedChannels);
+				Service::replyMsg(318, user, it->getNickname());
+			}
+			if (resultUserlist.size() == 0)
+				Service::errMsg(401, user, splittedUserlist[i]);
+		}
+	} else {
+		Service::errMsg(431, user);
+	}
+}
+
 vector<string> CommandList::getWhoReplyVector(User &user) {
 
 	vector<string> result;
@@ -1098,6 +1129,62 @@ vector<string> CommandList::getWhoReplyVector(User &user) {
 
 	return result;
 }
+
+string	CommandList::getJoinedChannelsString(User &user, User &initiator) {
+
+	std::string		result;
+
+	for (list<Channel>::iterator it = user.joinedChannels.begin(); it != user.joinedChannels.end(); it++) {
+		if (!Service::isChannelExist(user.joinedChannels.begin()->getChannelName()).first->_secret) {
+			if (!Service::isChannelExist(it->getChannelName()).first->_private) {
+				if (Service::isUserExist(Service::isChannelExist(it->getChannelName()).first->getOperList(), user.getNickname()).second)
+					result += "[@]";
+				result += CommandList::channelFlags(*it) + it->getChannelName() + ' ';
+			} else if (Service::isChannelExist(initiator.joinedChannels, it->getChannelName()).second) {
+				if (Service::isUserExist(Service::isChannelExist(it->getChannelName()).first->getOperList(), user.getNickname()).second)
+					result += "[@]";
+				result += CommandList::channelFlags(*it) + it->getChannelName() + ' ';
+			} else {
+				result += "Prv ";
+			}
+		} else if (Service::isChannelExist(initiator.joinedChannels, it->getChannelName()).second) {
+			if (Service::isUserExist(Service::isChannelExist(it->getChannelName()).first->getOperList(), user.getNickname()).second)
+				result += "[@]";
+			result += CommandList::channelFlags(*it) + it->getChannelName() + ' ';
+		}
+	}
+	return result;
+}
+
+string	CommandList::channelFlags(Channel &channel)  {
+
+	list<Channel>::iterator globalScopeChannel = Service::isChannelExist(channel.getChannelName()).first;
+	string result;
+
+	if (globalScopeChannel->isInviteOnly()) {
+		result += 'i';
+	}
+	if (globalScopeChannel->_moderated) {
+		result += 'm';
+	}
+	if (globalScopeChannel->_topic_by_oper) {
+		result += 't';
+	}
+	if (globalScopeChannel->_no_outside) {
+		result += 'n';
+	}
+	if (globalScopeChannel->_private) {
+		result += 'p';
+	}
+	if (globalScopeChannel->_has_password) {
+		result += 'k';
+	}
+	if (result.size() > 0) {
+		result = "[+" + result + "]";
+	}
+	return result;
+}
+
 
 void CommandList::getWildcardNickname(string str, User &user, list<User> &userlist) {
 
