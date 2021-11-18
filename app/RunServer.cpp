@@ -1,6 +1,7 @@
 #include "../server/Server.hpp"
 
 int main(int argc, char *argv[]) {
+	setlocale(LC_ALL,"Russian");
     system("clear");
     if (argc < 3) {
         printf("Usage: ./ircserv <port> <password>\n");
