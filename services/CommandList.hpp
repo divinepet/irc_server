@@ -59,6 +59,7 @@ public:
 	static void wallopsCmd(vector<string> args, User& user);
 	static void whoCmd(vector<string> args, User& user);
 	static void whoWasCmd(vector<string> args, User& user);
+	static void	whoisCmd(vector<string> args, User& user);
 
 private:
 	static void	getWildcardNickname(string str, User &user, list<User> &userlist);
@@ -67,6 +68,8 @@ private:
 	static void	getWildcardChannelName(string str, User &user, list<User> &userlist);
 	static void	getWildcardHostName(string str, User &user, list<User> &userlist);
 	static vector<string> getWhoReplyVector(User &user);
+	static string	getJoinedChannelsString(User &user, User &initiator);
+	static string	channelFlags(Channel &channel);
 };
 
 
