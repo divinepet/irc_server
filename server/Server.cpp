@@ -3,6 +3,7 @@
 list<User> Server::userList;
 list<Channel> Server::channelList;
 t_ping* Server::rr_data;
+list<User> Server::userHistory;
 
 Server::Server(int _port, string _pass) {
 	if (_port < 1024 || _port > 49151)
@@ -200,6 +201,7 @@ void Server::start() {
 
 void Server::kickUser(User &user) {
 	printf("%s disconnected.\n", user.getNickname().c_str());
+	userHistory.push_back(user);
 	for (list<Channel>::iterator it_ch = user.joinedChannels.begin(); it_ch != user.joinedChannels.end(); ++it_ch) {
 		pair<list<Channel>::iterator, bool> pair = Service::isChannelExist(it_ch->getChannelName());
 		if (pair.second) {

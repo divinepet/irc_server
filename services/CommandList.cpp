@@ -795,6 +795,9 @@ int CommandList::nickCmd(std::vector<std::string> args, User& user) {
 			return 0;
 		}
 	}
+	if (!user.getNickname().empty())
+		Server::userHistory.push_back(user);
+
 	user.setNickname(args[1]);
 //	user.setRegisterPhase(user.getRegisterPhase() + 1);
 //	if (user.getRegisterPhase() == 3 && user.isValidPass()) { motd(user); return 7; }
@@ -875,7 +878,6 @@ void CommandList::partCmd(std::vector<std::string> args, User &user) {
 //		Service::errMsg(462, user);
 //		return;
 //	} else if (user.getRegisterPhase() == 2) {
-//		rr_data[user.getId()].isOnline = false;
 //		kickUser(user);
 //		return;
 //	}
@@ -1050,6 +1052,31 @@ void CommandList::whoCmd(vector<string> args, User &user) {
 		}
 		Service::replyMsg(315, user, args[1]);
 	}
+}
+
+void CommandList::whoWasCmd(vector<string> args, User &user) {
+	if (args.size() == 1) {
+		Service::errMsg(431, user);
+		return;
+	}
+	vector<string> searchingNicknames = Service::split(args[1], ',');
+	size_t count = (args.size() > 2) ? atoi(args[2].c_str()) : searchingNicknames.size();
+	vector<User> results;
+	bool isFound;
+	for (size_t i = 0; i < searchingNicknames.size(); ++i) { // lol, lol2
+		isFound = false;							// lol, lol2
+		for (list<User>::iterator usrIt = Server::userHistory.begin(); usrIt != Server::userHistory.end(); ++usrIt) {
+			if (usrIt->getNickname() == searchingNicknames[i]) {
+				results.push_back(*usrIt);
+				isFound = true;
+			}
+		}
+		if (!isFound) Service::errMsg(406, user, searchingNicknames[i]);
+	}
+	for (vector<User>::iterator it = results.begin(); it != results.end() && count > 0; ++it, count--) {
+		Service::replyMsg(314, user, it->getNickname(), it->getUsername(), it->getRealHost(), it->getRealName());
+	}
+	Service::replyMsg(369, user, args[1]);
 }
 
 vector<string> CommandList::getWhoReplyVector(User &user) {

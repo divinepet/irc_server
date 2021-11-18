@@ -58,6 +58,7 @@ public:
 	static void versionCmd(vector<string> args, User& user);
 	static void wallopsCmd(vector<string> args, User& user);
 	static void whoCmd(vector<string> args, User& user);
+	static void whoWasCmd(vector<string> args, User& user);
 
 private:
 	static void	getWildcardNickname(string str, User &user, list<User> &userlist);

@@ -49,9 +49,10 @@ private:
     fd_set fd_accept, fd_read, fd_write;
     timeval delay;
     pthread_t *request_thread;
-    static t_ping *rr_data;
 public:
+    static t_ping *rr_data;
     static list<User> userList;
+    static list<User> userHistory;
     static list<Channel> channelList;
 
 
