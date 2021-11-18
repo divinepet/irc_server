@@ -122,17 +122,17 @@ void* ping_request(void *_ping_data) {
 
 void Server::get_message(char *buf, User& user) {
 	message_poll += buf;
-	if (!strstr(buf, "\n"))
+	if (!strstr(buf, "\r\n"))
 		return;
 	if (user.isRegistered() && !rr_data[user.getId()].response_waiting) {
-		cout << "reset done" << endl;
 		rr_data[user.getId()].restart_request = true;
 	}
-	cout << "\"" << message_poll << "\"" << " -> MESSAGE POLL" << endl;
-	vector<string> cmdVector = Service::split(message_poll, '\n');
-	for (size_t i = 0; i < cmdVector.size(); i++) {
-		int code = MessageParse::handleMessage(cmdVector[i], user, pass);
-		// int code = MessageParse::handleMessage(message_poll, user, pass);
+//	cout << "\"" << message_poll << "\"" << " -> MESSAGE POLL" << endl;
+//	vector<string> cmdVector = Service::split(message_poll, '\n');
+//	for (size_t i = 0; i < cmdVector.size(); i++) {
+//		int code = MessageParse::handleMessage(cmdVector[i], user, pass);
+		int code = MessageParse::handleMessage(message_poll, user, pass);
+		message_poll.clear();
 		switch (code) {
 			case 3: restartServer(); break;
 			case 7: {
@@ -152,8 +152,8 @@ void Server::get_message(char *buf, User& user) {
 				} break;
 			} default:;
 		}
-	}
-	message_poll.clear();
+//	}
+//	message_poll.clear();
 }
 
 void Server::start() {
