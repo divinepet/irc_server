@@ -4,7 +4,9 @@
 #include "../server/Server.hpp"
 using namespace std;
 
-#define f(a) msg.find(a) != string::npos
+#define f1(a) msg.find(a) != string::npos
+#define f2(a,b) f1(a) || f1(b)
+#define f3(a,b,c) f1(a) || f1(b) || f1(c)
 
 class User;
 
