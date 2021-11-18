@@ -37,6 +37,8 @@ private:
     static bool isNotComma(char c);
 	static bool	isStar(char c);
 	static bool isNotStar(char c);
+	static bool	isEnter(char c);
+	static bool isNotEnter(char c);
 };
 
 #include "../server/Server.hpp"

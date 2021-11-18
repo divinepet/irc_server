@@ -24,6 +24,10 @@ bool Service::isStar(char c) { return c == '*'; }
 
 bool Service::isNotStar(char c) { return c != '*'; }
 
+bool Service::isEnter(char c) { return c == '\n'; }
+
+bool Service::isNotEnter(char c) { return c != '\n'; }
+
 vector<string>	Service::split(const std::string& s, char c) {
     typedef std::string::const_iterator iter;
     std::vector<std::string> ret;
@@ -33,10 +37,14 @@ vector<string>	Service::split(const std::string& s, char c) {
 		if (c == ',') {
         	i = std::find_if(i, s.end(), isNotComma); // find the beginning of a word
         	j = std::find_if(i, s.end(), isComma); // find the end of the same word
-		} else {
+		} else if (c == '*') {
 			i = std::find_if(i, s.end(), isNotStar); // find the beginning of a word
         	j = std::find_if(i, s.end(), isStar); // find the end of the same word
+		} else {
+			i = std::find_if(i, s.end(), isNotEnter); // find the beginning of a word
+        	j = std::find_if(i, s.end(), isEnter); // find the end of the same word
 		}
+
         if(i!=s.end()){
             ret.push_back(std::string(i, j)); //insert the word into vector
             i = j; // repeat 1,2,3 on the rest of the line.

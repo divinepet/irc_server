@@ -128,27 +128,32 @@ void Server::get_message(char *buf, User& user) {
 		cout << "reset done" << endl;
 		rr_data[user.getId()].restart_request = true;
 	}
-	int code = MessageParse::handleMessage(message_poll, user, pass);
-	message_poll.clear();
-	switch (code) {
-		case 3: restartServer(); break;
-		case 7: {
-			if (rr_data[user.getId()].last_message_time == -1) {
-				rr_data[user.getId()].last_message_time = Service::timer();
-				pthread_create(&request_thread[user.getId()], NULL, &ping_request, &rr_data[user.getId()]);
-			} break;
-		}
-		case 8: {
-			if (!rr_data[user.getId()].response_waiting) {
-				rr_data[user.getId()].restart_request = true;
+	cout << "\"" << message_poll << "\"" << " -> MESSAGE POLL" << endl;
+	vector<string> cmdVector = Service::split(message_poll, '\n');
+	for (size_t i = 0; i < cmdVector.size(); i++) {
+		int code = MessageParse::handleMessage(cmdVector[i], user, pass);
+		// int code = MessageParse::handleMessage(message_poll, user, pass);
+		switch (code) {
+			case 3: restartServer(); break;
+			case 7: {
+				if (rr_data[user.getId()].last_message_time == -1) {
+					rr_data[user.getId()].last_message_time = Service::timer();
+					pthread_create(&request_thread[user.getId()], NULL, &ping_request, &rr_data[user.getId()]);
+				} break;
 			}
-			else {
-				rr_data[user.getId()].restart_response = true;
-				rr_data[user.getId()].last_message_time = Service::timer();
-				pthread_create(&request_thread[user.getId()], NULL, &ping_request, &rr_data[user.getId()]);
-			} break;
-		} default:;
+			case 8: {
+				if (!rr_data[user.getId()].response_waiting) {
+					rr_data[user.getId()].restart_request = true;
+				}
+				else {
+					rr_data[user.getId()].restart_response = true;
+					rr_data[user.getId()].last_message_time = Service::timer();
+					pthread_create(&request_thread[user.getId()], NULL, &ping_request, &rr_data[user.getId()]);
+				} break;
+			} default:;
+		}
 	}
+	message_poll.clear();
 }
 
 void Server::start() {
