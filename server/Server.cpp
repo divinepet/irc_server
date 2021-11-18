@@ -75,23 +75,19 @@ bool Server::writing(int _client_socket, const string &_str) {
 }
 
 void* ping_request(void *_ping_data) {
-	size_t request_timeout = atoi(config["requestTimeout"].c_str()) * 1000;
 	t_ping* p_d = ((t_ping *)_ping_data);
 	pthread_mutex_lock(&p_d->print_mutex);
-	time_t time_now = Service::timer();
+	size_t request_timeout = atoi(config["requestTimeout"].c_str()) * 1000;
 	pthread_mutex_unlock(&p_d->print_mutex);
+	time_t time_now = Service::timer();
 	p_d->restart_response = false;
 	while (time_now - p_d->last_message_time < request_timeout) {
 		if (!p_d->isOnline) return NULL;
 		if (p_d->restart_request) {
 			p_d->restart_request = false;
-			pthread_mutex_lock(&p_d->print_mutex);
 			p_d->last_message_time = Service::timer();
-			pthread_mutex_unlock(&p_d->print_mutex);
 		}
-		pthread_mutex_lock(&p_d->print_mutex);
 		time_now = Service::timer();
-		pthread_mutex_unlock(&p_d->print_mutex);
 	}
 	pthread_mutex_lock(&p_d->print_mutex);
 	if (!Server::writing(p_d->client_socket,
@@ -99,18 +95,17 @@ void* ping_request(void *_ping_data) {
 		return NULL;
 	pthread_mutex_unlock(&p_d->print_mutex);
 	p_d->response_waiting = true;
-	pthread_mutex_lock(&p_d->print_mutex);
 	time_now = Service::timer();
 	time_t response_time = Service::timer();
-	pthread_mutex_unlock(&p_d->print_mutex);
+	pthread_mutex_lock(&p_d->print_mutex);
 	size_t response_timeout = atoi(config["responseTimeout"].c_str()) * 1000;
+	pthread_mutex_unlock(&p_d->print_mutex);
 	while ((time_now - response_time < response_timeout) && !p_d->restart_response) {
 		if (!p_d->isOnline) return NULL;
-		pthread_mutex_lock(&p_d->print_mutex);
 		time_now = Service::timer();
-		pthread_mutex_unlock(&p_d->print_mutex);
 	}
 	if (!p_d->restart_response) {
+		pthread_mutex_lock(&p_d->print_mutex);
 		for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end() ; ++it) {
 			if (it->getSocketFd() == p_d->client_socket) {
 				pthread_mutex_lock(&p_d->print_mutex);
@@ -119,6 +114,7 @@ void* ping_request(void *_ping_data) {
 				break;
 			}
 		}
+		pthread_mutex_unlock(&p_d->print_mutex);
 	}
 	p_d->response_waiting = false;
 	return NULL;
@@ -128,8 +124,10 @@ void Server::get_message(char *buf, User& user) {
 	message_poll += buf;
 	if (!strstr(buf, "\n"))
 		return;
-	if (user.isRegistered() && !rr_data[user.getId()].response_waiting)
+	if (user.isRegistered() && !rr_data[user.getId()].response_waiting) {
+		cout << "reset done" << endl;
 		rr_data[user.getId()].restart_request = true;
+	}
 	int code = MessageParse::handleMessage(message_poll, user, pass);
 	message_poll.clear();
 	switch (code) {
