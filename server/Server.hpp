@@ -35,6 +35,7 @@ typedef struct s_ping {
 	bool response_waiting;
 	bool restart_request;
 	bool restart_response;
+	bool isOnline;
 	pthread_mutex_t print_mutex;
 } t_ping;
 
@@ -47,8 +48,8 @@ private:
     socklen_t client_length;
     fd_set fd_accept, fd_read, fd_write;
     timeval delay;
-    t_ping *rr_data;
     pthread_t *request_thread;
+    static t_ping *rr_data;
 public:
     static list<User> userList;
     static list<Channel> channelList;

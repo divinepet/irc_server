@@ -137,13 +137,11 @@ void CommandList::joinCmd(vector<string> args, User &user) {
 					if (!Service::isUserExist(chnl.first->getUserList(), user.getNickname()).second) { // if user not on rqsted chnl
 						if (!Service::isUserExist(chnl.first->getBanList(), user.getNickname()).second) { // if user not banned on chnl
 							if (!chnl.first->isInviteOnly() || (chnl.first->isInviteOnly() && chnl.first->isUserInvited(user))) {
-								if (!input_passwords.empty() && input_passwords[i].length() > 0) { // with password
+								if (!input_passwords.empty() && input_passwords[i].length() > 0) // with password
 									res = chnl.first->addUser(user, input_passwords[i]);
-									user.joinedChannels.push_back(*chnl.first);
-								} else { // without password
+								else // without password
 									res = chnl.first->addUser(user);
-									user.joinedChannels.push_back(*chnl.first);
-								}
+								user.joinedChannels.push_back(*chnl.first);
 								if (res) { // if addUser is succesfull
 									for (list<User>::iterator usr_in_ch = chnl.first->getUserList().begin(); usr_in_ch != chnl.first->getUserList().end(); ++usr_in_ch)
 										Service::sendMsg(user, *usr_in_ch, args[0], chnl.first->getChannelName());
@@ -203,10 +201,10 @@ void CommandList::kickCmd(vector<string> args, User &user) {
 							kickedUserFoundOnChannel = true;
 							// delete user from channel
 							for (list<User>::iterator usr_in_ch = channelIter->getUserList().begin(); usr_in_ch != channelIter->getUserList().end(); ++usr_in_ch)
-								Service::sendMsg(user, *usr_in_ch, args[0], channelIter->getChannelName(), args[3]);
+								Service::sendMsg(user, *usr_in_ch, args[0], channelIter->getChannelName(), args[2]);
 							/* Check for last operator */
 							if (Service::isUserExist(channelIter->_operator_list, user.getNickname()).second
-							&& channelIter->_operator_list.size() == 1 && channelIter->_userList.size() != 1) {
+							&& channelIter->_operator_list.size() == 1 && channelIter->_userList.size() != 1 && user.getNickname() == args[2]) {
 								User usr = *(++channelIter->_userList.begin());
 								channelIter->addOperator(usr);
 								Service::sendMsg(user, usr, "MODE", channelIter->getChannelName(), usr.getNickname() + " is operator now");
@@ -877,6 +875,7 @@ void CommandList::partCmd(std::vector<std::string> args, User &user) {
 //		Service::errMsg(462, user);
 //		return;
 //	} else if (user.getRegisterPhase() == 2) {
+//		rr_data[user.getId()].isOnline = false;
 //		kickUser(user);
 //		return;
 //	}

@@ -2,6 +2,7 @@
 
 list<User> Server::userList;
 list<Channel> Server::channelList;
+t_ping* Server::rr_data;
 
 Server::Server(int _port, string _pass) {
 	if (_port < 1024 || _port > 49151)
@@ -80,6 +81,7 @@ void* ping_request(void *_ping_data) {
 	pthread_mutex_unlock(&p_d->print_mutex);
 	p_d->restart_response = false;
 	while (time_now - p_d->last_message_time < request_timeout) {
+		if (!p_d->isOnline) return NULL;
 		if (p_d->restart_request) {
 			p_d->restart_request = false;
 			pthread_mutex_lock(&p_d->print_mutex);
@@ -102,6 +104,7 @@ void* ping_request(void *_ping_data) {
 	pthread_mutex_unlock(&p_d->print_mutex);
 	size_t response_timeout = atoi(config["responseTimeout"].c_str()) * 1000;
 	while ((time_now - response_time < response_timeout) && !p_d->restart_response) {
+		if (!p_d->isOnline) return NULL;
 		pthread_mutex_lock(&p_d->print_mutex);
 		time_now = Service::timer();
 		pthread_mutex_unlock(&p_d->print_mutex);
@@ -173,6 +176,7 @@ void Server::start() {
 				User user(new_socket_fd);
 				user.setRealHost(pair.second);
 				rr_data[user.getId()].client_socket = new_socket_fd;
+				rr_data[user.getId()].isOnline = true;
 				rr_data[user.getId()].last_message_time = -1;
 				Server::userList.push_back(user);
 				FD_SET(new_socket_fd, &fd_read);
@@ -196,7 +200,6 @@ void Server::start() {
 
 void Server::kickUser(User &user) {
 	printf("%s disconnected.\n", user.getNickname().c_str());
-	close(user.getSocketFd());
 	for (list<Channel>::iterator it_ch = user.joinedChannels.begin(); it_ch != user.joinedChannels.end(); ++it_ch) {
 		pair<list<Channel>::iterator, bool> pair = Service::isChannelExist(it_ch->getChannelName());
 		if (pair.second) {
@@ -215,6 +218,8 @@ void Server::kickUser(User &user) {
 			Service::sendMsg(user, *it_usr, "QUIT", "Client exited");
 		}
 	}
+	rr_data[user.getId()].isOnline = false;
+	close(user.getSocketFd());
 	Server::userList.remove(user);
 	Server::channelList.remove_if(Service::channelIsEmpty);
 }
