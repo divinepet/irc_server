@@ -3,7 +3,6 @@
 bool bothAreSpaces(char lhs, char rhs) { return (lhs == rhs) && (lhs == ' '); }
 
 void MessageParse::splitMessage(string _msg, vector<string> &args) {
-	_msg = _msg.substr(0, _msg.length() - 1);
 	string delimiter = " ";
 	size_t pos;
 	string prefix;
@@ -47,7 +46,7 @@ void MessageParse::splitMessage(string _msg, vector<string> &args) {
 	cout << endl;
 }
 
-int MessageParse::defineCommandType(vector<string> &args, User& user, string pass) {
+int MessageParse::defineCommandType(vector<string> &args, User& user, string pass, int socket) {
 	if (args[0] == "PASS") { CommandList::passCmd(args, user, pass); }
 	else if (args[0] == "NICK") { return CommandList::nickCmd(args, user); }
 	else if (args[0] == "USER") { return CommandList::userCmd(args, user); }
@@ -79,16 +78,16 @@ int MessageParse::defineCommandType(vector<string> &args, User& user, string pas
 	else if (args[0] == "WHO") { CommandList::whoCmd(args, user); }
 	else if (args[0] == "WHOIS") { CommandList::whoisCmd(args, user); }
 	else if (args[0] == "WHOWAS") { CommandList::whoWasCmd(args, user); }
-	else if (args[0] == "SEND") { Service::sendFile(user, args[1], args[2]); }
+	else if (args[0] == "SEND") { Service::sendFile(user, args[1], args[2], socket); }
 	else Service::errMsg(421, user, args[0]);
 	return 0;
 }
 
-int MessageParse::handleMessage(string _msg, User& user, string pass) {
+int MessageParse::handleMessage(string _msg, User& user, int socket, string pass) {
 	if (_msg == "\n") return 0;
 	vector<string> args;
 
 	splitMessage(_msg, args);
-	return defineCommandType(args, user, pass);
+	return defineCommandType(args, user, pass, socket);
 
 }
