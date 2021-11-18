@@ -135,4 +135,15 @@ bool Channel::isUserHasVoice(User &user) {
     return true;
 }
 
+void Channel::muteAll() {
+    for (list<User>::iterator it = _userList.begin(); it != _userList.end(); ++it) {
+        addUserToVoiceList(*it);
+    }
+}
+
+void Channel::unmuteAll() {
+    for (list<User>::iterator it = _userList.begin(); it != _userList.end(); ++it) {
+        _voice_list.remove(*it);
+    }
+}
 

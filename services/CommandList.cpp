@@ -332,8 +332,7 @@ bool CommandList::checkModeParams(vector<string> args, User &user) {
 //                        Service::errMsg(472, user, args[2]);
 //                        return false;
 //                    }
-                    if (args[2][i] == 'o' || args[2][i] == 'l'
-                    || args[2][i] == 'k' || args[2][i] == 'v') {
+                    if (args[2][i] == 'o' || args[2][i] == 'l' || args[2][i] == 'v') {
                         special_flags = true;
                     }
                 }
@@ -474,9 +473,11 @@ void CommandList::setChnlModeModerated(vector<string> args, User &user, Channel 
     if (args[2][0] == '+') {
         msg = "read only channel mode is enabled";
         rqsted_chnl.setModeratedFlag(true);
+        rqsted_chnl.muteAll();
     } else {
     	msg = "read only channel mode is disabled";
         rqsted_chnl.setModeratedFlag(false);
+        rqsted_chnl.unmuteAll();
     }
     rqsted_chnl.sendToAll(user, args[1], msg);
 }
@@ -581,12 +582,16 @@ void CommandList::setChnlModeKey(vector<string> args, User &user, Channel &rqste
     string  msg;
 
     if (args[2][0] == '+') { // +k
-        if (!rqsted_chnl.isPassword()) { // no password on chnl
-            msg = "channel has been protected with key: " + args[3];
-            rqsted_chnl.setPassword(args[3]);
-            rqsted_chnl.sendToAll(user, args[1], msg);
-        } else { // chnl key is already set
-            Service::errMsg(467, user, rqsted_chnl.getChannelName());
+        if (args.size() > 3) { // +k with params
+            if (!rqsted_chnl.isPassword()) { // no password on chnl
+                msg = "channel has been protected with key: " + args[3];
+                rqsted_chnl.setPassword(args[3]);
+                rqsted_chnl.sendToAll(user, args[1], msg);
+            } else { // chnl key is already set
+                Service::errMsg(467, user, rqsted_chnl.getChannelName());
+            }
+        } else { // not enough params for +k
+            Service::errMsg(472, user, args[2]);
         }
     } else { // -k
         msg = "channel key has been removed";
