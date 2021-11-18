@@ -11,14 +11,17 @@ char Bot::asciitolower(char in) {
 }
 
 void Bot::generateAnswer(User &user, string msg, const string& cmd, const string& ch_name ) {
-	string prompt = ":BOT_PSINA!@* " + cmd + " " + ch_name + " :";
 	std::transform(msg.begin(), msg.end(), msg.begin(), asciitolower);
-	cout << msg << endl;
-	if (msg.find("hi") != string::npos || msg.find("hello") != string::npos) {
-		string answer = prompt + "Nice to meet you in channel, " + user.getNickname() + "!\n";
-		send(user.getSocketFd(), answer.c_str(), answer.length(), 0 );
-	} else if (msg.find("fuck")  != string::npos && msg.find("bot")  != string::npos) {
-		string answer = prompt + "poshel ti nahui, " + user.getNickname() + "!\n";
-		send(user.getSocketFd(), answer.c_str(), answer.length(), 0 );
-	}
+	if (msg.find("bot") == np)
+		return;
+	string prompt = ":BOT!PSINA@* :";
+
+	string answer =
+			(f("hi") || f("hello"))
+			? prompt + "Hello, " + user.getNickname() + "! How are you?\n" :
+			(f("fuck") || f("asshole"))
+			? prompt + "Next time i will kick you...\n" : 0;
+
+
+	send(user.getSocketFd(), answer.c_str(), answer.length(), 0 );
 }

@@ -3,6 +3,9 @@
 #include <iostream>
 #include "../server/Server.hpp"
 using namespace std;
+
+#define f(a) msg.find(a) != string::npos
+
 class User;
 
 class Bot {
