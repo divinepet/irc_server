@@ -3,3 +3,5 @@
 *.o
 .vscode/
 ircserv
+cmake-build-debug/
+CMakeLists.txt
