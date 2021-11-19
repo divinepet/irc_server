@@ -28,7 +28,8 @@ void Bot::generateAnswer(User &user, string msg, const string& cmd, const string
 			f1("bye")
 			? prompt + "I'm looking forward to seeing you again!\n" :
 			f2("command", "channel")
-			? prompt + "Check RFC1459 protocol, they are too many\n" : 0;
+			? prompt + "Check RFC1459 protocol, they are too many\n" : "\n";
 
-	send(user.getSocketFd(), answer.c_str(), answer.length(), 0 );
+//	send(user.getSocketFd(), answer.c_str(), answer.length(), 0 );
+    Service::sendMsg(user, user, "PRIVMSG", ch_name, answer);
 }
