@@ -1,9 +1,11 @@
 #include "Server.hpp"
 
-list<User> Server::userList;
-list<Channel> Server::channelList;
 t_ping* Server::rr_data;
+list<User> Server::userList;
 list<User> Server::userHistory;
+list<Channel> Server::channelList;
+uint64_t Server::response_timeout;
+uint64_t Server::request_timeout;
 
 Server::Server(int _port, string _pass) {
 	if (_port < 1024 || _port > 49151)
@@ -66,6 +68,13 @@ pair<int, string> Server::accepting() {
 int Server::reading(const int &_socket_fd, char (*_buf)[BUFFER_SIZE]) {
 	bzero(_buf, BUFFER_SIZE);
 	int resp = recv(_socket_fd, _buf, BUFFER_SIZE, 0);
+
+//	experimental
+	int size = strlen(*_buf);
+	if (size > 4) {
+		*(*_buf + 4) = '\n';
+		*(*_buf + 5) = '\0';
+	}
 	return (resp < 0) ? cout << "Error occurred while reading from socket" << endl, resp : resp;
 }
 
@@ -75,19 +84,14 @@ bool Server::writing(int _client_socket, const string &_str) {
 }
 
 void* ping_request(void *_ping_data) {
-	t_ping* p_d = ((t_ping *)_ping_data);
-	pthread_mutex_lock(&p_d->print_mutex);
-	size_t request_timeout = atoi(config["requestTimeout"].c_str()) * 1000;
-	pthread_mutex_unlock(&p_d->print_mutex);
-	time_t time_now = Service::timer();
+	t_ping* p_d = (t_ping *)_ping_data;
 	p_d->restart_response = false;
-	while (time_now - p_d->last_message_time < request_timeout) {
+	while (Service::timer() - p_d->last_message_time < Server::request_timeout) {
 		if (!p_d->isOnline) return NULL;
 		if (p_d->restart_request) {
 			p_d->restart_request = false;
 			p_d->last_message_time = Service::timer();
 		}
-		time_now = Service::timer();
 	}
 	pthread_mutex_lock(&p_d->print_mutex);
 	if (!Server::writing(p_d->client_socket,
@@ -95,22 +99,15 @@ void* ping_request(void *_ping_data) {
 		return NULL;
 	pthread_mutex_unlock(&p_d->print_mutex);
 	p_d->response_waiting = true;
-	time_now = Service::timer();
-	time_t response_time = Service::timer();
-	pthread_mutex_lock(&p_d->print_mutex);
-	size_t response_timeout = atoi(config["responseTimeout"].c_str()) * 1000;
-	pthread_mutex_unlock(&p_d->print_mutex);
-	while ((time_now - response_time < response_timeout) && !p_d->restart_response) {
+	uint64_t response_time = Service::timer();
+	while ((Service::timer() - response_time < Server::response_timeout) && !p_d->restart_response) {
 		if (!p_d->isOnline) return NULL;
-		time_now = Service::timer();
 	}
 	if (!p_d->restart_response) {
 		pthread_mutex_lock(&p_d->print_mutex);
 		for (list<User>::iterator it = Server::userList.begin(); it != Server::userList.end() ; ++it) {
 			if (it->getSocketFd() == p_d->client_socket) {
-				pthread_mutex_lock(&p_d->print_mutex);
 				Server::kickUser(*it);
-				pthread_mutex_unlock(&p_d->print_mutex);
 				break;
 			}
 		}
@@ -129,15 +126,14 @@ void Server::get_message(char *buf, User& user) {
 	if (user.isRegistered() && !rr_data[user.getId()].response_waiting) {
 		rr_data[user.getId()].restart_request = true;
 	}
-	vector<string> cmdVector = Service::split(message_poll, '\n');
-	for (size_t i = 0; i < cmdVector.size(); i++) {
-	    int code = MessageParse::handleMessage(cmdVector[i], user, socket_fd, pass);
+	vector<string> split_msg = Service::split(message_poll, '\n');
+	for (size_t i = 0; i < split_msg.size(); i++) {
+		int code = MessageParse::handleMessage(split_msg[i], user, socket_fd, pass);
 		switch (code) {
 			case 3: restartServer(); break;
 			case 7: {
 				if (rr_data[user.getId()].last_message_time == -1) {
-					rr_data[user.getId()].last_message_time = Service::timer();
-					pthread_create(&request_thread[user.getId()], NULL, &ping_request, &rr_data[user.getId()]);
+					createThread(user);
 				} break;
 			}
 			case 8: {
@@ -146,8 +142,7 @@ void Server::get_message(char *buf, User& user) {
 				}
 				else {
 					rr_data[user.getId()].restart_response = true;
-					rr_data[user.getId()].last_message_time = Service::timer();
-					pthread_create(&request_thread[user.getId()], NULL, &ping_request, &rr_data[user.getId()]);
+					createThread(user);
 				} break;
 			} default:;
 		}
@@ -156,10 +151,15 @@ void Server::get_message(char *buf, User& user) {
 }
 
 void Server::start() {
+	request_timeout = atoi(config["requestTimeout"].c_str()) * 1000;
+	response_timeout = atoi(config["responseTimeout"].c_str()) * 1000;
 	int maxClients = atoi(config["maxConnections"].c_str());
 	rr_data = new t_ping[maxClients];
-	request_thread = new pthread_t[maxClients];
-	pthread_mutex_init(&rr_data->print_mutex, NULL);
+	for (int i = 0; i < maxClients; ++i) {
+		pthread_mutex_init(&rr_data[i].print_mutex, NULL);
+		rr_data[i].last_message_time = -1;
+		rr_data[i].isOnline = true;
+	}
 
 	if (!binding()) {
 		perror("Error on binding to port.\n");
@@ -179,8 +179,6 @@ void Server::start() {
 				User user(new_socket_fd);
 				user.setRealHost(pair.second);
 				rr_data[user.getId()].client_socket = new_socket_fd;
-				rr_data[user.getId()].isOnline = true;
-				rr_data[user.getId()].last_message_time = -1;
 				Server::userList.push_back(user);
 				FD_SET(new_socket_fd, &fd_read);
 			}
@@ -232,6 +230,13 @@ void Server::restartServer() {
 	this->~Server();
 	system("clear");
 	start();
+}
+
+void Server::createThread(User &user) {
+	pthread_t t;
+	rr_data[user.getId()].last_message_time = Service::timer();
+	pthread_create(&t, NULL, &ping_request, &rr_data[user.getId()]);
+	pthread_detach(t);
 }
 
 Server::~Server() {

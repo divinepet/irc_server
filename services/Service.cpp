@@ -1,10 +1,9 @@
 #include "Service.hpp"
 
-time_t Service::timer() {
-	struct timeval start = {};
-	gettimeofday(&start, nullptr);
-	time_t msecs_time = (start.tv_sec * 1000) + (start.tv_usec / 1000);
-	return msecs_time;
+uint64_t Service::timer() {
+	static struct timeval	tv;
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * (uint64_t)1000) + (tv.tv_usec / 1000));
 }
 
 string Service::getDate() {

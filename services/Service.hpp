@@ -7,7 +7,7 @@ class User;
 
 class Service {
 public:
-	static time_t timer();
+	static uint64_t timer();
 	static string getDate();
 	static vector<string> split(const string &str, char c);
 	static void errMsg(int err, User &user, string arg1="", string arg2="");

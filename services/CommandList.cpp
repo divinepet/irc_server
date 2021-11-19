@@ -1105,7 +1105,7 @@ void CommandList::whoisCmd(vector<string> args, User &user) {
 			list<User>		resultUserlist;
 			CommandList::getWildcardNickname(splittedUserlist[i], user, resultUserlist);
 			for (list<User>::iterator it = resultUserlist.begin(); it != resultUserlist.end(); it++) {
-				time_t afk = (Service::timer() - Server::rr_data[it->getId()].last_message_time) / 1000;
+				uint64_t afk = (Service::timer() - Server::rr_data[it->getId()].last_message_time) / 1000;
 				Service::replyMsg(311, user, it->getNickname(), it->getUsername(), it->getRealHost(), it->getRealName());
 				if (it->isAway())
 					Service::replyMsg(301, user, it->getNickname(), it->getAutoReply());
