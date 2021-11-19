@@ -19,9 +19,9 @@ public:
         _invite_only = false;
         _secret = false;
         _private = false;
-        _no_outside = false;
+        _no_outside = true;
         _moderated = false;
-        _topic_by_oper = false;
+        _topic_by_oper = true;
         _user_limit = 100;
     }
 
@@ -33,9 +33,9 @@ public:
         _invite_only = false;
         _secret = false;
         _private = false;
-        _no_outside = false;
+        _no_outside = true;
         _moderated = false;
-        _topic_by_oper = false;
+        _topic_by_oper = true;
         _user_limit = 100;
 	};
 
@@ -48,9 +48,9 @@ public:
         _invite_only = false;
         _secret = false;
         _private = false;
-        _no_outside = false;
+        _no_outside = true;
         _moderated = false;
-        _topic_by_oper = false;
+        _topic_by_oper = true;
         _user_limit = 100;
 	};
 

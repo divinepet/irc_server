@@ -364,12 +364,12 @@ bool CommandList::checkModeParams(vector<string> args, User &user) {
     return true;
 }
 
-void CommandList::setChnlModeOperator(vector<string> args, User &user, list<User> &user_list, Channel &rqsted_chnl) {
+void CommandList::setChnlModeOperator(vector<string> args, User &user, Channel &rqsted_chnl) {
 
     string                              msg;
     pair<list<User>::iterator, bool>    rqsted_user;
 
-    rqsted_user = Service::isUserExist(user_list, args[3]);
+    rqsted_user = Service::isUserExist(args[3]);
     if (rqsted_user.second) { // if input user exist
         if (Service::isUserExist(rqsted_chnl.getUserList(), rqsted_user.first->getNickname()).second) { // if rqsted user on rqsted chnl
             if (Service::isUserExist(rqsted_chnl.getOperList(), args[3]).second) { // if input user not operator yet on rqsted channel
@@ -638,11 +638,11 @@ void CommandList::setUserModeOperator(vector<string> args, User &user) {
     }
 }
 
-void CommandList::setChnlMode(vector<string> args, User &user, list<User> &user_list, Channel &chnl) {
+void CommandList::setChnlMode(vector<string> args, User &user, Channel &chnl) {
     for (size_t i = 1; i < args[2].length(); ++i) {
         switch (args[2][i]) {
             case 'o': {
-                setChnlModeOperator(args, user, user_list, chnl);
+                setChnlModeOperator(args, user, chnl);
                 break;
             }
             case 'p': {
@@ -718,10 +718,10 @@ void CommandList::modeCmd(vector<string> args, User &user) {
 
     if (checkModeParams(args, user)) {
         if (args[1][0] == '#' || args[1][0] == '&') { // if MODE fot channel
-            rqsted_chnl = Service::isChannelExist(Server::channelList, args[1]);
+            rqsted_chnl = Service::isChannelExist(args[1]);
             if (rqsted_chnl.second) { // if rqsted channel exist
                 if (Service::isUserExist(rqsted_chnl.first->getOperList(), user.getNickname()).second) { // if cuurent user operator on rqsted channel
-                    setChnlMode(args, user, Server::userList, *rqsted_chnl.first);
+                    setChnlMode(args, user, *rqsted_chnl.first);
                 } else { // user NOT operator on rqsted channel
                     Service::errMsg(482, user, args[1]);
                 }

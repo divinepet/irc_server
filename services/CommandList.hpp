@@ -35,9 +35,9 @@ public:
 	static void timeCmd(vector<string> args, User& user);
 	static void topicCmd(vector<string> args, User &user);
     static bool checkModeParams(vector<string> args, User &user);
-    static void setChnlMode(vector<string> args, User &user, list<User> &user_list, Channel &chnl);
+    static void setChnlMode(vector<string> args, User &user, Channel &chnl);
     static void setUserMode(vector<string> args, User &user);
-    static void setChnlModeOperator(vector<string> args, User &user, list<User> &user_list, Channel &rqsted_chnl);
+    static void setChnlModeOperator(vector<string> args, User &user, Channel &rqsted_chnl);
     static void setChnlModePrivate(vector<string> args, User &user, Channel &rqsted_chnl);
     static void setChnlModeSecret(vector<string> args, User &user, Channel &rqsted_chnl);
     static void setChnlModeInvite(vector<string> args, User &user, Channel &rqsted_chnl);
