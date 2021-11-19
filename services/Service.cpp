@@ -197,8 +197,6 @@ void Service::replyMsg(int code, User &user, string arg1, string arg2, string ar
 }
 
 void Service::sendMsg(User &sender, User& recipient, string arg1, string arg2, string arg3) {
-	if (sender.getNickname() == recipient.getNickname())
-		return;
 	string msg = ":" + sender.getNickname() + "!" + sender.getUsername() + "@" + sender.getRealHost() + " ";
 	msg = (arg2 == "") ? msg + arg1 + "\n" : (arg3 == "") ? msg + arg1 + " :" + arg2 + "\n" : msg + arg1 + " " + arg2 + " :" + arg3 + "\n";
 	Server::writing(recipient.getSocketFd(), msg);
