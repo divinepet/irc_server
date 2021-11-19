@@ -915,7 +915,7 @@ void CommandList::privmsgCmd(vector<string> args, User &user, bool isNotice) {
 		Service::errMsg(411, user, args[0]);
 	else if (args.size() == 2)
 		Service::errMsg(412, user);
-	else if (args[2].find("GCC SEND") != string::npos)
+	else if (args[2].find("DCC SEND") != string::npos)
 		Service::sendFile(args[2]);
 	else {
 		vector<string> arg_list = Service::split(args[1], ',');

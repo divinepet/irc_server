@@ -68,13 +68,6 @@ pair<int, string> Server::accepting() {
 int Server::reading(const int &_socket_fd, char (*_buf)[BUFFER_SIZE]) {
 	bzero(_buf, BUFFER_SIZE);
 	int resp = recv(_socket_fd, _buf, BUFFER_SIZE, 0);
-
-//	experimental
-	int size = strlen(*_buf);
-	if (size > 4) {
-		*(*_buf + 4) = '\n';
-		*(*_buf + 5) = '\0';
-	}
 	return (resp < 0) ? cout << "Error occurred while reading from socket" << endl, resp : resp;
 }
 
