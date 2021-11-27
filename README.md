@@ -1,7 +1,7 @@
 # About The Project
 ![screenshot](https://www.onsip.com/hs-fs/hub/516769/file-3082154394-png/blog-files/adiumui.png)
 
-This is IRC-Server written on C/C++ language using standart of RFC1459. This allows you to connect to the server by netcat or any instant messaging client that supports multiple IM networks (Adium for example)
+This is IRC-Server written on C++ language using standart of RFC1459. This allows you to connect to the server by netcat or any instant messaging client that supports multiple IM networks (Adium for example)
 
 # Getting started
 ## Installation ⚙️
