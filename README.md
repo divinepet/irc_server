@@ -19,12 +19,22 @@ make
 ```
 # Usage
 ## Connection 🔌
-Now, you need to connect to the server. You can use <b>netcat</b> passing the server-ip and port in arguments like: nc localhost 8000</br>
+Now, you need to connect to the server. You can use <b>netcat</b> passing the server-ip and port in arguments like: 
+```shell
+nc localhost 8000
+```
 If you are using Adium, you need to choose Irc-Server, create new client and fill out all the fields of the server settings
 ## Registration 🔑
-With nc client you should write three comamnds: </br>PASS \<server password\></br>NICK \<your nickname\></br>USER \<name\> \<host\> \<servername\> \<realname\> (this values can be anything, it doesn't matter).
+With nc client you should write three comamnds: 
+```shell
+PASS server_password
+NICK nickname
+USER name host servername realname # (it could be any values, it doesn't matter)
+```
 ## Messaging ✉️
 To write someone a message, use command PRIVMSG <receiver> <message>.</br><b>⚠️ Important:</b> if you want to send more than 1 word to client, use <b>:</b> before the message. For example:</br>
-PRIVMSG john :hello there!</br>
+```shell
+PRIVMSG john :hello there!
+```
 Other commands and usage can be find by the link:
 https://datatracker.ietf.org/doc/html/rfc1459
